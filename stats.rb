@@ -4,7 +4,16 @@ require 'date'
 
 def fetch_today_stats(username)
   today = Date.today
-  url = "https://api.chess.com/pub/player/#{username}/games/#{today.year}/#{sprintf('%02d', today.month)}"
+  fetch_day_stats(username, today)
+end
+
+def fetch_yesterday_stats(username)
+  yesterday = Date.today - 1
+  fetch_day_stats(username, yesterday)
+end
+
+def fetch_day_stats(username, date)
+  url = "https://api.chess.com/pub/player/#{username}/games/#{date.year}/#{sprintf('%02d', date.month)}"
   response = HTTParty.get(url)
 
   return {} if response.code != 200
@@ -22,7 +31,7 @@ def fetch_today_stats(username)
 
   month_games.each do |game|
     game_date = Time.at(game['end_time']).to_date
-    next unless game_date == today
+    next unless game_date == date
 
     today_stats[:played] += 1
     today_stats[:types] << game['time_class']
@@ -55,12 +64,18 @@ end
 usernames = ['alexzavalny', 'jefimserg', 'TheErix', 'vadimostapchuk']
 puts "Today Stats:"
 usernames.each do |username|
-  today_stats = fetch_today_stats(username)
+  stats = fetch_today_stats(username)
+  total_time_formatted = format_duration(stats[:total_time])
+  puts "#{username}: Played: #{stats[:played]}, Won: #{stats[:won]}, Lost: #{stats[:lost]}, Draw: #{stats[:draw]}, Types: #{stats[:types].uniq}, Total Time: #{total_time_formatted}"
+  puts
+end
 
-  if today_stats.empty?
-    puts "No data available for #{username}."
-  else
-    total_time_formatted = format_duration(today_stats[:total_time])
-    puts "#{username}: Played: #{today_stats[:played]}, Won: #{today_stats[:won]}, Lost: #{today_stats[:lost]}, Draw: #{today_stats[:draw]}, Types: #{today_stats[:types].uniq}, Total Time: #{total_time_formatted}"
-  end
+puts " "
+
+puts "Yesterday Stats:"
+usernames.each do |username|
+  stats = fetch_yesterday_stats(username)
+  total_time_formatted = format_duration(stats[:total_time])
+  puts "#{username}: Played: #{stats[:played]}, Won: #{stats[:won]}, Lost: #{stats[:lost]}, Draw: #{stats[:draw]}, Types: #{stats[:types].uniq}, Total Time: #{total_time_formatted}"
+  puts
 end
