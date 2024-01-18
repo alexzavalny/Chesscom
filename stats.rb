@@ -19,21 +19,51 @@ def fetch_day_stats(username, date)
   return {} if response.code != 200
 
   month_games = response['games']
-  today_stats = { played: 0, won: 0, lost: 0, draw: 0, types: [], total_time: 0 }
+  stats_by_type = Hash.new { |hash, key| hash[key] = { played: 0, won: 0, lost: 0, draw: 0, total_time: 0 } }
 
   month_games.each do |game|
     game_date = Time.at(game['end_time']).to_date
     next unless game_date == date
 
-    today_stats[:played] += 1
-    today_stats[:types] << game['time_class']
-    today_stats[:total_time] += get_total_time(game['pgn'])
+    game_type = game['time_class']
+    stats = stats_by_type[game_type]
+    stats[:played] += 1
+    stats[:total_time] += get_total_time(game['pgn'])
 
     result_category = game_result(game, username).to_sym
-    today_stats[result_category] += 1 if today_stats.key?(result_category)
+    stats[result_category] += 1 if stats.key?(result_category)
   end
 
-  today_stats
+  stats_by_type
+end
+
+def display_stats_for(username, date_method)
+  stats_by_type = send(date_method, username)
+  puts "/#{username}/"
+
+  total_played = 0
+  total_won = 0
+  total_lost = 0
+  total_draw = 0
+  total_time = 0
+  
+  stats_by_type.each do |game_type, stats|
+    total_time_formatted = format_duration(stats[:total_time])
+    puts "  #{game_type.capitalize}: Played: #{stats[:played]}, Won: #{stats[:won]}, Lost: #{stats[:lost]}, Draw: #{stats[:draw]}, Total Time: #{total_time_formatted}"
+
+    total_played += stats[:played]
+    total_won += stats[:won]
+    total_lost += stats[:lost]
+    total_draw += stats[:draw]
+    total_time += stats[:total_time]
+  end
+
+  if stats_by_type.length > 1
+    total_time_formatted = format_duration(total_time)
+    puts "  Total: Played: #{total_played}, Won: #{total_won}, Lost: #{total_lost}, Draw: #{total_draw}, Time: #{total_time_formatted}"
+  end
+
+  puts
 end
 
 def get_total_time(pgn)
@@ -73,17 +103,7 @@ def format_duration(seconds)
   "#{hours}h #{minutes}m #{seconds}s"
 end
 
-
 usernames = ['alexzavalny', 'jefimserg', 'TheErix', 'vadimostapchuk']
-
-
-
-def display_stats_for(username, date_label, date_method)
-  stats = send(date_method, username)
-  total_time_formatted = format_duration(stats[:total_time])
-  puts "#{username}: #{date_label} - Played: #{stats[:played]}, Won: #{stats[:won]}, Lost: #{stats[:lost]}, Draw: #{stats[:draw]}, Types: #{stats[:types].uniq}, Total Time: #{total_time_formatted}"
-  puts
-end
 
 usernames = ['alexzavalny', 'jefimserg', 'TheErix', 'vadimostapchuk']
 command = ARGV[0] # Gets the first command-line argument
@@ -91,15 +111,15 @@ command = ARGV[0] # Gets the first command-line argument
 case command
 when "today"
   puts "Today Stats:"
-  usernames.each { |username| display_stats_for(username, "Today", :fetch_today_stats) }
+  usernames.each { |username| display_stats_for(username, :fetch_today_stats) }
 when "yesterday"
   puts "Yesterday Stats:"
-  usernames.each { |username| display_stats_for(username, "Yesterday", :fetch_yesterday_stats) }
+  usernames.each { |username| display_stats_for(username, :fetch_yesterday_stats) }
 when "both"
   puts "Today Stats:"
-  usernames.each { |username| display_stats_for(username, "Today", :fetch_today_stats) }
+  usernames.each { |username| display_stats_for(username, :fetch_today_stats) }
   puts "Yesterday Stats:"
-  usernames.each { |username| display_stats_for(username, "Yesterday", :fetch_yesterday_stats) }
+  usernames.each { |username| display_stats_for(username, :fetch_yesterday_stats) }
 else
   puts "Invalid argument. Please use 'today', 'yesterday', or 'both'."
 end
