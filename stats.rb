@@ -133,14 +133,9 @@ when "today"
 when "yesterday"
   puts "Yesterday Stats:"
   usernames.each { |username| display_stats_for(username, :fetch_yesterday_stats) }
-when "both"
-  puts "Today Stats:"
-  usernames.each { |username| display_stats_for(username, :fetch_today_stats) }
-  puts "Yesterday Stats:"
-  usernames.each { |username| display_stats_for(username, :fetch_yesterday_stats) }
 when "month"
   puts "Month Stats:"
   usernames.each { |username| display_stats_for(username, :fetch_month_stats) }
 else
-  puts "Invalid argument. Please use 'today', 'yesterday', or 'both'."
+  puts "Invalid argument. Please use 'today', 'yesterday', or 'month'."
 end
