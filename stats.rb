@@ -27,13 +27,24 @@ def fetch_day_stats(username, date)
 
     today_stats[:played] += 1
     today_stats[:types] << game['time_class']
-    today_stats[:total_time] += game['time_control'].to_i
+    today_stats[:total_time] += get_total_time(game['pgn'])
 
     result_category = game_result(game, username).to_sym
     today_stats[result_category] += 1 if today_stats.key?(result_category)
   end
 
   today_stats
+end
+
+def get_total_time(pgn)
+  start_time_str = pgn.match(/\[StartTime \"(\d+:\d+:\d+)\"\]/)[1]
+  end_time_str = pgn.match(/\[EndTime \"(\d+:\d+:\d+)\"\]/)[1]
+
+  start_time = DateTime.parse(start_time_str).strftime('%s').to_i
+  end_time = DateTime.parse(end_time_str).strftime('%s').to_i
+
+  diff = end_time - start_time
+  diff
 end
 
 def game_result(game, username)
@@ -74,10 +85,10 @@ end
 
 puts " "
 
-# puts "Yesterday Stats:"
-# usernames.each do |username|
-#   stats = fetch_yesterday_stats(username)
-#   total_time_formatted = format_duration(stats[:total_time])
-#   puts "#{username}: Played: #{stats[:played]}, Won: #{stats[:won]}, Lost: #{stats[:lost]}, Draw: #{stats[:draw]}, Types: #{stats[:types].uniq}, Total Time: #{total_time_formatted}"
-#   puts
-# end
+puts "Yesterday Stats:"
+usernames.each do |username|
+  stats = fetch_yesterday_stats(username)
+  total_time_formatted = format_duration(stats[:total_time])
+  puts "#{username}: Played: #{stats[:played]}, Won: #{stats[:won]}, Lost: #{stats[:lost]}, Draw: #{stats[:draw]}, Types: #{stats[:types].uniq}, Total Time: #{total_time_formatted}"
+  puts
+end
