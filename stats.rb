@@ -44,7 +44,7 @@ def get_total_time(pgn)
   end_time = DateTime.parse(end_time_str).strftime('%s').to_i
 
   diff = end_time - start_time
-  diff
+  [diff, 0].max
 end
 
 def game_result(game, username)
