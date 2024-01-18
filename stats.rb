@@ -57,14 +57,16 @@ def display_stats_for(username, date_method)
     total_won += stats[:won]
     total_lost += stats[:lost]
     total_draw += stats[:draw]
-    total_time += stats[:total_time]
+    total_time += stats[:total_time] if game_type != "daily"
 
     win_percent = stats[:played] > 0 ? (stats[:won].to_f / stats[:played] * 100).round(2) : 0
     lost_percent = stats[:played] > 0 ? (stats[:lost].to_f / stats[:played] * 100).round(2) : 0
     draw_percent = stats[:played] > 0 ? (stats[:draw].to_f / stats[:played] * 100).round(2) : 0
     total_time_formatted = format_duration(stats[:total_time])
 
-    puts "  #{game_type.capitalize}: Played: #{stats[:played]}, Won: #{stats[:won]} (#{win_percent}%), Lost: #{stats[:lost]} (#{lost_percent}%), Draw: #{stats[:draw]} (#{draw_percent}%), Total Time: #{total_time_formatted}"
+    time_string = game_type != "daily" ? ", Total Time: #{total_time_formatted}" : ""
+
+    puts "  #{game_type.capitalize}: Played: #{stats[:played]}, Won: #{stats[:won]} (#{win_percent}%), Lost: #{stats[:lost]} (#{lost_percent}%), Draw: #{stats[:draw]} (#{draw_percent}%)" + time_string
   end
 
   if stats_by_type.length > 1
