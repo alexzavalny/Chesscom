@@ -75,20 +75,31 @@ end
 
 
 usernames = ['alexzavalny', 'jefimserg', 'TheErix', 'vadimostapchuk']
-puts "Today Stats:"
-usernames.each do |username|
-  stats = fetch_today_stats(username)
+
+
+
+def display_stats_for(username, date_label, date_method)
+  stats = send(date_method, username)
   total_time_formatted = format_duration(stats[:total_time])
-  puts "#{username}: Played: #{stats[:played]}, Won: #{stats[:won]}, Lost: #{stats[:lost]}, Draw: #{stats[:draw]}, Types: #{stats[:types].uniq}, Total Time: #{total_time_formatted}"
+  puts "#{username}: #{date_label} - Played: #{stats[:played]}, Won: #{stats[:won]}, Lost: #{stats[:lost]}, Draw: #{stats[:draw]}, Types: #{stats[:types].uniq}, Total Time: #{total_time_formatted}"
   puts
 end
 
-puts " "
+usernames = ['alexzavalny', 'jefimserg', 'TheErix', 'vadimostapchuk']
+command = ARGV[0] # Gets the first command-line argument
 
-puts "Yesterday Stats:"
-usernames.each do |username|
-  stats = fetch_yesterday_stats(username)
-  total_time_formatted = format_duration(stats[:total_time])
-  puts "#{username}: Played: #{stats[:played]}, Won: #{stats[:won]}, Lost: #{stats[:lost]}, Draw: #{stats[:draw]}, Types: #{stats[:types].uniq}, Total Time: #{total_time_formatted}"
-  puts
+case command
+when "today"
+  puts "Today Stats:"
+  usernames.each { |username| display_stats_for(username, "Today", :fetch_today_stats) }
+when "yesterday"
+  puts "Yesterday Stats:"
+  usernames.each { |username| display_stats_for(username, "Yesterday", :fetch_yesterday_stats) }
+when "both"
+  puts "Today Stats:"
+  usernames.each { |username| display_stats_for(username, "Today", :fetch_today_stats) }
+  puts "Yesterday Stats:"
+  usernames.each { |username| display_stats_for(username, "Yesterday", :fetch_yesterday_stats) }
+else
+  puts "Invalid argument. Please use 'today', 'yesterday', or 'both'."
 end
