@@ -69,7 +69,7 @@ def display_stats_for(username, date_method)
     puts "  #{game_type.capitalize}: Played: #{stats[:played]}, Won: #{stats[:won]} (#{win_percent}%), Lost: #{stats[:lost]} (#{lost_percent}%), Draw: #{stats[:draw]} (#{draw_percent}%)" + time_string
   end
 
-  if total_played = 0
+  if stats_by_type.length == 0
     puts "  No games. Something is wrong."
   end
 
