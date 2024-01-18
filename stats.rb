@@ -69,6 +69,10 @@ def display_stats_for(username, date_method)
     puts "  #{game_type.capitalize}: Played: #{stats[:played]}, Won: #{stats[:won]} (#{win_percent}%), Lost: #{stats[:lost]} (#{lost_percent}%), Draw: #{stats[:draw]} (#{draw_percent}%)" + time_string
   end
 
+  if total_played = 0
+    puts "  No games. Something is wrong."
+  end
+
   if stats_by_type.length > 1
     win_percent = total_played > 0 ? (total_won.to_f / total_played * 100).round(2) : 0
     lost_percent = total_played > 0 ? (total_lost.to_f / total_played * 100).round(2) : 0
