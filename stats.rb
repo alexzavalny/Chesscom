@@ -26,6 +26,8 @@ def fetch_day_stats(username, date, entire_month = false)
   month_games = response['games']
   stats_by_type = Hash.new { |hash, key| hash[key] = { played: 0, won: 0, lost: 0, draw: 0, total_time: 0 } }
 
+  ratings_by_game_type = {}
+
   month_games.each do |game|
     game_date = Time.at(game['end_time']).to_date
     next unless entire_month || game_date == date
@@ -37,6 +39,26 @@ def fetch_day_stats(username, date, entire_month = false)
 
     result_category = game_result(game, username).to_sym
     stats[result_category] += 1 if stats.key?(result_category)
+
+    if game['white']['username'].downcase == username.downcase
+      current_rating = game['white']['rating']
+    else
+      current_rating = game['black']['rating']
+    end
+
+    unless ratings_by_game_type[game_type]
+      ratings_by_game_type[game_type] = {first_game_rating: current_rating, last_game_rating: current_rating}
+    else
+      ratings_by_game_type[game_type][:last_game_rating] = current_rating
+    end
+  end
+
+  stats_by_type.each do |game_type, stats|
+    if ratings_by_game_type[game_type]
+      first_rating = ratings_by_game_type[game_type][:first_game_rating]
+      last_rating = ratings_by_game_type[game_type][:last_game_rating]
+      stats[:rating_change] = "#{first_rating} -> #{last_rating}"
+    end
   end
 
   stats_by_type
@@ -66,7 +88,7 @@ def display_stats_for(username, date_method)
 
     time_string = game_type != "daily" ? ", Total Time: #{total_time_formatted}" : ""
 
-    puts "  #{game_type.capitalize}: Played: #{stats[:played]}, Won: #{stats[:won]} (#{win_percent}%), Lost: #{stats[:lost]} (#{lost_percent}%), Draw: #{stats[:draw]} (#{draw_percent}%)" + time_string
+    puts "  #{game_type.capitalize}: Played: #{stats[:played]}, Won: #{stats[:won]} (#{win_percent}%), Lost: #{stats[:lost]} (#{lost_percent}%), Draw: #{stats[:draw]} (#{draw_percent}%)#{time_string}, Rating [#{stats[:rating_change]}]"
   end
 
   if stats_by_type.length == 0
@@ -84,9 +106,6 @@ def display_stats_for(username, date_method)
 
   puts
 end
-
-# ... [rest of your code remains unchanged] ...
-
 
 def get_total_time(pgn)
   start_time_str = pgn.match(/\[StartTime \"(\d+:\d+:\d+)\"\]/)[1]
