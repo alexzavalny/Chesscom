@@ -73,7 +73,7 @@ def display_stats_for(username, date_method)
   total_lost = 0
   total_draw = 0
   total_time = 0
-  
+
   stats_by_type.each do |game_type, stats|
     total_played += stats[:played]
     total_won += stats[:won]
@@ -120,11 +120,11 @@ end
 
 def game_result(game, username)
   result_mapping = {
-    'win' => 'won', 'checkmated' => 'lost', 'agreed' => 'draw', 
-    'repetition' => 'draw', 'timeout' => 'lost', 'resigned' => 'lost', 
-    'stalemate' => 'draw', 'lose' => 'lost', 'insufficient' => 'draw', 
-    '50move' => 'draw', 'abandoned' => 'lost', 'kingofthehill' => 'lost', 
-    'threecheck' => 'lost', 'timevsinsufficient' => 'draw', 
+    'win' => 'won', 'checkmated' => 'lost', 'agreed' => 'draw',
+    'repetition' => 'draw', 'timeout' => 'lost', 'resigned' => 'lost',
+    'stalemate' => 'draw', 'lose' => 'lost', 'insufficient' => 'draw',
+    '50move' => 'draw', 'abandoned' => 'lost', 'kingofthehill' => 'lost',
+    'threecheck' => 'lost', 'timevsinsufficient' => 'draw',
     'bughousepartnerlose' => 'lost'
   }
 
@@ -144,10 +144,9 @@ def format_duration(seconds)
   "#{hours}h #{minutes}m #{seconds}s"
 end
 
-usernames = ['alexzavalny', 'jefimserg', 'TheErix', 'vadimostapchuk']
+usernames = ['alexandrzavalnij', 'jefimserg', 'TheErix', 'vadimostapchuk']
 
-usernames = ['alexzavalny', 'jefimserg', 'TheErix', 'vadimostapchuk']
-command = ARGV[0] # Gets the first command-line argument
+command = ARGV[0] or "today" # Gets the first command-line argument
 
 case command
 when "today"
