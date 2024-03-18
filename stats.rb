@@ -146,7 +146,7 @@ end
 
 usernames = ['alexandrzavalnij', 'jefimserg', 'TheErix', 'vadimostapchuk']
 
-command = ARGV[0] or "today" # Gets the first command-line argument
+command = ARGV[0] || "today" # Gets the first command-line argument
 
 case command
 when "today"
