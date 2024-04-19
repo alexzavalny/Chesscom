@@ -3,7 +3,8 @@ require 'json'
 require 'date'
 require 'telegram/bot'
 
-TOKEN = "6577115487:AAGNXuOpcvYEdxi0jJPl9i7Vpkl_8WlY6X0"
+#read from token.txt
+TOKEN = File.read("token.txt").strip
 
 def fetch_today_stats(username)
   today = Date.today
