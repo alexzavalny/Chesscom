@@ -1,6 +1,9 @@
 require 'httparty'
 require 'json'
 require 'date'
+require 'telegram/bot'
+
+TOKEN = "6577115487:AAGNXuOpcvYEdxi0jJPl9i7Vpkl_8WlY6X0"
 
 def fetch_today_stats(username)
   today = Date.today
@@ -66,7 +69,7 @@ end
 
 def display_stats_for(username, date_method)
   stats_by_type = send(date_method, username)
-  puts "/#{username}/"
+  output = "/#{username}/\n"
 
   total_played = 0
   total_won = 0
@@ -88,11 +91,11 @@ def display_stats_for(username, date_method)
 
     time_string = game_type != "daily" ? ", Total Time: #{total_time_formatted}" : ""
 
-    puts "  #{game_type.capitalize}: Played: #{stats[:played]}, Won: #{stats[:won]} (#{win_percent}%), Lost: #{stats[:lost]} (#{lost_percent}%), Draw: #{stats[:draw]} (#{draw_percent}%)#{time_string}, Rating [#{stats[:rating_change]}]"
+    output += "  #{game_type.capitalize}: Played: #{stats[:played]}, Won: #{stats[:won]} (#{win_percent}%), Lost: #{stats[:lost]} (#{lost_percent}%), Draw: #{stats[:draw]} (#{draw_percent}%)#{time_string}, Rating [#{stats[:rating_change]}]\n"
   end
 
   if stats_by_type.length == 0
-    puts "  No games. Something is wrong."
+    output += "  No games. Something is wrong.\n"
   end
 
   if stats_by_type.length > 1
@@ -101,10 +104,10 @@ def display_stats_for(username, date_method)
     draw_percent = total_played > 0 ? (total_draw.to_f / total_played * 100).round(2) : 0
     total_time_formatted = format_duration(total_time)
 
-    puts "  Total: Played: #{total_played}, Won: #{total_won} (#{win_percent}%), Lost: #{total_lost} (#{lost_percent}%), Draw: #{total_draw} (#{draw_percent}%), Time: #{total_time_formatted}"
+    output += "  Total: Played: #{total_played}, Won: #{total_won} (#{win_percent}%), Lost: #{total_lost} (#{lost_percent}%), Draw: #{total_draw} (#{draw_percent}%), Time: #{total_time_formatted}\n"
   end
 
-  puts
+  output + "\n"
 end
 
 def get_total_time(pgn)
@@ -146,18 +149,57 @@ end
 
 usernames = ['alexandrzavalnij', 'jefimserg', 'TheErix', 'vadimostapchuk']
 
-command = ARGV[0] || "today" # Gets the first command-line argument
+# command = ARGV[0] || "today" # Gets the first command-line argument
 
-case command
-when "today"
-  puts "Today Stats:"
-  usernames.each { |username| display_stats_for(username, :fetch_today_stats) }
-when "yesterday"
-  puts "Yesterday Stats:"
-  usernames.each { |username| display_stats_for(username, :fetch_yesterday_stats) }
-when "month"
-  puts "Month Stats:"
-  usernames.each { |username| display_stats_for(username, :fetch_month_stats) }
-else
-  puts "Invalid argument. Please use 'today', 'yesterday', or 'month'."
+# case command
+# when "today"
+#   puts "Today Stats:"
+#   usernames.each { |username| display_stats_for(username, :fetch_today_stats) }
+# when "yesterday"
+#   puts "Yesterday Stats:"
+#   usernames.each { |username| display_stats_for(username, :fetch_yesterday_stats) }
+# when "month"
+#   puts "Month Stats:"
+#   usernames.each { |username| display_stats_for(username, :fetch_month_stats) }
+# else
+#   puts "Invalid argument. Please use 'today', 'yesterday', or 'month'."
+# end
+
+# Initialize the Telegram bot
+
+# Initialize the Telegram bot
+Telegram::Bot::Client.run(TOKEN) do |bot|
+  bot.listen do |update|
+    case update
+    when Telegram::Bot::Types::Message
+      message = update
+
+      if !message.text.nil? && message.text.start_with?('@ruby_chess_stats_bot')
+        command = message.text.split(' ')[1]
+        p command
+        case command
+        when 'today'
+          output = "Today's Stats:\n\n"
+          usernames.each { |username| output += display_stats_for(username, :fetch_today_stats) }
+        when 'yesterday'
+          output = "Yesterday's Stats:\n\n"
+          usernames.each { |username| output += display_stats_for(username, :fetch_yesterday_stats) }
+        when 'month'
+          output = "Month's Stats:\n\n"
+          usernames.each { |username| output += display_stats_for(username, :fetch_month_stats) }
+        else
+          output = "Invalid command. Please use '@chess_stats today', '@chess_stats yesterday', or '@chess_stats month'."
+        end
+
+        # Reply to the message with the output
+        bot.api.send_message(chat_id: message.chat.id, text: output)
+      end
+    when Telegram::Bot::Types::ChatMemberUpdated
+      # Handle chat member updates (optional)
+      # ...
+    else
+      # Handle other update types (optional)
+      # ...
+    end
+  end
 end
