@@ -3,6 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <title>Chess Stats Viewer</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style>
             body {
                 font-family: Arial, sans-serif;
@@ -65,6 +66,25 @@
                 border-radius: 8px;
                 box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             }
+        @media screen and (max-width: 600px) {
+  table {
+    width: 100%;
+    display: block;
+    overflow-x: auto; /* enables horizontal scrolling */
+  }
+
+  th, td {
+    padding: 5px; /* smaller padding on mobile */
+  }
+
+  th {
+    font-size: 14px; /* smaller font size for headers on mobile */
+  }
+
+  td {
+    font-size: 13px; /* smaller font size for data on mobile */
+  }
+}
         </style>
     </head>
     <body>
