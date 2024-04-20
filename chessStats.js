@@ -66,7 +66,7 @@ function processGames(data, username, period, year, month, day) {
     statsByType[gameType].played++;
     let result = determineResult(game, username);
     statsByType[gameType][result]++;
-    let duration = game.end_time - game.start_time; // Assuming `start_time` and `end_time` are Unix timestamps
+    let duration = getGameDurationFromPGN(game.pgn);
     statsByType[gameType].total_time += duration;
   });
 
@@ -91,6 +91,37 @@ function processGames(data, username, period, year, month, day) {
   return statsText;
 }
 
+function getGameDurationFromPGN(pgn) {
+  const startTimeMatch = pgn.match(/\[StartTime \"(\d+:\d+:\d+)\"\]/);
+  const endTimeMatch = pgn.match(/\[EndTime \"(\d+:\d+:\d+)\"\]/);
+
+  if (!startTimeMatch || !endTimeMatch) {
+    return 0; // Return 0 if either time is not found
+  }
+
+  const startTimeStr = startTimeMatch[1];
+  const endTimeStr = endTimeMatch[1];
+
+  // Convert HH:MM:SS string to seconds since the start of the day
+  const parseTime = (timeStr) => {
+    const [hours, minutes, seconds] = timeStr.split(":").map(Number);
+    return hours * 3600 + minutes * 60 + seconds;
+  };
+
+  const startTime = parseTime(startTimeStr);
+  const endTime = parseTime(endTimeStr);
+
+  const duration = endTime - startTime;
+  return Math.max(duration, 0); // Ensure duration is not negative
+}
+
+function formatDuration(seconds) {
+  let hours = Math.floor(seconds / 3600);
+  let minutes = Math.floor((seconds % 3600) / 60);
+  let remainingSeconds = seconds % 60;
+  return `${hours}h ${minutes}m ${remainingSeconds}s`;
+}
+
 function determineResult(game, username) {
   let userIsWhite =
     game.white.username.toLowerCase() === username.toLowerCase();
@@ -111,11 +142,4 @@ function determineResult(game, username) {
     default:
       return "unknown";
   }
-}
-
-function formatDuration(seconds) {
-  let hours = Math.floor(seconds / 3600);
-  let minutes = Math.floor((seconds % 3600) / 60);
-  let remainingSeconds = seconds % 60;
-  return `${hours}h ${minutes}m ${remainingSeconds}s`;
 }
