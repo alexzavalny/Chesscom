@@ -112,7 +112,7 @@ function getGameDurationFromPGN(pgn) {
   const endTime = parseTime(endTimeStr);
 
   const duration = endTime - startTime;
-  return Math.max(duration, 0); // Ensure duration is not negative
+  return Math.max(duration, 0);
 }
 
 function formatDuration(seconds) {
