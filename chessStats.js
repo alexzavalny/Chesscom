@@ -36,6 +36,21 @@ function fetchStats(period) {
     });
 }
 
+function getGameIcon(gameType) {
+  switch (gameType) {
+    case "rapid":
+      return '<img src="icons/rapid.svg" alt="Rapid">';
+    case "blitz":
+      return '<img src="icons/blitz.svg" alt="Blitz">';
+    case "bullet":
+      return '<img src="icons/bullet.svg" alt="Bullet">';
+    case "daily":
+      return '<img src="icons/daily.svg" alt="Daily">';
+    default:
+      return gameType; // Default text if no icon available
+  }
+}
+
 function processGames(data, username, period, year, month, day) {
   let games = data.games || [];
   let statsByType = {};
@@ -98,13 +113,13 @@ function processGames(data, username, period, year, month, day) {
       totalDuration += stats.total_time;
       let formattedTime = formatDuration(stats.total_time);
       statsText += `<tr>
-                      <td>${type.toUpperCase()}</td>
-                      <td>${stats.played}</td>
-                      <td>${stats.won}</td>
-                      <td>${stats.lost}</td>
-                      <td>${stats.draw}</td>
-                      <td>${formattedTime}</td>
-                    </tr>`;
+                              <td>${getGameIcon(type.toLowerCase())}</td>
+                              <td>${stats.played}</td>
+                              <td>${stats.won}</td>
+                              <td>${stats.lost}</td>
+                              <td>${stats.draw}</td>
+                              <td>${formattedTime}</td>
+                            </tr>`;
     }
   }
 
