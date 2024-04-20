@@ -110,6 +110,7 @@ function processGames(data, username, period, year, month, day) {
       totalWon += stats.won;
       totalLost += stats.lost;
       totalDraw += stats.draw;
+      if (type != "daily")
       totalDuration += stats.total_time;
       let formattedTime = formatDuration(stats.total_time);
       statsText += `<tr>
@@ -169,11 +170,12 @@ function getGameDurationFromPGN(pgn) {
   return Math.max(duration, 0);
 }
 
+const zeroPad = (num, places) => String(num).padStart(places, '0');
 function formatDuration(seconds) {
   let hours = Math.floor(seconds / 3600);
   let minutes = Math.floor((seconds % 3600) / 60);
   let remainingSeconds = seconds % 60;
-  return `${hours}h ${minutes}m ${remainingSeconds}s`;
+  return `${zeroPad(hours,2)}h ${zeroPad(minutes,2)}m ${zeroPad(remainingSeconds,2)}s`;
 }
 
 function determineResult(game, username) {
