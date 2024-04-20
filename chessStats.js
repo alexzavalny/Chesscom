@@ -174,8 +174,7 @@ const zeroPad = (num, places) => String(num).padStart(places, '0');
 function formatDuration(seconds) {
   let hours = Math.floor(seconds / 3600);
   let minutes = Math.floor((seconds % 3600) / 60);
-  let remainingSeconds = seconds % 60;
-  return `${zeroPad(hours,2)}h ${zeroPad(minutes,2)}m ${zeroPad(remainingSeconds,2)}s`;
+  return `${zeroPad(hours,2)}h ${zeroPad(minutes,2)}m`;
 }
 
 function determineResult(game, username) {
