@@ -70,24 +70,63 @@ function processGames(data, username, period, year, month, day) {
     statsByType[gameType].total_time += duration;
   });
 
-  let statsText = `/${username}/\n`;
+  let statsText = `<h2>${username}</h2>
+                   <table>
+                     <tr>
+                       <th>Game Type</th>
+                       <th>Played</th>
+                       <th>Won</th>
+                       <th>Lost</th>
+                       <th>Draw</th>
+                       <th>Total Time</th>
+                     </tr>`;
+
   let totalPlayed = 0,
     totalWon = 0,
     totalLost = 0,
     totalDraw = 0,
     totalDuration = 0;
+
   for (let type in statsByType) {
     let stats = statsByType[type];
-    totalPlayed += stats.played;
-    totalWon += stats.won;
-    totalLost += stats.lost;
-    totalDraw += stats.draw;
-    totalDuration += stats.total_time;
-    let formattedTime = formatDuration(stats.total_time);
-    statsText += `  ${type.toUpperCase()}: Played: ${stats.played}, Won: ${stats.won}, Lost: ${stats.lost}, Draw: ${stats.draw}, Total Time: ${formattedTime}\n`;
+    if (stats.played > 0) {
+      // Only add row if games were played
+      totalPlayed += stats.played;
+      totalWon += stats.won;
+      totalLost += stats.lost;
+      totalDraw += stats.draw;
+      totalDuration += stats.total_time;
+      let formattedTime = formatDuration(stats.total_time);
+      statsText += `<tr>
+                      <td>${type.toUpperCase()}</td>
+                      <td>${stats.played}</td>
+                      <td>${stats.won}</td>
+                      <td>${stats.lost}</td>
+                      <td>${stats.draw}</td>
+                      <td>${formattedTime}</td>
+                    </tr>`;
+    }
   }
+
   let overallTime = formatDuration(totalDuration);
-  statsText += `\nTotal across all types: Played: ${totalPlayed}, Won: ${totalWon}, Lost: ${totalLost}, Draw: ${totalDraw}, Total Time: ${overallTime}`;
+  // Adding the total row at the end of the table
+  let gameTypesWithGamesPlayed = Object.values(statsByType).filter(
+    (stats) => stats.played > 0,
+  ).length;
+
+  if (gameTypesWithGamesPlayed > 1) {
+    statsText += `<tr>
+                  <td><strong>Total</strong></td>
+                  <td><strong>${totalPlayed}</strong></td>
+                  <td><strong>${totalWon}</strong></td>
+                  <td><strong>${totalLost}</strong></td>
+                  <td><strong>${totalDraw}</strong></td>
+                  <td><strong>${overallTime}</strong></td>
+                </tr>`;
+  }
+
+  statsText += `</table>`;
+
   return statsText;
 }
 
