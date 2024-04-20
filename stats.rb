@@ -148,7 +148,13 @@ def format_duration(seconds)
   "#{hours}h #{minutes}m #{seconds}s"
 end
 
-usernames = ['alexandrzavalnij', 'jefimserg', 'TheErix', 'vadimostapchuk']
+all_usernames = ['alexandrzavalnij', 'jefimserg', 'TheErix', 'vadimostapchuk']
+username_shortcuts = {
+    "a" => "alexandrzavalnij",
+    "s" => "jefimserg",
+    "e" => "TheErix",
+    "v" => "vadimostapchuk"
+}
 
 # command = ARGV[0] || "today" # Gets the first command-line argument
 
@@ -176,7 +182,16 @@ Telegram::Bot::Client.run(TOKEN) do |bot|
       message = update
 
       if !message.text.nil? && message.text.start_with?('@ruby_chess_stats_bot')
-        command = message.text.split(' ')[1]
+        command_parts = message.text.split(' ')
+        command = command_parts[1]
+        username = command_parts[2]
+
+        unless username.nil?
+            username = username_shortcuts[username] || username
+        end
+
+        usernames = username.nil? ? all_usernames : [username]
+
         p command
         case command
         when 'today'

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Chess Stats</title>
+<style>
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+th, td {
+  padding: 10px;
+}
+th {
+  background-color: #f2f2f2;
+}
+</style>
+</head>
+<body>
+<h1>Chess Player Statistics</h1>
+<button onclick="fetchChessStats()">Load Stats</button>
+<table id="statsTable" style="width:100%; margin-top: 20px;">
+  <tr>
+    <th>Player</th>
+    <th>Played</th>
+    <th>Won</th>
+    <th>Lost</th>
+    <th>Draw</th>
+    <th>Rating Change</th>
+  </tr>
+  <!-- Stats rows will be added here -->
+</table>
+
+<script>
+const API_URL = 'https://api.chess.com/pub/player/{username}/games/{year}/{month}';
+const usernames = ['alexandrzavalnij', 'jefimserg', 'TheErix', 'vadimostapchuk'];
+
+async function fetchChessStats() {
+  const statsTable = document.getElementById('statsTable');
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0'); // JavaScript months are 0-based
+
+  usernames.forEach(async (username) => {
+    const url = API_URL.replace('{username}', username).replace('{year}', year).replace('{month}', month);
+    const response = await fetch(url);
+    if (response.ok) {
+      const data = await response.json();
+      const stats = parseStats(data.games, username);
+      addStatsToTable(statsTable, stats, username);
+    }
+  });
+}
+
+function parseStats(games, username) {
+  let played = 0, won = 0, lost = 0, draw = 0;
+  games.forEach(game => {
+    const result = gameResult(game, username);
+    played++;
+    if (result === 'won') won++;
+    else if (result === 'lost') lost++;
+    else if (result === 'draw') draw++;
+  });
+  return { played, won, lost, draw };
+}
+
+function gameResult(game, username) {
+  const userIsWhite = game.white.username.toLowerCase() === username.toLowerCase();
+  const userResult = userIsWhite ? game.white.result : game.black.result;
+  switch (userResult) {
+    case 'win': return 'won';
+    case 'lost': return 'lost';
+    case 'draw': return 'draw';
+    default: return 'unknown';
+  }
+}
+
+function addStatsToTable(table, stats, username) {
+  const row = table.insertRow(-1);
+  row.insertCell(0).textContent = username;
+  row.insertCell(1).textContent = stats.played;
+  row.insertCell(2).textContent = stats.won;
+  row.insertCell(3).textContent = stats.lost;
+  row.insertCell(4).textContent = stats.draw;
+  row.insertCell(5).textContent = 'N/A'; // Placeholder for rating change
+}
+</script>
+</body>
+</html>
