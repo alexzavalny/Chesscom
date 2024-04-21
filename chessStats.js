@@ -84,17 +84,12 @@ function processGames(data, username, period, year, month, day) {
     let correctPlayer = userIsWhite ? game.white : game.black;
     statsByType[gameType].rating = correctPlayer.rating;
 
-    if (gameType == "blitz") {
-      console.log(correctPlayer);
-      console.log(statsByType[gameType].rating);
-    }
     statsByType[gameType].played++;
     let result = determineResult(game, username);
     statsByType[gameType][result]++;
     let duration = getGameDurationFromPGN(game.pgn);
     statsByType[gameType].total_time += duration;
   });
-  console.log("----");
 
   let statsText = `<h2>${username}</h2>
                    <table>
@@ -194,6 +189,7 @@ function determineResult(game, username) {
   let userIsWhite =
     game.white.username.toLowerCase() === username.toLowerCase();
   let result = userIsWhite ? game.white.result : game.black.result;
+
   switch (result) {
     case "win":
       return "won";
@@ -206,6 +202,7 @@ function determineResult(game, username) {
     case "insufficient":
     case "50move":
     case "timevsinsufficient":
+    case "repetition":
       return "draw";
     default:
       return "unknown";
