@@ -88,7 +88,7 @@ function processGames(data, username, period, year, month, day) {
   let statsText = `<h2>${username}</h2>
                    <table>
                      <tr>
-                       <th>Game Type</th>
+                       <th></th>
                        <th>Played</th>
                        <th>Won</th>
                        <th>Lost</th>
