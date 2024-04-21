@@ -93,7 +93,7 @@ function processGames(data, username, period, year, month, day) {
                        <th>Won</th>
                        <th>Lost</th>
                        <th>Draw</th>
-                       <th>Total Time</th>
+                       <th>Duration</th>
                      </tr>`;
 
   let totalPlayed = 0,
