@@ -64,6 +64,7 @@ function processGames(data, username, period, year, month, day) {
         lost: 0,
         draw: 0,
         total_time: 0,
+        rating: 0,
       };
     }
 
@@ -78,12 +79,22 @@ function processGames(data, username, period, year, month, day) {
       }
     }
 
+    let userIsWhite =
+      game.white.username.toLowerCase() === username.toLowerCase();
+    let correctPlayer = userIsWhite ? game.white : game.black;
+    statsByType[gameType].rating = correctPlayer.rating;
+
+    if (gameType == "blitz") {
+      console.log(correctPlayer);
+      console.log(statsByType[gameType].rating);
+    }
     statsByType[gameType].played++;
     let result = determineResult(game, username);
     statsByType[gameType][result]++;
     let duration = getGameDurationFromPGN(game.pgn);
     statsByType[gameType].total_time += duration;
   });
+  console.log("----");
 
   let statsText = `<h2>${username}</h2>
                    <table>
@@ -94,6 +105,7 @@ function processGames(data, username, period, year, month, day) {
                        <th>Lost</th>
                        <th>Draw</th>
                        <th>Duration</th>
+                       <th>Rating</th>
                      </tr>`;
 
   let totalPlayed = 0,
@@ -110,8 +122,7 @@ function processGames(data, username, period, year, month, day) {
       totalWon += stats.won;
       totalLost += stats.lost;
       totalDraw += stats.draw;
-      if (type != "daily")
-      totalDuration += stats.total_time;
+      if (type != "daily") totalDuration += stats.total_time;
       let formattedTime = formatDuration(stats.total_time);
       statsText += `<tr>
                               <td>${getGameIcon(type.toLowerCase())}</td>
@@ -120,6 +131,7 @@ function processGames(data, username, period, year, month, day) {
                               <td>${stats.lost}</td>
                               <td>${stats.draw}</td>
                               <td>${formattedTime}</td>
+                              <td>${stats.rating}</td>
                             </tr>`;
     }
   }
@@ -138,6 +150,7 @@ function processGames(data, username, period, year, month, day) {
                   <td><strong>${totalLost}</strong></td>
                   <td><strong>${totalDraw}</strong></td>
                   <td><strong>${overallTime}</strong></td>
+                  <td></td>
                 </tr>`;
   }
 
@@ -170,11 +183,11 @@ function getGameDurationFromPGN(pgn) {
   return Math.max(duration, 0);
 }
 
-const zeroPad = (num, places) => String(num).padStart(places, '0');
+const zeroPad = (num, places) => String(num).padStart(places, "0");
 function formatDuration(seconds) {
   let hours = Math.floor(seconds / 3600);
   let minutes = Math.floor((seconds % 3600) / 60);
-  return `${zeroPad(hours,2)}h ${zeroPad(minutes,2)}m`;
+  return `${zeroPad(hours, 2)}h ${zeroPad(minutes, 2)}m`;
 }
 
 function determineResult(game, username) {
