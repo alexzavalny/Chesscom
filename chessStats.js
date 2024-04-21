@@ -5,6 +5,7 @@ const usernames = [
   "vadimostapchuk",
 ];
 
+const fetchStatsCache = {};
 function fetchStats(period) {
   const output = document.getElementById("statsOutput");
   output.innerHTML = "";
@@ -20,9 +21,16 @@ function fetchStats(period) {
 
   const promises = usernames.map((username) => {
     let url = `https://api.chess.com/pub/player/${username}/games/${year}/${month}`;
-    return fetch(url)
-      .then((response) => response.json())
-      .then((data) => processGames(data, username, period, year, month, day));
+    if (fetchStatsCache[url]) {
+      return Promise.resolve(processGames(fetchStatsCache[url], username, period, year, month, day));
+    } else {
+      return fetch(url)
+        .then((response) => response.json())
+        .then((data) => {
+          fetchStatsCache[url] = data;
+          return processGames(data, username, period, year, month, day);
+      });
+    }
   });
 
   Promise.all(promises)
