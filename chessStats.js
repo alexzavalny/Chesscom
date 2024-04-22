@@ -6,6 +6,7 @@ const usernames = [
 ];
 
 const fetchStatsCache = {};
+const fetchStatsCache = {};
 function fetchStats(period) {
   const output = document.getElementById("statsOutput");
   output.innerHTML = "";
@@ -21,26 +22,40 @@ function fetchStats(period) {
 
   const promises = usernames.map((username) => {
     let url = `https://api.chess.com/pub/player/${username}/games/${year}/${month}`;
-    if (fetchStatsCache[url]) {
-      return Promise.resolve(processGames(fetchStatsCache[url], username, period, year, month, day));
-    } else {
-      return fetch(url)
-        .then((response) => response.json())
-        .then((data) => {
-          fetchStatsCache[url] = data;
-          return processGames(data, username, period, year, month, day);
+    return fetchWithRetry(url, 3) // Retry up to 3 times
+      .then((data) => {
+        fetchStatsCache[url] = data; // Cache successful responses
+        return processGames(data, username, period, year, month, day);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch for user:", username, "Error:", error);
+        return `Error fetching data for ${username}: ${error.message}`;
       });
-    }
   });
 
-  Promise.all(promises)
-    .then((results) => {
-      results.forEach((result) => {
-        output.innerHTML += result + "\n\n";
-      });
+  Promise.all(promises).then((results) => {
+    results.forEach((result) => {
+      output.innerHTML += result + "\n\n";
+    });
+  });
+}
+
+function fetchWithRetry(url, retries, delay = 1000) {
+  return fetch(url)
+    .then((response) => {
+      if (!response.ok) throw new Error("Network response was not ok.");
+      return response.json();
     })
     .catch((error) => {
-      output.innerHTML = "Error fetching data: " + error;
+      if (retries > 0) {
+        console.log(`Retrying... attempts left: ${retries - 1}`);
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            resolve(fetchWithRetry(url, retries - 1, delay));
+          }, delay);
+        });
+      }
+      throw error;
     });
 }
 
