@@ -6,7 +6,6 @@ const usernames = [
 ];
 
 const fetchStatsCache = {};
-const fetchStatsCache = {};
 function fetchStats(period) {
   const output = document.getElementById("statsOutput");
   output.innerHTML = "";
