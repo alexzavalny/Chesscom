@@ -45,18 +45,7 @@ function fetchStats(period) {
 }
 
 function getGameIcon(gameType) {
-  switch (gameType) {
-    case "rapid":
-      return '<img src="icons/rapid.svg" alt="Rapid">';
-    case "blitz":
-      return '<img src="icons/blitz.svg" alt="Blitz">';
-    case "bullet":
-      return '<img src="icons/bullet.svg" alt="Bullet">';
-    case "daily":
-      return '<img src="icons/daily.svg" alt="Daily">';
-    default:
-      return gameType; // Default text if no icon available
-  }
+  return `<img src="icons/${gameType}.svg" alt="${gameType}">`;
 }
 
 function processGames(data, username, period, year, month, day) {
