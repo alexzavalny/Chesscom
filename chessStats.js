@@ -70,11 +70,14 @@ function fetchWithRetry(url, retries, delay = 1000) {
       return response.json();
     })
     .then((data) => {
-      localStorage.setItem(
-        url,
-        JSON.stringify({ data, timestamp: new Date().toISOString() }),
-      );
-      localStorage.setItem("lastFetch", new Date().toLocaleString());
+      try {
+        localStorage.setItem(
+          url,
+          JSON.stringify({ data, timestamp: new Date().toISOString() }),
+        );
+
+        localStorage.setItem("lastFetch", new Date().toLocaleString());
+      } catch (e) {}
       updateLastFetched();
       return data;
     })
