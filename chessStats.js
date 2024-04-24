@@ -5,7 +5,6 @@ const usernames = [
   "vadimostapchuk",
 ];
 
-const fetchStatsCache = {};
 function fetchStats(period) {
   const output = document.getElementById("statsOutput");
   output.innerHTML = "";
@@ -28,48 +27,23 @@ function fetchStats(period) {
       let username = usernames[index];
       let url = `https://api.chess.com/pub/player/${username}/games/${year}/${month}`;
 
-      if (fetchStatsCache[url]) {
-        console.log(`Using cached data for ${username}`);
-        processGames(
-          fetchStatsCache[url],
-          username,
-          period,
-          year,
-          month,
-          day,
-        ).then((result) => {
+      fetchWithRetry(url, 3) // Retry up to 3 times
+        .then((data) => {
+          return processGames(data, username, period, year, month, day);
+        })
+        .then((result) => {
           results.push(result);
           output.innerHTML += result + "\n\n";
           index++;
+          next(); // Process the next username
+        })
+        .catch((error) => {
+          console.error("Failed to fetch for user:", username, "Error:", error);
+          results.push(`Error fetching data for ${username}: ${error.message}`);
+          output.innerHTML += `Error fetching data for ${username}: ${error.message}\n\n`;
+          index++;
           next();
         });
-      } else {
-        fetchWithRetry(url, 3) // Retry up to 3 times
-          .then((data) => {
-            fetchStatsCache[url] = data; // Cache successful responses
-            return processGames(data, username, period, year, month, day);
-          })
-          .then((result) => {
-            results.push(result);
-            output.innerHTML += result + "\n\n";
-            index++;
-            next(); // Process the next username
-          })
-          .catch((error) => {
-            console.error(
-              "Failed to fetch for user:",
-              username,
-              "Error:",
-              error,
-            );
-            results.push(
-              `Error fetching data for ${username}: ${error.message}`,
-            );
-            output.innerHTML += `Error fetching data for ${username}: ${error.message}\n\n`;
-            index++;
-            next();
-          });
-      }
     }
   }
 
@@ -77,10 +51,32 @@ function fetchStats(period) {
 }
 
 function fetchWithRetry(url, retries, delay = 1000) {
+  const cache = localStorage.getItem(url);
+  if (cache) {
+    const { data, timestamp } = JSON.parse(cache);
+    const cacheDate = new Date(timestamp);
+    const now = new Date();
+
+    // Check if the cached data is from today
+    if (cacheDate.toDateString() === now.toDateString()) {
+      console.log("Using cached data.");
+      return Promise.resolve(data);
+    }
+  }
+
   return fetch(url)
     .then((response) => {
       if (!response.ok) throw new Error("Network response was not ok.");
       return response.json();
+    })
+    .then((data) => {
+      localStorage.setItem(
+        url,
+        JSON.stringify({ data, timestamp: new Date().toISOString() }),
+      );
+      localStorage.setItem("lastFetch", new Date().toLocaleString());
+      updateLastFetched();
+      return data;
     })
     .catch((error) => {
       if (retries > 0) {
@@ -261,3 +257,27 @@ function determineResult(game, username) {
       return "unknown";
   }
 }
+
+function updateLastFetched() {
+  let lastFetch = localStorage.getItem("lastFetch");
+
+  if (lastFetch) {
+    document.getElementById("lastFetch").textContent = lastFetch;
+  } else {
+    document.getElementById("lastFetch").textContent = "never";
+  }
+}
+
+function clearLocalStorage() {
+  // clear all local storage
+  localStorage.clear();
+  updateLastFetched();
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  fetchStats("today"); // Automatically call fetchStats for 'today' when the page loads
+
+  // we have this : <div>Last updated: <span id="lastFetch"></span></div>
+  // need to update on page load from local storage
+  updateLastFetched();
+});

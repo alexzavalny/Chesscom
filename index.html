@@ -113,9 +113,16 @@
     </head>
     <body>
         <h1>Chess Stats Viewer</h1>
-        <button onclick="fetchStats('today')">Today</button>
-        <button onclick="fetchStats('yesterday')">Yesterday</button>
-        <button onclick="fetchStats('month')">Month</button>
+        <button onclick="clearLocalStorage(); fetchStats('today')">
+            Today
+        </button>
+        <button onclick="clearLocalStorage(); fetchStats('yesterday')">
+            Yesterday
+        </button>
+        <button onclick="clearLocalStorage(); fetchStats('month')">
+            Month
+        </button>
+        <div>Last updated: <span id="lastFetch"></span></div>
         <div class="stats" id="statsOutput"></div>
         <script src="chessStats.js"></script>
     </body>
