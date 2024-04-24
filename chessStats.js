@@ -146,7 +146,7 @@ function processGames(data, username, period, year, month, day) {
 
 function formatStats(statsByType, username) {
   // Consolidate the stats formatting into a separate function for clarity
-  let statsText = `<h2>${username}</h2>
+  let statsText = `<h2><a href="https://www.chess.com/member/${username}" target="_blank">${username}</a></h2>
                    <table>
                      <tr>
                        <th></th>
@@ -164,7 +164,8 @@ function formatStats(statsByType, username) {
     totalDraw = 0,
     totalDuration = 0;
 
-  for (let type in statsByType) {
+  for (let type of ["daily", "rapid", "blitz", "bullet"]) {
+    if (!statsByType[type]) continue;
     let stats = statsByType[type];
     if (stats.played > 0) {
       totalPlayed += stats.played;
