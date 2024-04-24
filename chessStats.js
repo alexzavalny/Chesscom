@@ -100,45 +100,53 @@ function getGameIcon(gameType) {
 }
 
 function processGames(data, username, period, year, month, day) {
-  let games = data.games || [];
-  let statsByType = {};
+  return new Promise((resolve) => {
+    let games = data.games || [];
+    let statsByType = {};
 
-  games.forEach((game) => {
-    let gameType = game.time_class;
-    if (!statsByType[gameType]) {
-      statsByType[gameType] = {
-        played: 0,
-        won: 0,
-        lost: 0,
-        draw: 0,
-        total_time: 0,
-        rating: 0,
-      };
-    }
-
-    if (period !== "month" && game.end_time) {
-      let gameDate = new Date(game.end_time * 1000);
-      if (
-        gameDate.getFullYear() !== year ||
-        gameDate.getMonth() + 1 !== parseInt(month) ||
-        gameDate.getDate() !== parseInt(day)
-      ) {
-        return;
+    games.forEach((game) => {
+      let gameType = game.time_class;
+      if (!statsByType[gameType]) {
+        statsByType[gameType] = {
+          played: 0,
+          won: 0,
+          lost: 0,
+          draw: 0,
+          total_time: 0,
+          rating: 0,
+        };
       }
-    }
 
-    let userIsWhite =
-      game.white.username.toLowerCase() === username.toLowerCase();
-    let correctPlayer = userIsWhite ? game.white : game.black;
-    statsByType[gameType].rating = correctPlayer.rating;
+      if (period !== "month" && game.end_time) {
+        let gameDate = new Date(game.end_time * 1000);
+        if (
+          gameDate.getFullYear() !== year ||
+          gameDate.getMonth() + 1 !== parseInt(month) ||
+          gameDate.getDate() !== parseInt(day)
+        ) {
+          return;
+        }
+      }
 
-    statsByType[gameType].played++;
-    let result = determineResult(game, username);
-    statsByType[gameType][result]++;
-    let duration = getGameDurationFromPGN(game.pgn);
-    statsByType[gameType].total_time += duration;
+      let userIsWhite =
+        game.white.username.toLowerCase() === username.toLowerCase();
+      let correctPlayer = userIsWhite ? game.white : game.black;
+      statsByType[gameType].rating = correctPlayer.rating;
+
+      statsByType[gameType].played++;
+      let result = determineResult(game, username);
+      statsByType[gameType][result]++;
+      let duration = getGameDurationFromPGN(game.pgn);
+      statsByType[gameType].total_time += duration;
+    });
+
+    let statsText = formatStats(statsByType, username);
+    resolve(statsText);
   });
+}
 
+function formatStats(statsByType, username) {
+  // Consolidate the stats formatting into a separate function for clarity
   let statsText = `<h2>${username}</h2>
                    <table>
                      <tr>
@@ -160,7 +168,6 @@ function processGames(data, username, period, year, month, day) {
   for (let type in statsByType) {
     let stats = statsByType[type];
     if (stats.played > 0) {
-      // Only add row if games were played
       totalPlayed += stats.played;
       totalWon += stats.won;
       totalLost += stats.lost;
@@ -168,37 +175,35 @@ function processGames(data, username, period, year, month, day) {
       if (type != "daily") totalDuration += stats.total_time;
       let formattedTime = formatDuration(stats.total_time);
       statsText += `<tr>
-                              <td>${getGameIcon(type.toLowerCase())}</td>
-                              <td>${stats.played}</td>
-                              <td>${stats.won}</td>
-                              <td>${stats.lost}</td>
-                              <td>${stats.draw}</td>
-                              <td>${formattedTime}</td>
-                              <td>${stats.rating}</td>
-                            </tr>`;
+                        <td>${getGameIcon(type.toLowerCase())}</td>
+                        <td>${stats.played}</td>
+                        <td>${stats.won}</td>
+                        <td>${stats.lost}</td>
+                        <td>${stats.draw}</td>
+                        <td>${formattedTime}</td>
+                        <td>${stats.rating}</td>
+                      </tr>`;
     }
   }
 
   let overallTime = formatDuration(totalDuration);
-  // Adding the total row at the end of the table
   let gameTypesWithGamesPlayed = Object.values(statsByType).filter(
     (stats) => stats.played > 0,
   ).length;
 
   if (gameTypesWithGamesPlayed > 1) {
     statsText += `<tr>
-                  <td><strong>Total</strong></td>
-                  <td><strong>${totalPlayed}</strong></td>
-                  <td><strong>${totalWon}</strong></td>
-                  <td><strong>${totalLost}</strong></td>
-                  <td><strong>${totalDraw}</strong></td>
-                  <td><strong>${overallTime}</strong></td>
-                  <td></td>
-                </tr>`;
+                    <td><strong>Total</strong></td>
+                    <td><strong>${totalPlayed}</strong></td>
+                    <td><strong>${totalWon}</strong></td>
+                    <td><strong>${totalLost}</strong></td>
+                    <td><strong>${totalDraw}</strong></td>
+                    <td><strong>${overallTime}</strong></td>
+                    <td></td>
+                  </tr>`;
   }
 
   statsText += `</table>`;
-
   return statsText;
 }
 
