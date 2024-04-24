@@ -9,6 +9,7 @@ const fetchStatsCache = {};
 function fetchStats(period) {
   const output = document.getElementById("statsOutput");
   output.innerHTML = "";
+
   let date = new Date();
   let year = date.getFullYear();
   let month = String(date.getMonth() + 1).padStart(2, "0");
@@ -19,24 +20,35 @@ function fetchStats(period) {
     day = String(date.getDate()).padStart(2, "0");
   }
 
-  const promises = usernames.map((username) => {
-    let url = `https://api.chess.com/pub/player/${username}/games/${year}/${month}`;
-    return fetchWithRetry(url, 3) // Retry up to 3 times
-      .then((data) => {
-        fetchStatsCache[url] = data; // Cache successful responses
-        return processGames(data, username, period, year, month, day);
-      })
-      .catch((error) => {
-        console.error("Failed to fetch for user:", username, "Error:", error);
-        return `Error fetching data for ${username}: ${error.message}`;
-      });
-  });
+  let index = 0;
+  let results = [];
 
-  Promise.all(promises).then((results) => {
-    results.forEach((result) => {
-      output.innerHTML += result + "\n\n";
-    });
-  });
+  function next() {
+    if (index < usernames.length) {
+      let username = usernames[index];
+      let url = `https://api.chess.com/pub/player/${username}/games/${year}/${month}`;
+      fetchWithRetry(url, 3) // Retry up to 3 times
+        .then((data) => {
+          fetchStatsCache[url] = data; // Cache successful responses
+          return processGames(data, username, period, year, month, day);
+        })
+        .then((result) => {
+          results.push(result);
+          output.innerHTML += result + "\n\n";
+          index++;
+          next(); // Process the next username
+        })
+        .catch((error) => {
+          console.error("Failed to fetch for user:", username, "Error:", error);
+          results.push(`Error fetching data for ${username}: ${error.message}`);
+          output.innerHTML += `Error fetching data for ${username}: ${error.message}\n\n`;
+          index++;
+          next();
+        });
+    }
+  }
+
+  next(); // Start the sequence
 }
 
 function fetchWithRetry(url, retries, delay = 1000) {
