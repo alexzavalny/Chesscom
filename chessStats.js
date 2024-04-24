@@ -1,4 +1,4 @@
-// version 1.0
+// version 1.0.1
 
 const usernames = [
   "alexandrzavalnij",
@@ -61,13 +61,6 @@ function initTableEvents() {
     if (!row.getAttribute("data-username")) return;
     row.onclick = function () {
       modal.style.display = "flex";
-
-      // take div gamesList, clear it and append new games
-      // get username from row data-username
-      // get gameType from row data-type
-      // get games from window.stats[username][gameType].games
-      // append each game to gamesList
-      // code:
       const gamesList = document.getElementById("gamesList");
       gamesList.innerHTML = "<ul>";
       const username = row.getAttribute("data-username");
