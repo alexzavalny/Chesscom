@@ -44,10 +44,43 @@ function fetchStats(period) {
           index++;
           next();
         });
+    } else {
+      initTableEvents();
     }
   }
 
   next(); // Start the sequence
+}
+
+function initTableEvents() {
+  var modal = document.getElementById("gamesModal");
+  const tableRows = document.querySelectorAll("table tr");
+  tableRows.forEach((row) => {
+    row.onclick = function () {
+      modal.style.display = "flex";
+
+      // take div gamesList, clear it and append new games
+      // get username from row data-username
+      // get gameType from row data-type
+      // get games from window.stats[username][gameType].games
+      // append each game to gamesList
+      // code:
+      const gamesList = document.getElementById("gamesList");
+      gamesList.innerHTML = "<ul>";
+      const username = row.getAttribute("data-username");
+      const gameType = row.getAttribute("data-type");
+      const games = window.stats[username][gameType].games;
+      games.forEach((game) => {
+        gamesList.innerHTML += formatGame(game, username);
+      });
+      gamesList.innerHTML += "</ul>";
+    };
+  });
+}
+
+function formatGame(game, username) {
+  let gameSummary = `(${game.result}) ${game.white.username} vs ${game.black.username}`;
+  return `<li><a href="${game.url}" target="_blank">${gameSummary}</a></li>`;
 }
 
 function fetchWithRetry(url, retries, delay = 1000) {
@@ -113,6 +146,7 @@ function processGames(data, username, period, year, month, day) {
           draw: 0,
           total_time: 0,
           rating: 0,
+          games: [],
         };
       }
 
@@ -127,13 +161,16 @@ function processGames(data, username, period, year, month, day) {
         }
       }
 
+      game.result = determineResult(game, username);
+      statsByType[gameType].games.push(game);
+
       let userIsWhite =
         game.white.username.toLowerCase() === username.toLowerCase();
       let correctPlayer = userIsWhite ? game.white : game.black;
       statsByType[gameType].rating = correctPlayer.rating;
 
       statsByType[gameType].played++;
-      let result = determineResult(game, username);
+      let result = game.result;
       statsByType[gameType][result]++;
       let duration = getGameDurationFromPGN(game.pgn);
       statsByType[gameType].total_time += duration;
@@ -145,6 +182,9 @@ function processGames(data, username, period, year, month, day) {
 }
 
 function formatStats(statsByType, username) {
+  window.stats = window.stats || {};
+  window.stats[username] = statsByType;
+
   // Consolidate the stats formatting into a separate function for clarity
   let statsText = `<h2><a href="https://www.chess.com/member/${username}" target="_blank">${username}</a></h2>
                    <table>
@@ -174,7 +214,7 @@ function formatStats(statsByType, username) {
       totalDraw += stats.draw;
       if (type != "daily") totalDuration += stats.total_time;
       let formattedTime = formatDuration(stats.total_time);
-      statsText += `<tr>
+      statsText += `<tr data-type="${type}" data-username="${username}">
                         <td>${getGameIcon(type.toLowerCase())}</td>
                         <td>${stats.played}</td>
                         <td>${stats.won}</td>
@@ -284,4 +324,19 @@ document.addEventListener("DOMContentLoaded", function () {
   // we have this : <div>Last updated: <span id="lastFetch"></span></div>
   // need to update on page load from local storage
   updateLastFetched();
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+  var modal = document.getElementById("gamesModal");
+  var span = document.getElementsByClassName("close")[0];
+
+  span.onclick = function () {
+    modal.style.display = "none";
+  };
+
+  window.onclick = function (event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  };
 });
