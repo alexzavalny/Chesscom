@@ -27,24 +27,49 @@ function fetchStats(period) {
     if (index < usernames.length) {
       let username = usernames[index];
       let url = `https://api.chess.com/pub/player/${username}/games/${year}/${month}`;
-      fetchWithRetry(url, 3) // Retry up to 3 times
-        .then((data) => {
-          fetchStatsCache[url] = data; // Cache successful responses
-          return processGames(data, username, period, year, month, day);
-        })
-        .then((result) => {
+
+      if (fetchStatsCache[url]) {
+        console.log(`Using cached data for ${username}`);
+        processGames(
+          fetchStatsCache[url],
+          username,
+          period,
+          year,
+          month,
+          day,
+        ).then((result) => {
           results.push(result);
           output.innerHTML += result + "\n\n";
           index++;
-          next(); // Process the next username
-        })
-        .catch((error) => {
-          console.error("Failed to fetch for user:", username, "Error:", error);
-          results.push(`Error fetching data for ${username}: ${error.message}`);
-          output.innerHTML += `Error fetching data for ${username}: ${error.message}\n\n`;
-          index++;
           next();
         });
+      } else {
+        fetchWithRetry(url, 3) // Retry up to 3 times
+          .then((data) => {
+            fetchStatsCache[url] = data; // Cache successful responses
+            return processGames(data, username, period, year, month, day);
+          })
+          .then((result) => {
+            results.push(result);
+            output.innerHTML += result + "\n\n";
+            index++;
+            next(); // Process the next username
+          })
+          .catch((error) => {
+            console.error(
+              "Failed to fetch for user:",
+              username,
+              "Error:",
+              error,
+            );
+            results.push(
+              `Error fetching data for ${username}: ${error.message}`,
+            );
+            output.innerHTML += `Error fetching data for ${username}: ${error.message}\n\n`;
+            index++;
+            next();
+          });
+      }
     }
   }
 
