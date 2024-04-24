@@ -56,6 +56,7 @@ function initTableEvents() {
   var modal = document.getElementById("gamesModal");
   const tableRows = document.querySelectorAll("table tr");
   tableRows.forEach((row) => {
+    if (!row.getAttribute("data-username")) return;
     row.onclick = function () {
       modal.style.display = "flex";
 
