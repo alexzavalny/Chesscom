@@ -23,7 +23,13 @@
             </button>
             <div>Last updated: <span>{{ lastFetch }}</span></div>
             <div class="stats" v-for="result in results" :key="result.username">
-                <h2>{{ result.username }}</h2>
+                <h2>
+                    <a
+                        :href="`https://www.chess.com/member/${result.username}`"
+                        target="_blank"
+                        >{{ result.username }}</a
+                    >
+                </h2>
                 <table>
                     <thead>
                         <tr>
