@@ -140,6 +140,7 @@ new Vue({
         case "checkmated":
         case "timeout":
         case "resigned":
+        case "abandoned":
           return "lost";
         case "agreed":
         case "stalemate":
