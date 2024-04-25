@@ -108,6 +108,10 @@ h2 {
     z-index: 1000;
 }
 
+.modal h2 {
+    margin: 0;
+}
+
 .modal-content {
     background-color: #fff;
     padding: 20px;

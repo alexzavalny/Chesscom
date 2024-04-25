@@ -115,10 +115,10 @@ new Vue({
           };
         }
 
-        let result = this.determineResult(game, username);
+        game.result = this.determineResult(game, username);
         statsByType[gameType].played++;
         statsByType[gameType].games.push(game);
-        statsByType[gameType][result]++;
+        statsByType[gameType][game.result]++;
         let userIsWhite =
           game.white.username.toLowerCase() === username.toLowerCase();
         let correctPlayer = userIsWhite ? game.white : game.black;
