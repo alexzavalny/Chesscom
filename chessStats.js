@@ -10,6 +10,7 @@ new Vue({
   },
   methods: {
     fetchStats(period) {
+      this.results = [];
       const usernames = [
         "alexandrzavalnij",
         "jefimserg",
@@ -107,6 +108,10 @@ new Vue({
         let result = this.determineResult(game, username);
         statsByType[gameType].played++;
         statsByType[gameType][result]++;
+        let userIsWhite =
+          game.white.username.toLowerCase() === username.toLowerCase();
+        let correctPlayer = userIsWhite ? game.white : game.black;
+        statsByType[gameType].rating = correctPlayer.rating;
         let duration = this.getGameDurationFromPGN(game.pgn);
         statsByType[gameType].duration += duration;
       });
