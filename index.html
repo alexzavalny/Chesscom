@@ -60,6 +60,42 @@
                             <td>{{ formatDuration(details.duration) }}</td>
                             <td>{{ details.rating }}</td>
                         </tr>
+                        <tr v-if="totalStats[result.username].played > 0">
+                            <td><strong>Total</strong></td>
+                            <td>
+                                <strong
+                                    >{{ totalStats[result.username].played
+                                    }}</strong
+                                >
+                            </td>
+                            <td>
+                                <strong
+                                    >{{ totalStats[result.username].won
+                                    }}</strong
+                                >
+                            </td>
+                            <td>
+                                <strong
+                                    >{{ totalStats[result.username].lost
+                                    }}</strong
+                                >
+                            </td>
+                            <td>
+                                <strong
+                                    >{{ totalStats[result.username].draw
+                                    }}</strong
+                                >
+                            </td>
+                            <td>
+                                <strong>
+                                    {{
+                                    formatDuration(totalStats[result.username].duration)
+                                    }}
+                                </strong>
+                            </td>
+                            <td></td>
+                            <!-- Rating is not totalled; you may calculate an average or similar if appropriate -->
+                        </tr>
                     </tbody>
                 </table>
             </div>

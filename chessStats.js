@@ -172,4 +172,28 @@ new Vue({
   mounted() {
     this.fetchStats("today");
   },
+  computed: {
+    totalStats() {
+      let totalsHash = {};
+      this.results.forEach((user) => {
+        const totals = {
+          played: 0,
+          won: 0,
+          lost: 0,
+          draw: 0,
+          duration: 0,
+        };
+        Object.values(user.statsByType).forEach((stats) => {
+          totals.played += stats.played;
+          totals.won += stats.won;
+          totals.lost += stats.lost;
+          totals.draw += stats.draw;
+          totals.duration += stats.duration;
+        });
+        // Storing the totals by username in the hash
+        totalsHash[user.username] = totals;
+      });
+      return totalsHash;
+    },
+  },
 });
