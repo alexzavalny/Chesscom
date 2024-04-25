@@ -7,8 +7,17 @@ new Vue({
     gamesList: "",
     results: [],
     periods: ["today", "yesterday", "month"],
+    currentGames: [],
   },
   methods: {
+    openModal(games) {
+      this.currentGames = games;
+      console.log(games);
+      this.showModal = true;
+    },
+    closeModal() {
+      this.showModal = false;
+    },
     fetchStats(period) {
       this.results = [];
       const usernames = [
@@ -102,11 +111,13 @@ new Vue({
             draw: 0,
             duration: 0,
             rating: 0,
+            games: [],
           };
         }
 
         let result = this.determineResult(game, username);
         statsByType[gameType].played++;
+        statsByType[gameType].games.push(game);
         statsByType[gameType][result]++;
         let userIsWhite =
           game.white.username.toLowerCase() === username.toLowerCase();

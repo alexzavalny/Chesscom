@@ -46,6 +46,7 @@
                         <tr
                             v-for="(details, type) in result.statsByType"
                             :key="type"
+                            @click="openModal(details.games)"
                         >
                             <td>
                                 <img
@@ -103,7 +104,14 @@
                 <div class="modal-content">
                     <span class="close" @click="closeModal">&times;</span>
                     <h2>Games</h2>
-                    <p v-html="gamesList"></p>
+                    <ul>
+                        <li v-for="game in currentGames" :key="game.id">
+                            <a :href="game.url" target="_blank"
+                                >({{ game.result }}) {{ game.white.username }}
+                                vs {{ game.black.username }}</a
+                            >
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
