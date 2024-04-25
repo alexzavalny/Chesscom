@@ -176,9 +176,6 @@ new Vue({
       this.lastFetch = new Date().toLocaleString();
       localStorage.setItem("lastFetch", this.lastFetch);
     },
-    closeModal() {
-      this.showModal = false;
-    },
   },
   mounted() {
     this.fetchStats("today");
