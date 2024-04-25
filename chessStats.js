@@ -141,6 +141,12 @@ new Vue({
           return "unknown";
       }
     },
+    formatDuration(seconds) {
+      let hours = Math.floor(seconds / 3600);
+      let minutes = Math.floor((seconds % 3600) / 60);
+      let formattedDuration = `${hours}h ${minutes}m`;
+      return formattedDuration;
+    },
     getGameDurationFromPGN(pgn) {
       const startTimeMatch = pgn.match(/\[StartTime \"(\d+:\d+:\d+)\"\]/);
       const endTimeMatch = pgn.match(/\[EndTime \"(\d+:\d+:\d+)\"\]/);
