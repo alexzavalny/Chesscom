@@ -106,10 +106,10 @@
                     <h2>Games</h2>
                     <ul>
                         <li v-for="game in currentGames" :key="game.id">
-                            <a :href="game.url" target="_blank"
-                                >({{ game.result }}) {{ game.white.username }}
-                                vs {{ game.black.username }}</a
-                            >
+                            <span class="chess-icon" :class="{'icon-result-draw': game.result === 'draw', 'icon-result-win': game.result === 'won', 'icon-result-lost': game.result === 'lost'}"></span>
+                            <a :href="game.url" target="_blank">
+                                {{ game.white.username }} vs {{ game.black.username }}
+                            </a>
                         </li>
                     </ul>
                 </div>

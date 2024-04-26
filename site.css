@@ -119,6 +119,8 @@ h2 {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     width: 80%;
     max-width: 600px;
+    max-height: 80%;
+    overflow: auto;
 }
 
 .close {
@@ -131,4 +133,33 @@ h2 {
 
 .close:hover {
     color: #000;
+}
+
+
+
+@font-face {
+    font-family: 'Chess V3';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(chessglyph-v3.woff2) format('woff2');
+}
+
+span.chess-icon {
+    font-family: Chess V3;
+}
+span.icon-result-draw:before {
+    font-family: Chess V3;
+    content: "\1F03";
+    color: #ccc;
+}
+span.icon-result-win:before {
+    font-family: Chess V3;
+    content: "\1F01";
+    color: #4caf50;
+}
+span.icon-result-lost:before {
+    font-family: Chess V3;
+    content: "\1F02";
+    color: #f00;
 }
