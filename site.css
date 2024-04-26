@@ -61,9 +61,16 @@ h2 {
     margin-top: 30px;
 }
 
-i.percentage {
+td.percentage {
     color: #999;
     font-size: 12px;
+    text-align: left;
+    font-style: italic;
+    padding-left: 1px;
+}
+td.score {
+    text-align: right;
+    padding-right: 1px;
 }
 
 .stats {
@@ -127,6 +134,9 @@ i.percentage {
     max-height: 80%;
     overflow: auto;
 }
+.modal-content tr {
+    cursor: pointer;
+}
 
 .close {
     color: #aaa;
@@ -150,6 +160,7 @@ i.percentage {
 
 span.chess-icon {
     font-family: Chess V3;
+    font-size: x-large;
 }
 span.icon-result-draw:before {
     font-family: Chess V3;
