@@ -9,6 +9,9 @@ var theApp = new Vue({
     currentGames: [],
   },
   methods: {
+    openGame(gameUrl) {
+      window.open(gameUrl, "_blank");
+    },
     openModal(games) {
       this.currentGames = games;
       console.log(games);

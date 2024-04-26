@@ -31,50 +31,46 @@
                     >
                 </h2>
                 <table>
+                    <colgroup>
+                        <col style="width: 10%;">
+                        <col style="width: 10%;">
+                        <col style="width: 10%;">
+                        <col style="width: 10%;">
+                        <col style="width: 10%;">
+                        <col style="width: 10%;">
+                        <col style="width: 10%;">
+                        <col style="width: 10%;">
+                        <col style="width: 10%;">
+                        <col style="width: 10%;">
+                    </colgroup>
                     <thead>
                         <tr>
                             <th>Type</th>
                             <th>Played</th>
-                            <th>Won</th>
-                            <th>Lost</th>
-                            <th>Draw</th>
+                            <th colspan="2">Won</th>
+                            <th colspan="2">Lost</th>
+                            <th colspan="2">Draw</th>
                             <th>Duration</th>
                             <th>Rating</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr
-                            v-for="(details, type) in result.statsByType"
-                            :key="type"
-                            @click="openModal(details.games)"
-                        >
+                        <tr v-for="(details, type) in result.statsByType" :key="type" @click="openModal(details.games)">
                             <td>
-                                <img
-                                    :src="`icons/${type.toLowerCase()}.svg`"
-                                    :alt="type"
-                                />
+                                <img :src="`icons/${type.toLowerCase()}.svg`" :alt="type" />
                             </td>
                             <td>{{ details.played }}</td>
-                            <td>
-                                {{ details.won }}
-                                <i class="percentage"
-                                    >{{ percentage(details.won, details.played)
-                                    }}%</i
-                                >
+                            <td class="score">{{ details.won }}</td>
+                            <td class="percentage">
+                                {{ percentage(details.won, details.played)}}%
                             </td>
-                            <td>
-                                {{ details.lost }}
-                                <i class="percentage"
-                                    >{{ percentage(details.lost, details.played)
-                                    }}%</i
-                                >
+                            <td class="score">{{ details.lost }}</td>
+                            <td class="percentage">
+                                {{ percentage(details.lost, details.played)}}%
                             </td>
-                            <td>
-                                {{ details.draw }}
-                                <i class="percentage"
-                                    >{{ percentage(details.draw, details.played)
-                                    }}%</i
-                                >
+                            <td class="score">{{ details.draw }}</td>
+                            <td class="percentage">
+                                {{ percentage(details.draw, details.played)}}%
                             </td>
                             <td>{{ formatDuration(details.duration) }}</td>
                             <td>{{ details.rating }}</td>
@@ -82,49 +78,29 @@
                         <tr v-if="totalStats[result.username].played > 0">
                             <td><strong>Total</strong></td>
                             <td>
-                                <strong
-                                    >{{ totalStats[result.username].played
-                                    }}</strong
-                                >
+                                <strong>{{ totalStats[result.username].played}}</strong>
                             </td>
-                            <td>
-                                <strong
-                                    >{{ totalStats[result.username].won
-                                    }}</strong
-                                >
-                                <i class="percentage"
-                                    >{{
-                                    percentage(totalStats[result.username].won,
-                                    totalStats[result.username].played) }}%</i
-                                >
+                            <td class="score">
+                                <strong>{{ totalStats[result.username].won}}</strong>
                             </td>
-                            <td>
-                                <strong
-                                    >{{ totalStats[result.username].lost
-                                    }}</strong
-                                >
-                                <i class="percentage"
-                                    >{{
-                                    percentage(totalStats[result.username].lost,
-                                    totalStats[result.username].played) }}%</i
-                                >
+                            <td class="percentage">
+                                {{percentage(totalStats[result.username].won,totalStats[result.username].played) }}%
                             </td>
-                            <td>
-                                <strong
-                                    >{{ totalStats[result.username].draw
-                                    }}</strong
-                                >
-                                <i class="percentage"
-                                    >{{
-                                    percentage(totalStats[result.username].draw,
-                                    totalStats[result.username].played) }}%</i
-                                >
+                            <td class="score">
+                                <strong>{{ totalStats[result.username].lost}}</strong>
+                            </td>
+                            <td class="percentage">
+                                {{percentage(totalStats[result.username].lost,totalStats[result.username].played) }}%
+                            </td>
+                            <td class="score">
+                                <strong>{{ totalStats[result.username].draw}}</strong>
+                            </td>
+                            <td class="percentage">
+                                {{percentage(totalStats[result.username].draw,totalStats[result.username].played) }}%
                             </td>
                             <td>
                                 <strong>
-                                    {{
-                                    formatDuration(totalStats[result.username].duration)
-                                    }}
+                                    {{formatDuration(totalStats[result.username].duration)}}
                                 </strong>
                             </td>
                             <td></td>
@@ -138,7 +114,7 @@
                     <span class="close" @click="closeModal">&times;</span>
                     <h2>Games</h2>
                     <table>
-                        <tr v-for="game in currentGames" :key="game.id">
+                        <tr v-for="game in currentGames" :key="game.id" @click="openGame(game.url)">
                             <td>
                                 <span
                                     class="chess-icon"
@@ -146,20 +122,12 @@
                                 ></span>
                             </td>
                             <td>
-                                <a :href="game.url" target="_blank">
-                                    {{ game.white.username }}
-                                    <span v-if="game.accuracies"
-                                        >({{ game.accuracies.white }}%)</span
-                                    >
-                                </a>
+                                {{ game.white.username }}
+                                <span v-if="game.accuracies">({{ game.accuracies.white }}%)</span>
                             </td>
                             <td>
-                                <a :href="game.url" target="_blank">
-                                    {{ game.black.username }}
-                                    <span v-if="game.accuracies">
-                                        ({{ game.accuracies.black }}%)</span
-                                    >
-                                </a>
+                                {{ game.black.username }}
+                                <span v-if="game.accuracies">({{ game.accuracies.black }}%)</span>
                             </td>
                         </tr>
                     </table>
