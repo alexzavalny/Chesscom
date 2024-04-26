@@ -1,5 +1,4 @@
-// chessStats.js
-new Vue({
+var theApp = new Vue({
   el: "#app",
   data: {
     lastFetch: "",
