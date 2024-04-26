@@ -176,6 +176,9 @@ var theApp = new Vue({
       this.lastFetch = new Date().toLocaleString();
       localStorage.setItem("lastFetch", this.lastFetch);
     },
+    percentage(value, total) {
+      return ((value / total) * 100).toFixed(1);
+    },
   },
   mounted() {
     this.fetchStats("today");

@@ -9,7 +9,7 @@
             href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
             rel="stylesheet"
         />
-        <link rel="stylesheet" href="site.css" />
+        <link rel="stylesheet" href="site.css?1" />
     </head>
     <body>
         <div id="app">
@@ -55,9 +55,27 @@
                                 />
                             </td>
                             <td>{{ details.played }}</td>
-                            <td>{{ details.won }}</td>
-                            <td>{{ details.lost }}</td>
-                            <td>{{ details.draw }}</td>
+                            <td>
+                                {{ details.won }}
+                                <i class="percentage"
+                                    >{{ percentage(details.won, details.played)
+                                    }}%</i
+                                >
+                            </td>
+                            <td>
+                                {{ details.lost }}
+                                <i class="percentage"
+                                    >{{ percentage(details.lost, details.played)
+                                    }}%</i
+                                >
+                            </td>
+                            <td>
+                                {{ details.draw }}
+                                <i class="percentage"
+                                    >{{ percentage(details.draw, details.played)
+                                    }}%</i
+                                >
+                            </td>
                             <td>{{ formatDuration(details.duration) }}</td>
                             <td>{{ details.rating }}</td>
                         </tr>
@@ -74,17 +92,32 @@
                                     >{{ totalStats[result.username].won
                                     }}</strong
                                 >
+                                <i class="percentage"
+                                    >({{
+                                    percentage(totalStats[result.username].won,
+                                    totalStats[result.username].played) }}%)</i
+                                >
                             </td>
                             <td>
                                 <strong
                                     >{{ totalStats[result.username].lost
                                     }}</strong
                                 >
+                                <i class="percentage"
+                                    >({{
+                                    percentage(totalStats[result.username].lost,
+                                    totalStats[result.username].played) }}%)</i
+                                >
                             </td>
                             <td>
                                 <strong
                                     >{{ totalStats[result.username].draw
                                     }}</strong
+                                >
+                                <i class="percentage"
+                                    >({{
+                                    percentage(totalStats[result.username].draw,
+                                    totalStats[result.username].played) }}%)</i
                                 >
                             </td>
                             <td>
@@ -115,11 +148,17 @@
                             <td>
                                 <a :href="game.url" target="_blank">
                                     {{ game.white.username }}
+                                    <span v-if="game.accuracies"
+                                        >({{ game.accuracies.white }}%)</span
+                                    >
                                 </a>
                             </td>
                             <td>
                                 <a :href="game.url" target="_blank">
                                     {{ game.black.username }}
+                                    <span v-if="game.accuracies">
+                                        ({{ game.accuracies.black }}%)</span
+                                    >
                                 </a>
                             </td>
                         </tr>
