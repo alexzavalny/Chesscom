@@ -182,6 +182,17 @@ var theApp = new Vue({
     percentage(value, total) {
       return ((value / total) * 100).toFixed(1);
     },
+    colorClass(accuracy) {
+      if (accuracy < 60) {
+        return "red";
+      } else if (accuracy >= 60 && accuracy < 80) {
+        return "yellow";
+      } else if (accuracy >= 80 && accuracy < 95) {
+        return "green";
+      } else {
+        return "blue";
+      }
+    },
   },
   mounted() {
     this.fetchStats("today");

@@ -177,3 +177,19 @@ span.icon-result-lost:before {
     content: "\1F02";
     color: #f00;
 }
+
+.red {
+    color: red;
+}
+
+.yellow {
+    color: #cbcb0d;
+}
+
+.green {
+    color: green;
+}
+
+.blue {
+    color: blue;
+}
