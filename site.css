@@ -204,3 +204,18 @@ span.chess-icon-repetition:before {
 span.chess-icon-unknown:before {
     content: "\1F0D";
 }
+.red {
+    color: red;
+}
+
+.yellow {
+    color: #cbcb0d;
+}
+
+.green {
+    color: green;
+}
+
+.blue {
+    color: blue;
+}

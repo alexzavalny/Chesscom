@@ -7,7 +7,7 @@
         <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
         <link rel="icon" type="image/x-icon" href="favicon.ico">
-        <link rel="stylesheet" href="site.css?1" />
+        <link rel="stylesheet" href="site.css?4" />
     </head>
     <body>
         <div id="app">
@@ -30,16 +30,16 @@
                 </h2>
                 <table>
                     <colgroup>
-                        <col style="width: 10%;">
-                        <col style="width: 10%;">
-                        <col style="width: 10%;">
-                        <col style="width: 10%;">
-                        <col style="width: 10%;">
-                        <col style="width: 10%;">
-                        <col style="width: 10%;">
-                        <col style="width: 10%;">
-                        <col style="width: 10%;">
-                        <col style="width: 10%;">
+                        <col style="width: 10%" />
+                        <col style="width: 10%" />
+                        <col style="width: 10%" />
+                        <col style="width: 10%" />
+                        <col style="width: 10%" />
+                        <col style="width: 10%" />
+                        <col style="width: 10%" />
+                        <col style="width: 10%" />
+                        <col style="width: 10%" />
+                        <col style="width: 10%" />
                     </colgroup>
                     <thead>
                         <tr>
@@ -53,9 +53,16 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(details, type) in result.statsByType" :key="type" @click="openModal(details.games)">
+                        <tr
+                            v-for="(details, type) in result.statsByType"
+                            :key="type"
+                            @click="openModal(details.games)"
+                        >
                             <td>
-                                <img :src="`icons/${type.toLowerCase()}.svg`" :alt="type" />
+                                <img
+                                    :src="`icons/${type.toLowerCase()}.svg`"
+                                    :alt="type"
+                                />
                             </td>
                             <td>{{ details.played }}</td>
                             <td class="score">{{ details.won }}</td>
@@ -76,25 +83,40 @@
                         <tr v-if="totalStats[result.username].played > 0">
                             <td><strong>Total</strong></td>
                             <td>
-                                <strong>{{ totalStats[result.username].played}}</strong>
+                                <strong
+                                    >{{
+                                    totalStats[result.username].played}}</strong
+                                >
                             </td>
                             <td class="score">
-                                <strong>{{ totalStats[result.username].won}}</strong>
+                                <strong
+                                    >{{
+                                    totalStats[result.username].won}}</strong
+                                >
                             </td>
                             <td class="percentage">
-                                {{percentage(totalStats[result.username].won,totalStats[result.username].played) }}%
+                                {{percentage(totalStats[result.username].won,totalStats[result.username].played)
+                                }}%
                             </td>
                             <td class="score">
-                                <strong>{{ totalStats[result.username].lost}}</strong>
+                                <strong
+                                    >{{
+                                    totalStats[result.username].lost}}</strong
+                                >
                             </td>
                             <td class="percentage">
-                                {{percentage(totalStats[result.username].lost,totalStats[result.username].played) }}%
+                                {{percentage(totalStats[result.username].lost,totalStats[result.username].played)
+                                }}%
                             </td>
                             <td class="score">
-                                <strong>{{ totalStats[result.username].draw}}</strong>
+                                <strong
+                                    >{{
+                                    totalStats[result.username].draw}}</strong
+                                >
                             </td>
                             <td class="percentage">
-                                {{percentage(totalStats[result.username].draw,totalStats[result.username].played) }}%
+                                {{percentage(totalStats[result.username].draw,totalStats[result.username].played)
+                                }}%
                             </td>
                             <td>
                                 <strong>
@@ -112,27 +134,40 @@
                     <span class="close" @click="closeModal">&times;</span>
                     <h2>Games</h2>
                     <table>
-                        <tr v-for="game in currentGames" :key="game.id" @click="openGame(game.url)">
+                        <tr
+                            v-for="game in currentGames"
+                            :key="game.id"
+                            @click="openGame(game.url)"
+                        >
                             <td>
                                 <span
                                     class="chess-icon"
                                     :class="iconClassByResult(game)"
                                 ></span>
                             </td>
-                            <td>
+                            <td style="text-align: right">
                                 {{ game.white.username }}
-                                <span v-if="game.accuracies">({{ game.accuracies.white }}%)</span>
+                                <span
+                                    v-if="game.accuracies"
+                                    :class="colorClass(game.accuracies.white)"
+                                >
+                                    [{{ game.accuracies.white }}%]
+                                </span>
                             </td>
-                            <td>
+                            <td style="text-align: left">
+                                <span
+                                    v-if="game.accuracies"
+                                    :class="colorClass(game.accuracies.black)"
+                                >
+                                    [{{ game.accuracies.black }}%]
+                                </span>
                                 {{ game.black.username }}
-                                <span v-if="game.accuracies">({{ game.accuracies.black }}%)</span>
                             </td>
                         </tr>
                     </table>
                 </div>
             </div>
         </div>
-
         <script src="chessStats.js"></script>
     </body>
 </html>
