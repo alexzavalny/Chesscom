@@ -162,22 +162,48 @@ span.chess-icon {
     font-family: Chess V3;
     font-size: x-large;
 }
-span.icon-result-draw:before {
-    font-family: Chess V3;
-    content: "\1F03";
+span.chess-icon-draw:before {
     color: #ccc;
 }
-span.icon-result-win:before {
-    font-family: Chess V3;
-    content: "\1F01";
+span.chess-icon-won:before {
     color: #4caf50;
 }
-span.icon-result-lost:before {
-    font-family: Chess V3;
-    content: "\1F02";
+span.chess-icon-lost:before {
     color: #f00;
 }
-
+span.chess-icon-checkmated:before {
+    content: "\1F92";
+}
+span.chess-icon-timeout:before {
+    content: "\1F8A";
+}
+span.chess-icon-resigned:before {
+    content: "\1F78";
+}
+span.chess-icon-abandoned:before {
+    content: "\00D7";
+}
+span.chess-icon-agreed:before {
+    content: "\1F88";
+}
+span.chess-icon-stalemate:before {
+    content: "\222B";
+}
+span.chess-icon-insufficient:before {
+    content: "\1F76";
+}
+span.chess-icon-50move:before {
+    content: "\1F90";
+}
+span.chess-icon-timevsinsufficient:before {
+    content: "\1F8A";
+}
+span.chess-icon-repetition:before {
+    content: "\004C";
+}
+span.chess-icon-unknown:before {
+    content: "\1F0D";
+}
 .red {
     color: red;
 }
