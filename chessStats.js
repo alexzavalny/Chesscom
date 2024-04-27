@@ -117,7 +117,10 @@ var theApp = new Vue({
           };
         }
 
-        game.result = this.determineResult(game, username);
+        game.resultSubType = (game.white.username.toLowerCase() === username.toLowerCase() ? game.white.result : game.black.result);
+        game.result = this.determineResult(game.resultSubType);
+        if (game.resultSubType === "win") 
+          game.resultSubType = (game.white.username.toLowerCase() === username.toLowerCase() ? game.black.result : game.white.result);
         statsByType[gameType].played++;
         statsByType[gameType].games.push(game);
         statsByType[gameType][game.result]++;
@@ -131,12 +134,8 @@ var theApp = new Vue({
 
       return statsByType;
     },
-    determineResult(game, username) {
-      let userIsWhite =
-        game.white.username.toLowerCase() === username.toLowerCase();
-      let result = userIsWhite ? game.white.result : game.black.result;
-
-      switch (result) {
+    determineResult(resultSubType) {
+      switch (resultSubType) {
         case "win":
           return "won";
         case "checkmated":
@@ -154,6 +153,9 @@ var theApp = new Vue({
         default:
           return "unknown";
       }
+    },
+    iconClassByResult(game) {
+        return `chess-icon-${game.result} chess-icon-${game.resultSubType}`;
     },
     formatDuration(seconds) {
       let hours = Math.floor(seconds / 3600);
