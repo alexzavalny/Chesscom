@@ -5,6 +5,7 @@ var theApp = new Vue({
     showModal: false,
     gamesList: "",
     results: [],
+    usernames: ["alexandrzavalnij", "jefimserg", "TheErix", "vadimostapchuk"],
     periods: ["today", "yesterday", "month"],
     currentGames: [],
   },
@@ -22,12 +23,7 @@ var theApp = new Vue({
     },
     fetchStats(period) {
       this.results = [];
-      const usernames = [
-        "alexandrzavalnij",
-        "jefimserg",
-        "TheErix",
-        "vadimostapchuk",
-      ];
+
       let date = new Date();
       if (period === "yesterday") {
         date.setDate(date.getDate() - 1);
@@ -38,7 +34,7 @@ var theApp = new Vue({
       let day = String(date.getDate()).padStart(2, "0");
 
       Promise.all(
-        usernames.map((username) =>
+        this.usernames.map((username) =>
           this.fetchUserStats(username, year, month, day, period),
         ),
       )
@@ -202,7 +198,15 @@ var theApp = new Vue({
     },
   },
   mounted() {
-    this.fetchStats("today");
+    // if query string contains a list of usernames, then set the usernames
+    const urlParams = new URLSearchParams(window.location.search);
+    const usernames = urlParams.get("usernames");
+    if (usernames) {
+      this.usernames = usernames.split(",");
+    }
+
+    const defaultPeriod = urlParams.get("period") || "today";
+    this.fetchStats(defaultPeriod);
   },
   computed: {
     totalStats() {
