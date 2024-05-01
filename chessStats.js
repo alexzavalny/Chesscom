@@ -29,14 +29,13 @@ var theApp = new Vue({
         "vadimostapchuk",
       ];
       let date = new Date();
+      if (period === "yesterday") {
+        date.setDate(date.getDate() - 1);
+      }
+
       let year = date.getFullYear();
       let month = String(date.getMonth() + 1).padStart(2, "0");
       let day = String(date.getDate()).padStart(2, "0");
-
-      if (period === "yesterday") {
-        date.setDate(date.getDate() - 1);
-        day = String(date.getDate()).padStart(2, "0");
-      }
 
       Promise.all(
         usernames.map((username) =>
@@ -117,10 +116,16 @@ var theApp = new Vue({
           };
         }
 
-        game.resultSubType = (game.white.username.toLowerCase() === username.toLowerCase() ? game.white.result : game.black.result);
+        game.resultSubType =
+          game.white.username.toLowerCase() === username.toLowerCase()
+            ? game.white.result
+            : game.black.result;
         game.result = this.determineResult(game.resultSubType);
-        if (game.resultSubType === "win") 
-          game.resultSubType = (game.white.username.toLowerCase() === username.toLowerCase() ? game.black.result : game.white.result);
+        if (game.resultSubType === "win")
+          game.resultSubType =
+            game.white.username.toLowerCase() === username.toLowerCase()
+              ? game.black.result
+              : game.white.result;
         statsByType[gameType].played++;
         statsByType[gameType].games.push(game);
         statsByType[gameType][game.result]++;
@@ -155,7 +160,7 @@ var theApp = new Vue({
       }
     },
     iconClassByResult(game) {
-        return `chess-icon-${game.result} chess-icon-${game.resultSubType}`;
+      return `chess-icon-${game.result} chess-icon-${game.resultSubType}`;
     },
     formatDuration(seconds) {
       let hours = Math.floor(seconds / 3600);
