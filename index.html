@@ -11,162 +11,173 @@
     </head>
     <body>
         <div id="app">
-            <h1>Chess Stats Viewer</h1>
-            <button
-                v-for="period in periods"
-                @click="fetchStats(period)"
-                :key="period"
-            >
-                {{ period.charAt(0).toUpperCase() + period.slice(1) }}
-            </button>
-            <div>Last updated: <span>{{ lastFetch }}</span></div>
-            <div class="stats" v-for="result in results" :key="result.username">
-                <h2>
-                    <a
-                        :href="`https://www.chess.com/member/${result.username}`"
-                        target="_blank"
-                        >{{ result.username }}</a
-                    >
-                </h2>
-                <table>
-                    <colgroup>
-                        <col style="width: 10%" />
-                        <col style="width: 10%" />
-                        <col style="width: 10%" />
-                        <col style="width: 10%" />
-                        <col style="width: 10%" />
-                        <col style="width: 10%" />
-                        <col style="width: 10%" />
-                        <col style="width: 10%" />
-                        <col style="width: 10%" />
-                        <col style="width: 10%" />
-                    </colgroup>
-                    <thead>
-                        <tr>
-                            <th>Type</th>
-                            <th>Played</th>
-                            <th colspan="2">Won</th>
-                            <th colspan="2">Lost</th>
-                            <th colspan="2">Draw</th>
-                            <th>Duration</th>
-                            <th>Rating</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr
-                            v-for="(details, type) in result.statsByType"
-                            :key="type"
-                            @click="openModal(details.games)"
+            <main class="container">
+                <h1>Chess Stats Viewer</h1>
+
+                <div class="panel">
+                    <div class="date-controls">
+                        <button
+                            v-for="period in periods"
+                            @click="fetchStats(period)"
+                            :key="period"
+                            :class="periodButtonClass(period)"
                         >
-                            <td>
-                                <img
-                                    :src="`icons/${type.toLowerCase()}.svg`"
-                                    :alt="type"
-                                />
-                            </td>
-                            <td>{{ details.played }}</td>
-                            <td class="score">{{ details.won }}</td>
-                            <td class="percentage">
-                                {{ percentage(details.won, details.played)}}%
-                            </td>
-                            <td class="score">{{ details.lost }}</td>
-                            <td class="percentage">
-                                {{ percentage(details.lost, details.played)}}%
-                            </td>
-                            <td class="score">{{ details.draw }}</td>
-                            <td class="percentage">
-                                {{ percentage(details.draw, details.played)}}%
-                            </td>
-                            <td>{{ formatDuration(details.duration) }}</td>
-                            <td>{{ details.rating }}</td>
-                        </tr>
-                        <tr v-if="totalStats[result.username].played > 0">
-                            <td><strong>Total</strong></td>
-                            <td>
-                                <strong
-                                    >{{
-                                    totalStats[result.username].played}}</strong
-                                >
-                            </td>
-                            <td class="score">
-                                <strong
-                                    >{{
-                                    totalStats[result.username].won}}</strong
-                                >
-                            </td>
-                            <td class="percentage">
-                                {{percentage(totalStats[result.username].won,totalStats[result.username].played)
-                                }}%
-                            </td>
-                            <td class="score">
-                                <strong
-                                    >{{
-                                    totalStats[result.username].lost}}</strong
-                                >
-                            </td>
-                            <td class="percentage">
-                                {{percentage(totalStats[result.username].lost,totalStats[result.username].played)
-                                }}%
-                            </td>
-                            <td class="score">
-                                <strong
-                                    >{{
-                                    totalStats[result.username].draw}}</strong
-                                >
-                            </td>
-                            <td class="percentage">
-                                {{percentage(totalStats[result.username].draw,totalStats[result.username].played)
-                                }}%
-                            </td>
-                            <td>
-                                <strong>
-                                    {{formatDuration(totalStats[result.username].duration)}}
-                                </strong>
-                            </td>
-                            <td></td>
-                            <!-- Rating is not totalled; you may calculate an average or similar if appropriate -->
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div v-if="showModal" class="modal">
-                <div class="modal-content">
-                    <span class="close" @click="closeModal">&times;</span>
-                    <h2>Games</h2>
+                            {{ period.charAt(0).toUpperCase() + period.slice(1) }}
+                        </button>
+                    </div>
+                    
+                    <div>Last updated: <span>{{ lastFetch }}</span></div>
+                </div>
+                
+
+                <div class="stats" v-for="result in results" :key="result.username">
+                    <h2>
+                        <a
+                            :href="`https://www.chess.com/member/${result.username}`"
+                            target="_blank"
+                            >{{ result.username }}</a
+                        >
+                    </h2>
                     <table>
-                        <tr
-                            v-for="game in currentGames"
-                            :key="game.id"
-                            @click="openGame(game.url)"
-                        >
-                            <td>
-                                <span
-                                    class="chess-icon"
-                                    :class="iconClassByResult(game)"
-                                ></span>
-                            </td>
-                            <td style="text-align: right">
-                                {{ game.white.username }}
-                                <span
-                                    v-if="game.accuracies"
-                                    :class="colorClass(game.accuracies.white)"
-                                >
-                                    [{{ game.accuracies.white }}%]
-                                </span>
-                            </td>
-                            <td style="text-align: left">
-                                <span
-                                    v-if="game.accuracies"
-                                    :class="colorClass(game.accuracies.black)"
-                                >
-                                    [{{ game.accuracies.black }}%]
-                                </span>
-                                {{ game.black.username }}
-                            </td>
-                        </tr>
+                        <colgroup>
+                            <col style="width: 10%" />
+                            <col style="width: 10%" />
+                            <col style="width: 10%" />
+                            <col style="width: 10%" />
+                            <col style="width: 10%" />
+                            <col style="width: 10%" />
+                            <col style="width: 10%" />
+                            <col style="width: 10%" />
+                            <col style="width: 10%" />
+                            <col style="width: 10%" />
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Played</th>
+                                <th colspan="2">Won</th>
+                                <th colspan="2">Lost</th>
+                                <th colspan="2">Draw</th>
+                                <th>Duration</th>
+                                <th>Rating</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr
+                                v-for="(details, type) in result.statsByType"
+                                :key="type"
+                                @click="openModal(details.games)"
+                            >
+                                <td>
+                                    <img
+                                        :src="`icons/${type.toLowerCase()}.svg`"
+                                        :alt="type"
+                                    />
+                                </td>
+                                <td>{{ details.played }}</td>
+                                <td class="score">{{ details.won }}</td>
+                                <td class="percentage">
+                                    {{ percentage(details.won, details.played)}}%
+                                </td>
+                                <td class="score">{{ details.lost }}</td>
+                                <td class="percentage">
+                                    {{ percentage(details.lost, details.played)}}%
+                                </td>
+                                <td class="score">{{ details.draw }}</td>
+                                <td class="percentage">
+                                    {{ percentage(details.draw, details.played)}}%
+                                </td>
+                                <td>{{ formatDuration(details.duration) }}</td>
+                                <td>{{ details.rating }}</td>
+                            </tr>
+                            <tr class="totals" v-if="totalStats[result.username].played > 0">
+                                <td><strong>Total</strong></td>
+                                <td>
+                                    <strong
+                                        >{{
+                                        totalStats[result.username].played}}</strong
+                                    >
+                                </td>
+                                <td class="score">
+                                    <strong
+                                        >{{
+                                        totalStats[result.username].won}}</strong
+                                    >
+                                </td>
+                                <td class="percentage">
+                                    {{percentage(totalStats[result.username].won,totalStats[result.username].played)
+                                    }}%
+                                </td>
+                                <td class="score">
+                                    <strong
+                                        >{{
+                                        totalStats[result.username].lost}}</strong
+                                    >
+                                </td>
+                                <td class="percentage">
+                                    {{percentage(totalStats[result.username].lost,totalStats[result.username].played)
+                                    }}%
+                                </td>
+                                <td class="score">
+                                    <strong
+                                        >{{
+                                        totalStats[result.username].draw}}</strong
+                                    >
+                                </td>
+                                <td class="percentage">
+                                    {{percentage(totalStats[result.username].draw,totalStats[result.username].played)
+                                    }}%
+                                </td>
+                                <td>
+                                    <strong>
+                                        {{formatDuration(totalStats[result.username].duration)}}
+                                    </strong>
+                                </td>
+                                <td></td>
+                                <!-- Rating is not totalled; you may calculate an average or similar if appropriate -->
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
-            </div>
+                <div v-if="showModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close" @click="closeModal">&times;</span>
+                        <h2>Games</h2>
+                        <table>
+                            <tr
+                                v-for="game in currentGames"
+                                :key="game.id"
+                                @click="openGame(game.url)"
+                            >
+                                <td>
+                                    <span
+                                        class="chess-icon"
+                                        :class="iconClassByResult(game)"
+                                    ></span>
+                                </td>
+                                <td style="text-align: right">
+                                    {{ game.white.username }}
+                                    <span
+                                        v-if="game.accuracies"
+                                        :class="colorClass(game.accuracies.white)"
+                                    >
+                                        [{{ game.accuracies.white }}%]
+                                    </span>
+                                </td>
+                                <td style="text-align: left">
+                                    <span
+                                        v-if="game.accuracies"
+                                        :class="colorClass(game.accuracies.black)"
+                                    >
+                                        [{{ game.accuracies.black }}%]
+                                    </span>
+                                    {{ game.black.username }}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </main>
         </div>
         <script src="chessStats.js"></script>
     </body>

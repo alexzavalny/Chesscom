@@ -1,6 +1,7 @@
 var theApp = new Vue({
   el: "#app",
   data: {
+    activePeriod: "today",
     lastFetch: "",
     showModal: false,
     gamesList: "",
@@ -22,6 +23,8 @@ var theApp = new Vue({
       this.showModal = false;
     },
     fetchStats(period) {
+      this.activePeriod = period;
+
       this.results = [];
 
       let date = new Date();
@@ -209,6 +212,13 @@ var theApp = new Vue({
     this.fetchStats(defaultPeriod);
   },
   computed: {
+    periodButtonClass() {
+      return function(period) {
+        return {
+          active: period === this.activePeriod
+        };
+      };
+    },
     totalStats() {
       let totalsHash = {};
       this.results.forEach((user) => {
