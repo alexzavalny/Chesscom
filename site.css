@@ -24,6 +24,7 @@ table {
     margin: 20px auto;
     border-collapse: collapse;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
 }
 
 th,
@@ -34,8 +35,20 @@ td {
 }
 
 th {
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: normal;
+    padding: 14px 20px;
     background-color: #4caf50;
     color: white;
+}
+
+td {
+    padding: 8px 20px;
+}
+
+.totals td {
+    background-color: #f3f3f3;
 }
 
 tr:hover {
@@ -47,7 +60,6 @@ button {
     color: white;
     border: none;
     padding: 10px 20px;
-    margin: 10px;
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
@@ -74,13 +86,20 @@ td.score {
 }
 
 .stats {
-    width: 95%;
-    margin: 10px auto;
     padding: 10px 20px;
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
+
+.stats + .stats {
+    margin-top: 16px;
+}
+
+.table:has(tbody:empty) {
+    display: none;
+}
+
 @media screen and (max-width: 600px) {
     th,
     td {
@@ -218,4 +237,40 @@ span.chess-icon-unknown:before {
 
 .blue {
     color: blue;
+}
+
+/* Layout */
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+} 
+
+.panel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+@media(max-width: 700px) {
+    .panel {
+        flex-direction: column;
+        gap: 16px;
+    }
+}
+
+.date-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.date-controls button {
+    color: #666;
+    background: #fff;
+    border: 1px solid #ddd;
+}
+
+.date-controls button.active {
+    color: #fff;
+    background: #4caf50;
 }
