@@ -54,11 +54,11 @@
                         <thead>
                             <tr>
                                 <th>Type</th>
-                                <th>Played</th>
+                                <th>Games</th>
                                 <th colspan="2">Won</th>
                                 <th colspan="2">Lost</th>
                                 <th colspan="2">Draw</th>
-                                <th>Duration</th>
+                                <th>Time</th>
                                 <th>Rating</th>
                             </tr>
                         </thead>
@@ -87,7 +87,7 @@
                                 <td class="percentage">
                                     {{ percentage(details.draw, details.played)}}%
                                 </td>
-                                <td>{{ formatDuration(details.duration) }}</td>
+                                <td class="time">{{ formatDuration(details.duration) }}</td>
                                 <td>{{ details.rating }}</td>
                             </tr>
                             <tr class="totals" v-if="totalStats[result.username].played > 0">
@@ -128,7 +128,7 @@
                                     {{percentage(totalStats[result.username].draw,totalStats[result.username].played)
                                     }}%
                                 </td>
-                                <td>
+                                <td class="time">
                                     <strong>
                                         {{formatDuration(totalStats[result.username].duration)}}
                                     </strong>
