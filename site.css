@@ -85,6 +85,10 @@ td.score {
     padding-right: 1px;
 }
 
+td.time {
+    white-space: nowrap;
+}
+
 .stats {
     padding: 10px 20px;
     background-color: #fff;
@@ -108,7 +112,7 @@ td.score {
     }
 
     th {
-        font-size: 14px;
+        font-size: 11px;
     }
 
     td {
