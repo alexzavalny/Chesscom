@@ -52,6 +52,10 @@ td {
     padding: 8px 20px;
 }
 
+td.desktop {
+    display: table-cell;
+}
+
 .totals td {
     background-color: #f3f3f3;
 }
@@ -265,6 +269,10 @@ span.chess-icon-unknown:before {
     .panel {
         flex-direction: column;
         gap: 16px;
+    }
+
+    td.desktop {
+        display: none;
     }
 }
 
