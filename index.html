@@ -141,6 +141,11 @@
                     <div class="modal-content">
                         <span class="close" @click="closeModal">&times;</span>
                         <h2>Games</h2>
+
+                        <!-- checkbox "Show openings", unchecked, with vue state -->
+                        <input type="checkbox" id="showOpenings" v-model="showOpenings" />
+                        <label for="showOpenings">Show openings</label>
+
                         <table>
                             <tr
                                 v-for="game in currentGames"
@@ -171,7 +176,7 @@
                                     </span>
                                     {{ game.black.username }}
                                 </td>
-                                <td class="desktop">
+                                <td class="desktop" v-if="showOpenings">
                                     <!-- game.opening is in format { "name" => "url" } -->
                                     <a :href="game.opening.url" target="_blank">
                                         {{ game.opening.name }}

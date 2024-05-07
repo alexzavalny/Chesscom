@@ -7,8 +7,9 @@ var theApp = new Vue({
     gamesList: "",
     results: [],
     usernames: ["alexandrzavalnij", "jefimserg", "TheErix", "vadimostapchuk"],
-    periods: ["today", "yesterday", "month"],
+    periods: ["today", "yesterday", "month", "prevmonth"],
     currentGames: [],
+    showOpenings: false,
   },
   methods: {
     openGame(gameUrl) {
@@ -30,6 +31,10 @@ var theApp = new Vue({
       let date = new Date();
       if (period === "yesterday") {
         date.setDate(date.getDate() - 1);
+      }
+
+      if (period === "prevmonth") {
+        date.setMonth(date.getMonth() - 1);
       }
 
       let year = date.getFullYear();
@@ -95,6 +100,7 @@ var theApp = new Vue({
         let gameDate = new Date(game.end_time * 1000);
         if (
           period !== "month" &&
+          period !== "prevmonth" &&
           (gameDate.getFullYear() !== year ||
             gameDate.getMonth() + 1 !== parseInt(month, 10) ||
             gameDate.getDate() !== parseInt(day, 10))
