@@ -240,6 +240,9 @@ var theApp = new Vue({
         if (details.rating < details.ratingBefore) return "rating-fall";
         return "";
     },
+    nonameClass(username) {
+      if (this.usernames.indexOf(username) == -1) return "player-noname";
+    },
   },
   mounted() {
     // if query string contains a list of usernames, then set the usernames
