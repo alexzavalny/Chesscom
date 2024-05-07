@@ -291,3 +291,14 @@ span.chess-icon-unknown:before {
     color: #fff;
     background: #4caf50;
 }
+
+.rating-before {
+    font-size: xx-small;
+    color: #ddd;
+}
+.rating-climb {
+    color: #4caf50;
+}
+.rating-fall {
+    color: red;
+}

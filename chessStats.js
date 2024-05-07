@@ -116,6 +116,7 @@ var theApp = new Vue({
             lost: 0,
             draw: 0,
             duration: 0,
+            ratingBefore: 0,
             rating: 0,
             games: [],
           };
@@ -137,6 +138,7 @@ var theApp = new Vue({
         let userIsWhite =
           game.white.username.toLowerCase() === username.toLowerCase();
         let correctPlayer = userIsWhite ? game.white : game.black;
+        statsByType[gameType].ratingBefore || (statsByType[gameType].ratingBefore = correctPlayer.rating);
         statsByType[gameType].rating = correctPlayer.rating;
         let duration = this.getGameDurationFromPGN(game.pgn);
         game.opening = this.getGameOpening(game.pgn);
@@ -232,6 +234,11 @@ var theApp = new Vue({
       } else {
         return "blue";
       }
+    },
+    ratingClass(details) {
+        if (details.rating > details.ratingBefore) return "rating-climb";
+        if (details.rating < details.ratingBefore) return "rating-fall";
+        return "";
     },
   },
   mounted() {

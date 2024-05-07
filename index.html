@@ -86,7 +86,7 @@
                                     {{ percentage(details.draw, details.played)}}%
                                 </td>
                                 <td class="time">{{ formatDuration(details.duration) }}</td>
-                                <td>{{ details.rating }}</td>
+                                <td><span class="rating-before">{{ details.ratingBefore }}</span><br><span :class="ratingClass(details)">{{ details.rating }}</span></td>
                             </tr>
                             <tr class="totals" v-if="totalStats[result.username].played > 0">
                                 <td><strong>Total</strong></td>
