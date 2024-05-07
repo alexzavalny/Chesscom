@@ -133,6 +133,7 @@ var theApp = new Vue({
         let correctPlayer = userIsWhite ? game.white : game.black;
         statsByType[gameType].rating = correctPlayer.rating;
         let duration = this.getGameDurationFromPGN(game.pgn);
+        game.opening = this.getGameOpening(game.pgn);
         statsByType[gameType].duration += duration;
       });
 
@@ -166,6 +167,33 @@ var theApp = new Vue({
       let minutes = Math.floor((seconds % 3600) / 60);
       let formattedDuration = `${hours}h ${minutes}m`;
       return formattedDuration;
+    },
+    getGameOpening(pgn) {
+      // Extract the opening name from the PGN
+      // example:
+      // [ECOUrl "https://www.chess.com/openings/Sicilian-Defense-Open-Accelerated-Dragon-Exchange-Variation-5...bxc6"]
+
+      var fullUrl = pgn.match(/\[ECOUrl "(.+?)"\]/);
+      if (fullUrl && fullUrl.length > 1) {
+        fullUrl = fullUrl[1]; // This captures only the URL part
+      }
+
+      const ecoUrlMatch = pgn.match(
+        /\[ECOUrl \"https:\/\/www\.chess\.com\/openings\/(.+?)\"\]/,
+      );
+      if (!fullUrl) {
+        return { name: "Unknown opening", url: "#" }; // format { "name": "url" }
+      }
+
+      const openingUrl = ecoUrlMatch[1];
+      const openingName = openingUrl
+        .split("/")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ")
+        .split("-")
+        .join(" ");
+      const openingNameFirst50Chars = openingName.substring(0, 50) + "...";
+      return { name: openingNameFirst50Chars, url: fullUrl };
     },
     getGameDurationFromPGN(pgn) {
       const startTimeMatch = pgn.match(/\[StartTime \"(\d+:\d+:\d+)\"\]/);
@@ -213,9 +241,9 @@ var theApp = new Vue({
   },
   computed: {
     periodButtonClass() {
-      return function(period) {
+      return function (period) {
         return {
-          active: period === this.activePeriod
+          active: period === this.activePeriod,
         };
       };
     },

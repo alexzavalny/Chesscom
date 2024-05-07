@@ -7,7 +7,7 @@
         <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
         <link rel="icon" type="image/x-icon" href="favicon.ico">
-        <link rel="stylesheet" href="site.css?6" />
+        <link rel="stylesheet" href="site.css?7" />
     </head>
     <body>
         <div id="app">
@@ -23,10 +23,10 @@
                             {{ period.charAt(0).toUpperCase() + period.slice(1) }}
                         </button>
                     </div>
-                    
+
                     <div>Last updated: <span>{{ lastFetch }}</span></div>
                 </div>
-                
+
 
                 <div class="stats" v-for="result in results" :key="result.username">
                     <h2>
@@ -171,12 +171,17 @@
                                     </span>
                                     {{ game.black.username }}
                                 </td>
+                                <td>
+                                    <!-- game.opening is in format { "name" => "url" } -->
+                                    <a :href="game.opening.url" target="_blank">
+                                        {{ game.opening.name }}
+                                </td>
                             </tr>
                         </table>
                     </div>
                 </div>
             </main>
         </div>
-        <script src="chessStats.js?2"></script>
+        <script src="chessStats.js?3"></script>
     </body>
 </html>

@@ -4,6 +4,11 @@ body {
     color: #333;
 }
 
+a {
+    text-decoration: none;
+    color: cadetblue;
+}
+
 *,
 *::before,
 *::after {
@@ -247,7 +252,7 @@ span.chess-icon-unknown:before {
 .container {
     max-width: 1000px;
     margin: 0 auto;
-} 
+}
 
 .panel {
     display: flex;
@@ -256,7 +261,7 @@ span.chess-icon-unknown:before {
     margin-bottom: 24px;
 }
 
-@media(max-width: 700px) {
+@media (max-width: 700px) {
     .panel {
         flex-direction: column;
         gap: 16px;
