@@ -10,6 +10,7 @@ var theApp = new Vue({
     periods: ["today", "yesterday", "month", "prevmonth"],
     currentGames: [],
     showOpenings: false,
+    showTime: false,
   },
   methods: {
     openGame(gameUrl) {
@@ -138,9 +139,13 @@ var theApp = new Vue({
         let userIsWhite =
           game.white.username.toLowerCase() === username.toLowerCase();
         let correctPlayer = userIsWhite ? game.white : game.black;
-        statsByType[gameType].ratingBefore || (statsByType[gameType].ratingBefore = correctPlayer.rating);
+        statsByType[gameType].ratingBefore ||
+          (statsByType[gameType].ratingBefore = correctPlayer.rating);
         statsByType[gameType].rating = correctPlayer.rating;
         let duration = this.getGameDurationFromPGN(game.pgn);
+        // convert game.end_time to Date
+        game.endTime = new Date(game.end_time * 1000);
+
         game.opening = this.getGameOpening(game.pgn);
         statsByType[gameType].duration += duration;
       });
@@ -236,9 +241,9 @@ var theApp = new Vue({
       }
     },
     ratingClass(details) {
-        if (details.rating > details.ratingBefore) return "rating-climb";
-        if (details.rating < details.ratingBefore) return "rating-fall";
-        return "";
+      if (details.rating > details.ratingBefore) return "rating-climb";
+      if (details.rating < details.ratingBefore) return "rating-fall";
+      return "";
     },
     nonameClass(username) {
       if (this.usernames.indexOf(username) == -1) return "player-noname";

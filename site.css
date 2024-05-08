@@ -52,10 +52,6 @@ td {
     padding: 8px 20px;
 }
 
-td.desktop {
-    display: table-cell;
-}
-
 .totals td {
     background-color: #f3f3f3;
 }
@@ -271,7 +267,7 @@ span.chess-icon-unknown:before {
         gap: 16px;
     }
 
-    td.desktop {
+    .desktop {
         display: none;
     }
 }
@@ -306,7 +302,7 @@ span.chess-icon-unknown:before {
     opacity: 0.5;
 }
 
-.show-openings {
+.checkbox {
     font-size: small;
     font-weight: normal;
     float: right;

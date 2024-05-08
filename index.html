@@ -7,7 +7,7 @@
         <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
         <link rel="icon" type="image/x-icon" href="favicon.ico">
-        <link rel="stylesheet" href="site.css?8" />
+        <link rel="stylesheet" href="site.css?9" />
     </head>
     <body>
         <div id="app">
@@ -142,10 +142,13 @@
                         <span class="close" @click="closeModal">&times;</span>
                         <h2>
                             Games
-                            <!-- checkbox "Show openings", unchecked, with vue state -->
-                            <span class="show-openings">
+                            <span class="checkbox desktop">
                                 <input type="checkbox" id="showOpenings" v-model="showOpenings" />
-                                <label for="showOpenings">Show Openings</label>
+                                <label for="showOpenings">Openings</label>
+                            </span>
+                            <span class="checkbox desktop">
+                                <input type="checkbox" id="showTime" v-model="showTime" />
+                                <label for="showTime">Time</label>
                             </span>
                         </h2>
                         <table>
@@ -154,6 +157,9 @@
                                 :key="game.id"
                                 @click="openGame(game.url)"
                             >
+                                <td v-if="showTime">
+                                    <!-- game.endTime to time hh:mm -->
+                                    {{ game.endTime.toLocaleTimeString().slice(0, -3) }}
                                 <td>
                                     <span
                                         class="chess-icon"
@@ -189,6 +195,6 @@
                 </div>
             </main>
         </div>
-        <script src="chessStats.js?3"></script>
+        <script src="chessStats.js?4"></script>
     </body>
 </html>
