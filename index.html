@@ -159,7 +159,7 @@
                             >
                                 <td v-if="showTime">
                                     <!-- game.endTime to time hh:mm -->
-                                    {{ game.endTime.toLocaleTimeString().slice(0, -3) }}
+                                    {{ game.endTime.toLocaleTimeString([],{ hour12: false, hour: "2-digit", minute: "2-digit" }) }}
                                 <td>
                                     <span
                                         class="chess-icon"
