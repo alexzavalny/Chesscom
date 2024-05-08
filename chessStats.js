@@ -273,7 +273,9 @@ var theApp = new Vue({
           draw: 0,
           duration: 0,
         };
-        Object.values(user.statsByType).forEach((stats) => {
+        Object.entries(user.statsByType).forEach(([gameType, stats]) => {
+          if (gameType == "daily") return;
+
           totals.played += stats.played;
           totals.won += stats.won;
           totals.lost += stats.lost;
