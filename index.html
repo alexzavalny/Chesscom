@@ -86,7 +86,7 @@
                                     {{ percentage(details.draw, details.played)}}%
                                 </td>
                                 <td class="time">{{ formatDuration(details.duration) }}</td>
-                                <td>{{ details.rating }}</td>
+                                <td><span class="rating-before">{{ details.ratingBefore }}</span><br><span :class="ratingClass(details)">{{ details.rating }}</span></td>
                             </tr>
                             <tr class="totals" v-if="totalStats[result.username].played > 0">
                                 <td><strong>Total</strong></td>
@@ -140,12 +140,14 @@
                 <div v-if="showModal" class="modal">
                     <div class="modal-content">
                         <span class="close" @click="closeModal">&times;</span>
-                        <h2>Games</h2>
-
-                        <!-- checkbox "Show openings", unchecked, with vue state -->
-                        <input type="checkbox" id="showOpenings" v-model="showOpenings" />
-                        <label for="showOpenings">Show openings</label>
-
+                        <h2>
+                            Games
+                            <!-- checkbox "Show openings", unchecked, with vue state -->
+                            <span class="show-openings">
+                                <input type="checkbox" id="showOpenings" v-model="showOpenings" />
+                                <label for="showOpenings">Show Openings</label>
+                            </span>
+                        </h2>
                         <table>
                             <tr
                                 v-for="game in currentGames"
@@ -159,7 +161,7 @@
                                     ></span>
                                 </td>
                                 <td style="text-align: right">
-                                    {{ game.white.username }}
+                                    <span :class="nonameClass(game.white.username)">{{ game.white.username }}</span>
                                     <span
                                         v-if="game.accuracies"
                                         :class="colorClass(game.accuracies.white)"
@@ -174,7 +176,7 @@
                                     >
                                         [{{ game.accuracies.black }}%]
                                     </span>
-                                    {{ game.black.username }}
+                                    <span :class="nonameClass(game.black.username)">{{ game.black.username }}</span>
                                 </td>
                                 <td class="desktop" v-if="showOpenings">
                                     <!-- game.opening is in format { "name" => "url" } -->
