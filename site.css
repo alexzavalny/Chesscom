@@ -75,7 +75,7 @@ button:hover {
 }
 
 h2 {
-    margin-top: 30px;
+    margin-top: 0px;
 }
 
 td.percentage {
@@ -126,9 +126,9 @@ td.time {
         margin-left: 20px;
     }
     .stats {
-        width: 95%;
+        width: 99%;
         margin: 10px auto;
-        padding: 10px 0px;
+        padding: 20px 0px 0px 0px;
     }
 }
 
