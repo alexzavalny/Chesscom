@@ -36,7 +36,9 @@
                             >{{ result.username }}</a
                         >
                     </h2>
-                    <table>
+
+                    <span style="font-size: 45px" v-if="Object.entries(result.statsByType).length == 0">💩</span>
+                    <table v-if="Object.entries(result.statsByType).length > 0">
                         <colgroup>
                             <col style="width: 10%" />
                             <col style="width: 10%" />
