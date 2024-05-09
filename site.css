@@ -305,3 +305,15 @@ span.chess-icon-unknown:before {
     float: right;
     margin-right: 20px;
 }
+
+@keyframes rock {
+    0% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    100% { transform: translateX(-5px); }
+}
+
+.rocking-span {
+    font-size: 45px;
+    animation: rock 1s ease-in-out infinite;
+    display: inline-block;
+}
