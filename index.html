@@ -172,7 +172,7 @@
                                         :class="iconClassByResult(game)"
                                     ></span>
                                 </td>
-                                <td style="text-align: right">
+                                <td class="modal__player-white">
                                     <span :class="nonameClass(game.white.username)">{{ game.white.username }}</span>
                                     <span
                                         v-if="game.accuracies"
@@ -181,7 +181,8 @@
                                         [{{ game.accuracies.white }}%]
                                     </span>
                                 </td>
-                                <td style="text-align: left">
+                                <td class="modal__move-count">{{ game.moveCount }}</td>
+                                <td class="modal__player-black">
                                     <span
                                         v-if="game.accuracies"
                                         :class="colorClass(game.accuracies.black)"

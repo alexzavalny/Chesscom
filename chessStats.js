@@ -145,6 +145,7 @@ var theApp = new Vue({
         let duration = this.getGameDurationFromPGN(game.pgn);
         // convert game.end_time to Date
         game.endTime = new Date(game.end_time * 1000);
+        game.moveCount = parseInt(this.getMoveCountFromPGN(game.pgn));
 
         game.opening = this.getGameOpening(game.pgn);
         statsByType[gameType].duration += duration;
@@ -208,6 +209,10 @@ var theApp = new Vue({
       const openingNameFirst50Chars = openingName.substring(0, 50) + "...";
       return { name: openingNameFirst50Chars, url: fullUrl };
     },
+    getMoveCountFromPGN(pgn) {
+      const rawSplit = pgn.split(" ");
+      return rawSplit[rawSplit.length - 5];
+    },
     getGameDurationFromPGN(pgn) {
       const startTimeMatch = pgn.match(/\[StartTime \"(\d+:\d+:\d+)\"\]/);
       const endTimeMatch = pgn.match(/\[EndTime \"(\d+:\d+:\d+)\"\]/);
@@ -234,7 +239,7 @@ var theApp = new Vue({
         return "red";
       } else if (accuracy >= 60 && accuracy < 80) {
         return "yellow";
-      } else if (accuracy >= 80 && accuracy < 95) {
+      } else if (accuracy >= 80 && accuracy < 90) {
         return "green";
       } else {
         return "blue";
