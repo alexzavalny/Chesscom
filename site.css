@@ -96,9 +96,6 @@ td.time {
 
 .stats {
     padding: 10px 20px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .stats + .stats {
@@ -125,7 +122,7 @@ td.time {
     }
 
     h2 {
-        margin-top: 30px;
+        margin-top: 0px;
         margin-left: 20px;
     }
     .stats {

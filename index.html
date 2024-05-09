@@ -7,7 +7,7 @@
         <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
         <link rel="icon" type="image/x-icon" href="favicon.ico">
-        <link rel="stylesheet" href="site.css?9" />
+        <link rel="stylesheet" href="site.css?10" />
     </head>
     <body>
         <div id="app">
@@ -33,11 +33,15 @@
                         <a
                             :href="`https://www.chess.com/member/${result.username}`"
                             target="_blank"
-                            >{{ result.username }}</a
+                            >{{ result.username }}
+                                <span style="font-size: 35px" v-if="Object.entries(result.statsByType).length == 0">💩</span>
+                                <span style="font-size: 35px" v-if="Object.entries(result.statsByType).length > 0 && totalStats[result.username].won > totalStats[result.username].lost">🍀</span>
+
+                            </a
                         >
                     </h2>
 
-                    <span style="font-size: 45px" v-if="Object.entries(result.statsByType).length == 0">💩</span>
+
                     <table v-if="Object.entries(result.statsByType).length > 0">
                         <colgroup>
                             <col style="width: 10%" />
