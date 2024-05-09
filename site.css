@@ -298,6 +298,18 @@ span.chess-icon-unknown:before {
 .player-noname {
     opacity: 0.5;
 }
+.modal__move-count {
+    padding: 0px;
+    font-size: small;
+}
+.modal__player-black {
+    text-align: left;
+    padding: 0px 5px 0px 5px;
+}
+.modal__player-white {
+    text-align: right;
+    padding: 0px 5px 0px 5px;
+}
 
 .checkbox {
     font-size: small;
