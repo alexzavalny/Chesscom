@@ -109,7 +109,7 @@ var theApp = new Vue({
           return;
         }
 
-        let gameType = game.time_class;
+        let gameType = (game.rules == "chess" ? game.time_class : game.rules);
         if (!statsByType[gameType]) {
           statsByType[gameType] = {
             played: 0,
