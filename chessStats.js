@@ -96,8 +96,13 @@ var theApp = new Vue({
     },
     processGames(data, username, period, year, month, day) {
       let statsByType = {};
+      let ratingBeforeByType = {};
 
       data.games.forEach((game) => {
+        let gameType = (game.rules == "chess" ? game.time_class : game.rules);
+        let userIsWhite = game.white.username.toLowerCase() === username.toLowerCase();
+        let correctPlayer = userIsWhite ? game.white : game.black;
+
         let gameDate = new Date(game.end_time * 1000);
         if (
           period !== "month" &&
@@ -106,10 +111,10 @@ var theApp = new Vue({
             gameDate.getMonth() + 1 !== parseInt(month, 10) ||
             gameDate.getDate() !== parseInt(day, 10))
         ) {
+          ratingBeforeByType[gameType] = correctPlayer.rating;
           return;
         }
 
-        let gameType = (game.rules == "chess" ? game.time_class : game.rules);
         if (!statsByType[gameType]) {
           statsByType[gameType] = {
             played: 0,
@@ -136,11 +141,8 @@ var theApp = new Vue({
         statsByType[gameType].played++;
         statsByType[gameType].games.push(game);
         statsByType[gameType][game.result]++;
-        let userIsWhite =
-          game.white.username.toLowerCase() === username.toLowerCase();
-        let correctPlayer = userIsWhite ? game.white : game.black;
         statsByType[gameType].ratingBefore ||
-          (statsByType[gameType].ratingBefore = correctPlayer.rating);
+          (statsByType[gameType].ratingBefore = ratingBeforeByType[gameType]);
         statsByType[gameType].rating = correctPlayer.rating;
         let duration = this.getGameDurationFromPGN(game.pgn);
         // convert game.end_time to Date
