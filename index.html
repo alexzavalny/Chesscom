@@ -182,7 +182,7 @@
                                         [{{ game.accuracies.white }}%]
                                     </span>
                                 </td>
-                                <td class="modal__move-count">{{ game.moveCount }}</td>
+                                <td class="modal__move-count">-{{ game.moveCount }}-</td>
                                 <td class="modal__player-black">
                                     <span
                                         v-if="game.accuracies"
@@ -203,6 +203,6 @@
                 </div>
             </main>
         </div>
-        <script src="chessStats.js?4"></script>
+        <script src="chessStats.js?5"></script>
     </body>
 </html>
