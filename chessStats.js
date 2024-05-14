@@ -10,7 +10,7 @@ var theApp = new Vue({
     periods: ["today", "yesterday", "month", "prevmonth"],
     currentGames: [],
     showOpenings: false,
-    showTime: false,
+    showTime: true,
   },
   methods: {
     openGame(gameUrl) {
