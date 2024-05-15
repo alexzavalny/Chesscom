@@ -142,7 +142,7 @@ var theApp = new Vue({
         statsByType[gameType].games.push(game);
         statsByType[gameType][game.result]++;
         statsByType[gameType].ratingBefore ||
-          (statsByType[gameType].ratingBefore = ratingBeforeByType[gameType]);
+          (statsByType[gameType].ratingBefore = ratingBeforeByType[gameType] || correctPlayer.rating);
         statsByType[gameType].rating = correctPlayer.rating;
         let duration = this.getGameDurationFromPGN(game.pgn);
         // convert game.end_time to Date
