@@ -37,6 +37,7 @@
                                 <span style="font-size: 35px" v-if="Object.entries(result.statsByType).length == 0" class="rocking-span">💩</span>
                                 <span style="font-size: 35px" v-if="Object.entries(result.statsByType).length > 0 && totalStats[result.username].won > totalStats[result.username].lost">🍀</span>
                                 <span style="font-size: 35px" v-if="Object.entries(result.statsByType).length > 0 && totalStats[result.username].won <= totalStats[result.username].lost">☘️</span>
+                                <span style="font-size: 35px" v-if="isTheBest(result.username)">&#x1F451;</span>
                             </a
                         >
                     </h2>

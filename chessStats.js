@@ -255,6 +255,10 @@ var theApp = new Vue({
     nonameClass(username) {
       if (this.usernames.indexOf(username) == -1) return "player-noname";
     },
+    isTheBest(username) {
+      let maxDuration = Math.max(...Object.keys(theApp.totalStats).map(function (x) { return theApp.totalStats[x].duration }));
+      return maxDuration > 0 && this.totalStats[username].duration == maxDuration;
+    }
   },
   mounted() {
     // if query string contains a list of usernames, then set the usernames
