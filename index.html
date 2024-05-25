@@ -28,7 +28,7 @@
                 </div>
 
 
-                <div class="stats" v-for="result in results" :key="result.username">
+                <div class="stats" v-for="result in results" :key="result.username" v-if="Object.entries(result.statsByType).length > 0">
                     <h2>
                         <a
                             :href="`https://www.chess.com/member/${result.username}`"
