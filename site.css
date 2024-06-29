@@ -106,32 +106,6 @@ td.time {
     display: none;
 }
 
-@media screen and (max-width: 600px) {
-    th,
-    td {
-        padding: 5px;
-        text-align: left;
-    }
-
-    th {
-        font-size: 11px;
-    }
-
-    td {
-        font-size: 13px;
-    }
-
-    h2 {
-        margin-top: 0px;
-        margin-left: 20px;
-    }
-    .stats {
-        width: 99%;
-        margin: 10px auto;
-        padding: 20px 0px 0px 0px;
-    }
-}
-
 .modal {
     position: fixed;
     left: 0;
@@ -258,17 +232,6 @@ span.chess-icon-unknown:before {
     margin-bottom: 24px;
 }
 
-@media (max-width: 700px) {
-    .panel {
-        flex-direction: column;
-        gap: 16px;
-    }
-
-    .desktop {
-        display: none;
-    }
-}
-
 .date-controls {
     display: flex;
     gap: 8px;
@@ -319,13 +282,76 @@ span.chess-icon-unknown:before {
 }
 
 @keyframes rock {
-    0% { transform: translateX(-5px); }
-    50% { transform: translateX(5px); }
-    100% { transform: translateX(-5px); }
+    0% {
+        transform: translateX(-5px);
+    }
+    50% {
+        transform: translateX(5px);
+    }
+    100% {
+        transform: translateX(-5px);
+    }
 }
 
 .rocking-span {
     font-size: 45px;
     animation: rock 1s ease-in-out infinite;
     display: inline-block;
+}
+
+/* Responsive styles */
+@media screen and (max-width: 700px) {
+    .panel {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+    }
+
+    .desktop {
+        display: none;
+    }
+
+    .date-controls {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .date-controls button {
+        flex: 1 1 40%;
+        min-width: 0;
+        padding: 8px;
+        font-size: 14px;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .stats {
+        width: 100%;
+        margin: 10px 0;
+        padding: 20px 10px 0px 10px;
+    }
+
+    table {
+        font-size: 12px;
+    }
+
+    th,
+    td {
+        padding: 5px 2px;
+    }
+
+    h2 {
+        margin-left: 10px;
+    }
+
+    .modal-content {
+        width: 95%;
+        padding: 10px;
+    }
+}
+
+@media screen and (max-width: 400px) {
+    .date-controls button {
+        flex: 1 1 100%;
+    }
 }
