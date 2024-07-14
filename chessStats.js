@@ -11,6 +11,7 @@ var theApp = new Vue({
     currentGames: [],
     showOpenings: false,
     showTime: true,
+    showDate: false,
   },
   methods: {
     openGame(gameUrl) {
@@ -94,13 +95,17 @@ var theApp = new Vue({
         attempt();
       });
     },
+    formatDate(date) {
+      return date.toISOString().split("T")[0]; // This will return the date in YYYY-MM-DD format
+    },
     processGames(data, username, period, year, month, day) {
       let statsByType = {};
       let ratingBeforeByType = {};
 
       data.games.forEach((game) => {
-        let gameType = (game.rules == "chess" ? game.time_class : game.rules);
-        let userIsWhite = game.white.username.toLowerCase() === username.toLowerCase();
+        let gameType = game.rules == "chess" ? game.time_class : game.rules;
+        let userIsWhite =
+          game.white.username.toLowerCase() === username.toLowerCase();
         let correctPlayer = userIsWhite ? game.white : game.black;
 
         let gameDate = new Date(game.end_time * 1000);
@@ -142,7 +147,8 @@ var theApp = new Vue({
         statsByType[gameType].games.push(game);
         statsByType[gameType][game.result]++;
         statsByType[gameType].ratingBefore ||
-          (statsByType[gameType].ratingBefore = ratingBeforeByType[gameType] || correctPlayer.rating);
+          (statsByType[gameType].ratingBefore =
+            ratingBeforeByType[gameType] || correctPlayer.rating);
         statsByType[gameType].rating = correctPlayer.rating;
         let duration = this.getGameDurationFromPGN(game.pgn);
         // convert game.end_time to Date
@@ -256,9 +262,15 @@ var theApp = new Vue({
       if (this.usernames.indexOf(username) == -1) return "player-noname";
     },
     isTheBest(username) {
-      let maxDuration = Math.max(...Object.keys(theApp.totalStats).map(function (x) { return theApp.totalStats[x].duration }));
-      return maxDuration > 0 && this.totalStats[username].duration == maxDuration;
-    }
+      let maxDuration = Math.max(
+        ...Object.keys(theApp.totalStats).map(function (x) {
+          return theApp.totalStats[x].duration;
+        }),
+      );
+      return (
+        maxDuration > 0 && this.totalStats[username].duration == maxDuration
+      );
+    },
   },
   mounted() {
     // if query string contains a list of usernames, then set the usernames

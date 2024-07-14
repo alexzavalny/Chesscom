@@ -155,6 +155,10 @@
                                 <input type="checkbox" id="showTime" v-model="showTime" />
                                 <label for="showTime">Time</label>
                             </span>
+                            <span class="checkbox desktop">
+                                <input type="checkbox" id="showDate" v-model="showDate" />
+                                <label for="showDate">Date</label>
+                            </span>
                         </h2>
                         <table>
                             <tr
@@ -162,6 +166,9 @@
                                 :key="game.id"
                                 @click="openGame(game.url)"
                             >
+                                <td v-if="showDate">
+                                    {{ formatDate(game.endTime) }}
+                                </td>
                                 <td v-if="showTime">
                                     <!-- game.endTime to time hh:mm -->
                                     {{ game.endTime.toLocaleTimeString([],{ hour12: false, hour: "2-digit", minute: "2-digit" }) }}
@@ -202,6 +209,6 @@
                 </div>
             </main>
         </div>
-        <script src="chessStats.js?6"></script>
+        <script src="chessStats.js?7"></script>
     </body>
 </html>
