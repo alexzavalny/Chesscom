@@ -119,22 +119,33 @@ td.time {
     z-index: 1000;
 }
 
-.modal h2 {
-    margin: 0;
+.modal-content tr {
+    cursor: pointer;
 }
 
 .modal-content {
+    display: flex;
+    flex-direction: column;
     background-color: #fff;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     width: 80%;
     max-width: 600px;
     max-height: 80%;
-    overflow: auto;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
-.modal-content tr {
-    cursor: pointer;
+
+.modal-header {
+    padding: 10px;
+    position: sticky;
+    top: 0;
+    background-color: #fff;
+    z-index: 1;
+}
+
+.modal-body {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 0 10px 10px 10px;
 }
 
 .close {
@@ -147,6 +158,10 @@ td.time {
 
 .close:hover {
     color: #000;
+}
+
+.modal h2 {
+    margin: 0;
 }
 
 @font-face {
@@ -337,7 +352,7 @@ span.chess-icon-unknown:before {
 
     th,
     td {
-        padding: 5px 2px;
+        padding: 3px 1px;
     }
 
     h2 {
@@ -346,6 +361,6 @@ span.chess-icon-unknown:before {
 
     .modal-content {
         width: 95%;
-        padding: 10px;
+        padding: 0px;
     }
 }

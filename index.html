@@ -144,28 +144,31 @@
                 </div>
                 <div v-if="showModal" class="modal">
                     <div class="modal-content">
-                        <span class="close" @click="closeModal">&times;</span>
-                        <h2>
-                            Games
-                            <span class="checkbox desktop">
-                                <input type="checkbox" id="showOpenings" v-model="showOpenings" />
-                                <label for="showOpenings">Openings</label>
-                            </span>
-                            <span class="checkbox desktop">
-                                <input type="checkbox" id="showTime" v-model="showTime" />
-                                <label for="showTime">Time</label>
-                            </span>
-                            <span class="checkbox desktop">
-                                <input type="checkbox" id="showDate" v-model="showDate" />
-                                <label for="showDate">Date</label>
-                            </span>
-                        </h2>
-                        <table>
-                            <tr
-                                v-for="game in currentGames"
-                                :key="game.id"
-                                @click="openGame(game.url)"
-                            >
+                        <div class="modal-header">
+                            <span class="close" @click="closeModal">&times;</span>
+                            <h2>
+                                Games
+                                <span class="checkbox desktop">
+                                    <input type="checkbox" id="showOpenings" v-model="showOpenings" />
+                                    <label for="showOpenings">Openings</label>
+                                </span>
+                                <span class="checkbox desktop">
+                                    <input type="checkbox" id="showTime" v-model="showTime" />
+                                    <label for="showTime">Time</label>
+                                </span>
+                                <span class="checkbox desktop">
+                                    <input type="checkbox" id="showDate" v-model="showDate" />
+                                    <label for="showDate">Date</label>
+                                </span>
+                            </h2>
+                        </div>
+                        <div class="modal-body">
+                            <table>
+                                <tr
+                                    v-for="game in currentGames"
+                                    :key="game.id"
+                                    @click="openGame(game.url)"
+                                >
                                 <td v-if="showDate">
                                     {{ formatDate(game.endTime) }}
                                 </td>
