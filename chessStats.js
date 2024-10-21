@@ -271,6 +271,11 @@ var theApp = new Vue({
         maxDuration > 0 && this.totalStats[username].duration == maxDuration
       );
     },
+    handleKeyDown(event) {
+      if (event.key === 'Escape' && this.showModal) {
+        this.closeModal();
+      }
+    },
   },
   mounted() {
     // if query string contains a list of usernames, then set the usernames
@@ -282,6 +287,12 @@ var theApp = new Vue({
 
     const defaultPeriod = urlParams.get("period") || "today";
     this.fetchStats(defaultPeriod);
+  },
+  created() {
+    document.addEventListener('keydown', this.handleKeyDown);
+  },
+  beforeDestroy() {
+    document.removeEventListener('keydown', this.handleKeyDown);
   },
   computed: {
     periodButtonClass() {
