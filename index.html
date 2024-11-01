@@ -145,11 +145,13 @@
                 </div>
                 <div v-if="showModal" class="modal">
                     <div class="modal-content">
-                        <canvas id="ratingChart"></canvas>
+
                         <div class="modal-header">
                             <span class="close" @click="closeModal">&times;</span>
                             <h2>
                                 Games
+
+                                <canvas id="ratingChart" v-if="showChart"></canvas>
                                 <span class="checkbox desktop">
                                     <input type="checkbox" id="showOpenings" v-model="showOpenings" />
                                     <label for="showOpenings">Openings</label>
@@ -161,6 +163,10 @@
                                 <span class="checkbox desktop">
                                     <input type="checkbox" id="showDate" v-model="showDate" />
                                     <label for="showDate">Date</label>
+                                </span>
+                                <span class="checkbox desktop">
+                                    <input type="checkbox" id="showChart" v-model="showChart" />
+                                    <label for="showChart">Chart</label>
                                 </span>
                             </h2>
                         </div>

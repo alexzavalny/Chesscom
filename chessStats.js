@@ -13,6 +13,7 @@ var theApp = new Vue({
     showTime: true,
     showDate: false,
     currentChart: null, // Add this new property
+    showChart: true,  // Add this line
   },
   methods: {
     openGame(gameUrl) {
