@@ -314,6 +314,12 @@ span.chess-icon-unknown:before {
     display: inline-block;
 }
 
+canvas#ratingChart {
+    width: 100%;
+    max-height: 300px;
+    margin-bottom: 20px;
+}
+
 /* Responsive styles */
 @media screen and (max-width: 700px) {
     .panel {

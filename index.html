@@ -8,6 +8,7 @@
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
         <link rel="icon" type="image/x-icon" href="favicon.ico">
         <link rel="stylesheet" href="site.css?12" />
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     </head>
     <body>
         <div id="app">
@@ -144,6 +145,7 @@
                 </div>
                 <div v-if="showModal" class="modal">
                     <div class="modal-content">
+                        <canvas id="ratingChart"></canvas>
                         <div class="modal-header">
                             <span class="close" @click="closeModal">&times;</span>
                             <h2>

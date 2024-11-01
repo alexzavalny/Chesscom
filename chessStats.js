@@ -12,6 +12,7 @@ var theApp = new Vue({
     showOpenings: false,
     showTime: true,
     showDate: false,
+    currentChart: null, // Add this new property
   },
   methods: {
     openGame(gameUrl) {
@@ -19,10 +20,62 @@ var theApp = new Vue({
     },
     openModal(games) {
       this.currentGames = games;
-      console.log(games);
       this.showModal = true;
+      
+      // Wait for DOM update
+      this.$nextTick(() => {
+          const ctx = document.getElementById('ratingChart');
+          
+          // Destroy existing chart if any
+          if (this.currentChart) {
+              this.currentChart.destroy();
+          }
+          
+          // Prepare data
+          const ratings = games.map(game => {
+              const isWhite = game.white.username.toLowerCase() === games[0].white.username.toLowerCase();
+              return isWhite ? game.white.rating : game.black.rating;
+          });
+          
+          const labels = games.map((_, index) => `Game ${index + 1}`).reverse();
+          
+          // Create new chart
+          this.currentChart = new Chart(ctx, {
+              type: 'line',
+              data: {
+                  labels: labels,
+                  datasets: [{
+                      label: 'Rating',
+                      data: ratings,
+                      borderColor: 'rgb(75, 192, 192)',
+                      tension: 0.1
+                  }]
+              },
+              options: {
+                  responsive: true,
+                  plugins: {
+                      title: {
+                          display: true,
+                          text: 'Rating Progress'
+                      }
+                  },
+                  scales: {
+                      x: {
+                          display: false // This hides the x-axis
+                      },
+                      y: {
+                          beginAtZero: false
+                      }
+                  }
+              }
+          });
+      });
     },
     closeModal() {
+      if (this.currentChart) {
+          this.currentChart.destroy();
+          this.currentChart = null;
+      }
       this.showModal = false;
     },
     fetchStats(period) {
