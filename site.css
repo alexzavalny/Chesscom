@@ -370,3 +370,42 @@ canvas#ratingChart {
         padding: 0px;
     }
 }
+/* Additional leaderboard styles */
+.leaderboard-section {
+    margin-bottom: 30px;
+}
+
+.leaderboard-section h3 {
+    margin-bottom: 15px;
+    color: #333;
+    font-size: 1.2em;
+}
+
+.leaderboard-section table td {
+    vertical-align: middle;
+}
+
+.leaderboard-section th {
+    background-color: #e4ba31;
+}
+
+.leaderboard-section + .leaderboard-section {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+button.leaderboard {
+    background-color: #e4ba31;
+}
+
+/* Make the table scrollable on mobile */
+@media screen and (max-width: 600px) {
+    .leaderboard-section {
+        overflow-x: auto;
+    }
+
+    .leaderboard-section table {
+        min-width: 500px;
+    }
+}

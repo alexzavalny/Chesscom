@@ -1,384 +1,520 @@
 var theApp = new Vue({
-  el: "#app",
-  data: {
-    activePeriod: "today",
-    lastFetch: "",
-    showModal: false,
-    gamesList: "",
-    results: [],
-    usernames: ["alexandrzavalnij", "jefimserg", "TheErix", "vadimostapchuk"],
-    periods: ["today", "yesterday", "month", "prevmonth"],
-    currentGames: [],
-    showOpenings: false,
-    showTime: true,
-    showDate: false,
-    currentChart: null, // Add this new property
-    showChart: true,  // Add this line
-  },
-  methods: {
-    openGame(gameUrl) {
-      window.open(gameUrl, "_blank");
+    el: "#app",
+    data: {
+        activePeriod: "today",
+        lastFetch: "",
+        showModal: false,
+        gamesList: "",
+        results: [],
+        usernames: [
+            "alexandrzavalnij",
+            "jefimserg",
+            "TheErix",
+            "vadimostapchuk",
+        ],
+        periods: ["today", "yesterday", "month", "prevmonth"],
+        currentGames: [],
+        showOpenings: false,
+        showTime: true,
+        showDate: false,
+        currentChart: null, // Add this new property
+        showChart: true, // Add this line
+        showLeaderboard: false,
+        playerStats: {},
+        leaderboards: {},
     },
-    openModal(games) {
-      this.currentGames = games;
-      this.showModal = true;
-      
-      // Wait for DOM update
-      this.$nextTick(() => {
-          const ctx = document.getElementById('ratingChart');
-          
-          // Destroy existing chart if any
-          if (this.currentChart) {
-              this.currentChart.destroy();
-          }
-          
-          // Prepare data
-          const ratings = games.map(game => {
-              const isWhite = game.white.username.toLowerCase() === games[0].white.username.toLowerCase();
-              return isWhite ? game.white.rating : game.black.rating;
-          });
-          
-          const labels = games.map((_, index) => `Game ${index + 1}`).reverse();
-          
-          // Create new chart
-          this.currentChart = new Chart(ctx, {
-              type: 'line',
-              data: {
-                  labels: labels,
-                  datasets: [{
-                      label: 'Rating',
-                      data: ratings,
-                      borderColor: 'rgb(75, 192, 192)',
-                      tension: 0.1
-                  }]
-              },
-              options: {
-                  responsive: true,
-                  plugins: {
-                      title: {
-                          display: true,
-                          text: 'Rating Progress'
-                      }
-                  },
-                  scales: {
-                      x: {
-                          display: false // This hides the x-axis
-                      },
-                      y: {
-                          beginAtZero: false
-                      }
-                  }
-              }
-          });
-      });
-    },
-    closeModal() {
-      if (this.currentChart) {
-          this.currentChart.destroy();
-          this.currentChart = null;
-      }
-      this.showModal = false;
-    },
-    fetchStats(period) {
-      this.activePeriod = period;
+    methods: {
+        openGame(gameUrl) {
+            window.open(gameUrl, "_blank");
+        },
+        openModal(games) {
+            this.currentGames = games;
+            this.showModal = true;
 
-      this.results = [];
+            // Wait for DOM update
+            this.$nextTick(() => {
+                const ctx = document.getElementById("ratingChart");
 
-      let date = new Date();
-      if (period === "yesterday") {
-        date.setDate(date.getDate() - 1);
-      }
+                // Destroy existing chart if any
+                if (this.currentChart) {
+                    this.currentChart.destroy();
+                }
 
-      if (period === "prevmonth") {
-        date.setMonth(date.getMonth() - 1);
-      }
+                // Prepare data
+                const ratings = games.map((game) => {
+                    const isWhite =
+                        game.white.username.toLowerCase() ===
+                        games[0].white.username.toLowerCase();
+                    return isWhite ? game.white.rating : game.black.rating;
+                });
 
-      let year = date.getFullYear();
-      let month = String(date.getMonth() + 1).padStart(2, "0");
-      let day = String(date.getDate()).padStart(2, "0");
+                const labels = games.map((game, index) => {
+                    const gameDate = new Date(game.end_time * 1000);
+                    const formattedDate = gameDate.toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                    });
+                    return `Game ${games.length - index} (${formattedDate})`;
+                });
 
-      Promise.all(
-        this.usernames.map((username) =>
-          this.fetchUserStats(username, year, month, day, period),
-        ),
-      )
-        .then(() => {
-          this.updateLastFetched();
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
-        });
-    },
-    fetchUserStats(username, year, month, day, period) {
-      let url = `https://api.chess.com/pub/player/${username}/games/${year}/${month}`;
-      return this.fetchWithRetry(url, 3)
-        .then((data) =>
-          this.processGames(data, username, period, year, month, day),
-        )
-        .then((stats) => {
-          this.results.push({
-            username: username,
-            statsByType: stats,
-          });
-        });
-    },
-    fetchWithRetry(url, retries, delay = 1000) {
-      return new Promise((resolve, reject) => {
-        const attempt = () => {
-          fetch(url)
-            .then((response) => {
-              if (response.ok) {
-                response
-                  .json()
-                  .then((data) => resolve(data))
-                  .catch((jsonError) => {
-                    throw jsonError;
-                  });
-              } else {
-                throw new Error("Network response was not ok.");
-              }
-            })
-            .catch((fetchError) => {
-              if (retries > 0) {
-                setTimeout(attempt, delay, --retries);
-              } else {
-                reject(fetchError);
-              }
+                // Create new chart
+                this.currentChart = new Chart(ctx, {
+                    type: "line",
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: "Rating",
+                                data: ratings,
+                                borderColor: "rgb(75, 192, 192)",
+                                tension: 0.1,
+                            },
+                        ],
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: "Rating Progress",
+                            },
+                        },
+                        scales: {
+                            x: {
+                                display: false, // This hides the x-axis
+                            },
+                            y: {
+                                beginAtZero: false,
+                            },
+                        },
+                    },
+                });
             });
-        };
-        attempt();
-      });
-    },
-    formatDate(date) {
-      return date.toISOString().split("T")[0]; // This will return the date in YYYY-MM-DD format
-    },
-    processGames(data, username, period, year, month, day) {
-      let statsByType = {};
-      let ratingBeforeByType = {};
+        },
+        closeModal() {
+            if (this.currentChart) {
+                this.currentChart.destroy();
+                this.currentChart = null;
+            }
+            this.showModal = false;
+        },
+        fetchStats(period) {
+            this.activePeriod = period;
 
-      data.games.forEach((game) => {
-        let gameType = game.rules == "chess" ? game.time_class : game.rules;
-        let userIsWhite =
-          game.white.username.toLowerCase() === username.toLowerCase();
-        let correctPlayer = userIsWhite ? game.white : game.black;
+            this.results = [];
 
-        let gameDate = new Date(game.end_time * 1000);
-        if (
-          period !== "month" &&
-          period !== "prevmonth" &&
-          (gameDate.getFullYear() !== year ||
-            gameDate.getMonth() + 1 !== parseInt(month, 10) ||
-            gameDate.getDate() !== parseInt(day, 10))
-        ) {
-          ratingBeforeByType[gameType] = correctPlayer.rating;
-          return;
+            let date = new Date();
+            if (period === "yesterday") {
+                date.setDate(date.getDate() - 1);
+            }
+
+            if (period === "prevmonth") {
+                date.setMonth(date.getMonth() - 1);
+            }
+
+            let year = date.getFullYear();
+            let month = String(date.getMonth() + 1).padStart(2, "0");
+            let day = String(date.getDate()).padStart(2, "0");
+
+            Promise.all(
+                this.usernames.map((username) =>
+                    this.fetchUserStats(username, year, month, day, period),
+                ),
+            )
+                .then(() => {
+                    this.updateLastFetched();
+                })
+                .catch((error) => {
+                    console.error("Error fetching data:", error);
+                });
+        },
+        fetchUserStats(username, year, month, day, period) {
+            let url = `https://api.chess.com/pub/player/${username}/games/${year}/${month}`;
+            return this.fetchWithRetry(url, 3)
+                .then((data) =>
+                    this.processGames(data, username, period, year, month, day),
+                )
+                .then((stats) => {
+                    this.results.push({
+                        username: username,
+                        statsByType: stats,
+                    });
+                });
+        },
+        fetchWithRetry(url, retries, delay = 1000) {
+            return new Promise((resolve, reject) => {
+                const attempt = () => {
+                    fetch(url)
+                        .then((response) => {
+                            if (response.ok) {
+                                response
+                                    .json()
+                                    .then((data) => resolve(data))
+                                    .catch((jsonError) => {
+                                        throw jsonError;
+                                    });
+                            } else {
+                                throw new Error("Network response was not ok.");
+                            }
+                        })
+                        .catch((fetchError) => {
+                            if (retries > 0) {
+                                setTimeout(attempt, delay, --retries);
+                            } else {
+                                reject(fetchError);
+                            }
+                        });
+                };
+                attempt();
+            });
+        },
+        formatDate(date) {
+            return date.toISOString().split("T")[0]; // This will return the date in YYYY-MM-DD format
+        },
+        processGames(data, username, period, year, month, day) {
+            let statsByType = {};
+            let ratingBeforeByType = {};
+
+            data.games.forEach((game) => {
+                let gameType =
+                    game.rules == "chess" ? game.time_class : game.rules;
+                let userIsWhite =
+                    game.white.username.toLowerCase() ===
+                    username.toLowerCase();
+                let correctPlayer = userIsWhite ? game.white : game.black;
+
+                let gameDate = new Date(game.end_time * 1000);
+                if (
+                    period !== "month" &&
+                    period !== "prevmonth" &&
+                    (gameDate.getFullYear() !== year ||
+                        gameDate.getMonth() + 1 !== parseInt(month, 10) ||
+                        gameDate.getDate() !== parseInt(day, 10))
+                ) {
+                    ratingBeforeByType[gameType] = correctPlayer.rating;
+                    return;
+                }
+
+                if (!statsByType[gameType]) {
+                    statsByType[gameType] = {
+                        played: 0,
+                        won: 0,
+                        lost: 0,
+                        draw: 0,
+                        duration: 0,
+                        ratingBefore: 0,
+                        rating: 0,
+                        games: [],
+                    };
+                }
+
+                game.resultSubType =
+                    game.white.username.toLowerCase() === username.toLowerCase()
+                        ? game.white.result
+                        : game.black.result;
+                game.result = this.determineResult(game.resultSubType);
+                if (game.resultSubType === "win")
+                    game.resultSubType =
+                        game.white.username.toLowerCase() ===
+                        username.toLowerCase()
+                            ? game.black.result
+                            : game.white.result;
+                statsByType[gameType].played++;
+                statsByType[gameType].games.push(game);
+                statsByType[gameType][game.result]++;
+                statsByType[gameType].ratingBefore ||
+                    (statsByType[gameType].ratingBefore =
+                        ratingBeforeByType[gameType] || correctPlayer.rating);
+                statsByType[gameType].rating = correctPlayer.rating;
+                let duration = this.getGameDurationFromPGN(game.pgn);
+                // convert game.end_time to Date
+                game.endTime = new Date(game.end_time * 1000);
+                game.moveCount = parseInt(this.getMoveCountFromPGN(game.pgn));
+
+                game.opening = this.getGameOpening(game.pgn);
+                statsByType[gameType].duration += duration;
+            });
+
+            return statsByType;
+        },
+        determineResult(resultSubType) {
+            switch (resultSubType) {
+                case "win":
+                    return "won";
+                case "checkmated":
+                case "timeout":
+                case "resigned":
+                case "abandoned":
+                    return "lost";
+                case "agreed":
+                case "stalemate":
+                case "insufficient":
+                case "50move":
+                case "timevsinsufficient":
+                case "repetition":
+                    return "draw";
+                default:
+                    return "unknown";
+            }
+        },
+        iconClassByResult(game) {
+            return `chess-icon-${game.result} chess-icon-${game.resultSubType}`;
+        },
+        formatDuration(seconds) {
+            let hours = Math.floor(seconds / 3600);
+            let minutes = Math.floor((seconds % 3600) / 60);
+            let formattedDuration = `${hours}h ${minutes}m`;
+            return formattedDuration;
+        },
+        getGameOpening(pgn) {
+            // Extract the opening name from the PGN
+            // example:
+            // [ECOUrl "https://www.chess.com/openings/Sicilian-Defense-Open-Accelerated-Dragon-Exchange-Variation-5...bxc6"]
+
+            var fullUrl = pgn.match(/\[ECOUrl "(.+?)"\]/);
+            if (fullUrl && fullUrl.length > 1) {
+                fullUrl = fullUrl[1]; // This captures only the URL part
+            }
+
+            const ecoUrlMatch = pgn.match(
+                /\[ECOUrl \"https:\/\/www\.chess\.com\/openings\/(.+?)\"\]/,
+            );
+            if (!fullUrl) {
+                return { name: "Unknown opening", url: "#" }; // format { "name": "url" }
+            }
+
+            const openingUrl = ecoUrlMatch[1];
+            const openingName = openingUrl
+                .split("/")
+                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(" ")
+                .split("-")
+                .join(" ");
+            const openingNameFirst50Chars =
+                openingName.substring(0, 50) + "...";
+            return { name: openingNameFirst50Chars, url: fullUrl };
+        },
+        getMoveCountFromPGN(pgn) {
+            const rawSplit = pgn.split(" ");
+            return rawSplit[rawSplit.length - 5];
+        },
+        getGameDurationFromPGN(pgn) {
+            const startTimeMatch = pgn.match(/\[StartTime \"(\d+:\d+:\d+)\"\]/);
+            const endTimeMatch = pgn.match(/\[EndTime \"(\d+:\d+:\d+)\"\]/);
+            if (!startTimeMatch || !endTimeMatch) {
+                return 0;
+            }
+            const parseTime = (timeStr) => {
+                const [hours, minutes, seconds] = timeStr
+                    .split(":")
+                    .map(Number);
+                return hours * 3600 + minutes * 60 + seconds;
+            };
+            const startTime = parseTime(startTimeMatch[1]);
+            const endTime = parseTime(endTimeMatch[1]);
+            return Math.max(endTime - startTime, 0);
+        },
+        updateLastFetched() {
+            this.lastFetch = new Date().toLocaleString();
+            localStorage.setItem("lastFetch", this.lastFetch);
+        },
+        async fetchPlayerStats(username) {
+            const url = `https://api.chess.com/pub/player/${username}/stats`;
+            try {
+                const response = await this.fetchWithRetry(url, 3);
+                return response;
+            } catch (error) {
+                console.error(`Error fetching stats for ${username}:`, error);
+                return null;
+            }
+        },
+
+        async loadAllPlayerStats() {
+            this.playerStats = {}; // Reset stats
+            const fetchPromises = this.usernames.map(async (username) => {
+                const stats = await this.fetchPlayerStats(username);
+                if (stats) {
+                    this.playerStats[username] = stats;
+                }
+            });
+
+            await Promise.all(fetchPromises);
+            this.generateLeaderboards();
+        },
+
+        // In generateLeaderboards() method, modify the leaderboards initialization:
+        generateLeaderboards() {
+            const leaderboards = {
+                blitz: [],
+                rapid: [],
+                bullet: [],
+                tactics: [],
+                puzzle_rush: [],
+            };
+
+            // Map chess.com API response keys to our simpler keys
+            const gameTypeMap = {
+                chess_blitz: "blitz",
+                chess_rapid: "rapid",
+                chess_bullet: "bullet",
+                tactics: "tactics",
+                puzzle_rush: "puzzle_rush",
+            };
+
+            Object.entries(this.playerStats).forEach(([username, stats]) => {
+                // Handle chess game types
+                Object.entries(gameTypeMap).forEach(([apiKey, ourKey]) => {
+                    if (stats[apiKey]) {
+                        if (
+                            [
+                                "chess_blitz",
+                                "chess_rapid",
+                                "chess_bullet",
+                            ].includes(apiKey)
+                        ) {
+                            // Handle regular chess ratings
+                            if (stats[apiKey].last) {
+                                leaderboards[ourKey].push({
+                                    username,
+                                    rating: stats[apiKey].last.rating,
+                                    gamesWon: stats[apiKey].record.win,
+                                    gamesLost: stats[apiKey].record.loss,
+                                    gamesDraw: stats[apiKey].record.draw,
+                                    bestRating: stats[apiKey].best
+                                        ? stats[apiKey].best.rating
+                                        : null,
+                                });
+                            }
+                        } else if (apiKey === "tactics") {
+                            // Handle tactics ratings
+                            leaderboards[ourKey].push({
+                                username,
+                                rating: stats[apiKey].highest.rating,
+                                bestRating: stats[apiKey].highest.rating,
+                                lowestRating: stats[apiKey].lowest.rating,
+                            });
+                        } else if (apiKey === "puzzle_rush") {
+                            // Handle puzzle rush scores
+                            if (stats[apiKey].best) {
+                                leaderboards[ourKey].push({
+                                    username,
+                                    score: stats[apiKey].best.score,
+                                    attempts: stats[apiKey].best.total_attempts,
+                                });
+                            }
+                        }
+                    }
+                });
+            });
+
+            // Sort each leaderboard appropriately
+            Object.keys(leaderboards).forEach((type) => {
+                if (type === "puzzle_rush") {
+                    leaderboards[type].sort((a, b) => b.score - a.score);
+                } else {
+                    leaderboards[type].sort((a, b) => b.rating - a.rating);
+                }
+            });
+
+            this.leaderboards = leaderboards;
+        },
+
+        async toggleLeaderboard() {
+            this.showLeaderboard = !this.showLeaderboard;
+
+            if (this.showLeaderboard) {
+                await this.loadAllPlayerStats();
+            }
+        },
+        percentage(value, total) {
+            return ((value / total) * 100).toFixed(1);
+        },
+        colorClass(accuracy) {
+            if (accuracy < 60) {
+                return "red";
+            } else if (accuracy >= 60 && accuracy < 80) {
+                return "yellow";
+            } else if (accuracy >= 80 && accuracy < 90) {
+                return "green";
+            } else {
+                return "blue";
+            }
+        },
+        ratingClass(details) {
+            if (details.rating > details.ratingBefore) return "rating-climb";
+            if (details.rating < details.ratingBefore) return "rating-fall";
+            return "";
+        },
+        nonameClass(username) {
+            if (this.usernames.indexOf(username) == -1) return "player-noname";
+        },
+        isTheBest(username) {
+            let maxDuration = Math.max(
+                ...Object.keys(theApp.totalStats).map(function (x) {
+                    return theApp.totalStats[x].duration;
+                }),
+            );
+            return (
+                maxDuration > 0 &&
+                this.totalStats[username].duration == maxDuration
+            );
+        },
+        handleKeyDown(event) {
+            if (event.key === "Escape" && this.showModal) {
+                this.closeModal();
+            }
+        },
+    },
+    mounted() {
+        // if query string contains a list of usernames, then set the usernames
+        const urlParams = new URLSearchParams(window.location.search);
+        const usernames = urlParams.get("usernames");
+        if (usernames) {
+            this.usernames = usernames.split(",");
         }
 
-        if (!statsByType[gameType]) {
-          statsByType[gameType] = {
-            played: 0,
-            won: 0,
-            lost: 0,
-            draw: 0,
-            duration: 0,
-            ratingBefore: 0,
-            rating: 0,
-            games: [],
-          };
-        }
+        const defaultPeriod = urlParams.get("period") || "today";
+        this.fetchStats(defaultPeriod);
+    },
+    created() {
+        document.addEventListener("keydown", this.handleKeyDown);
+    },
+    beforeDestroy() {
+        document.removeEventListener("keydown", this.handleKeyDown);
+    },
+    computed: {
+        periodButtonClass() {
+            return function (period) {
+                return {
+                    active: period === this.activePeriod,
+                };
+            };
+        },
+        totalStats() {
+            let totalsHash = {};
+            this.results.forEach((user) => {
+                const totals = {
+                    played: 0,
+                    won: 0,
+                    lost: 0,
+                    draw: 0,
+                    duration: 0,
+                };
+                Object.entries(user.statsByType).forEach(
+                    ([gameType, stats]) => {
+                        if (gameType == "daily") return;
 
-        game.resultSubType =
-          game.white.username.toLowerCase() === username.toLowerCase()
-            ? game.white.result
-            : game.black.result;
-        game.result = this.determineResult(game.resultSubType);
-        if (game.resultSubType === "win")
-          game.resultSubType =
-            game.white.username.toLowerCase() === username.toLowerCase()
-              ? game.black.result
-              : game.white.result;
-        statsByType[gameType].played++;
-        statsByType[gameType].games.push(game);
-        statsByType[gameType][game.result]++;
-        statsByType[gameType].ratingBefore ||
-          (statsByType[gameType].ratingBefore =
-            ratingBeforeByType[gameType] || correctPlayer.rating);
-        statsByType[gameType].rating = correctPlayer.rating;
-        let duration = this.getGameDurationFromPGN(game.pgn);
-        // convert game.end_time to Date
-        game.endTime = new Date(game.end_time * 1000);
-        game.moveCount = parseInt(this.getMoveCountFromPGN(game.pgn));
-
-        game.opening = this.getGameOpening(game.pgn);
-        statsByType[gameType].duration += duration;
-      });
-
-      return statsByType;
+                        totals.played += stats.played;
+                        totals.won += stats.won;
+                        totals.lost += stats.lost;
+                        totals.draw += stats.draw;
+                        totals.duration += stats.duration;
+                    },
+                );
+                // Storing the totals by username in the hash
+                totalsHash[user.username] = totals;
+            });
+            return totalsHash;
+        },
     },
-    determineResult(resultSubType) {
-      switch (resultSubType) {
-        case "win":
-          return "won";
-        case "checkmated":
-        case "timeout":
-        case "resigned":
-        case "abandoned":
-          return "lost";
-        case "agreed":
-        case "stalemate":
-        case "insufficient":
-        case "50move":
-        case "timevsinsufficient":
-        case "repetition":
-          return "draw";
-        default:
-          return "unknown";
-      }
-    },
-    iconClassByResult(game) {
-      return `chess-icon-${game.result} chess-icon-${game.resultSubType}`;
-    },
-    formatDuration(seconds) {
-      let hours = Math.floor(seconds / 3600);
-      let minutes = Math.floor((seconds % 3600) / 60);
-      let formattedDuration = `${hours}h ${minutes}m`;
-      return formattedDuration;
-    },
-    getGameOpening(pgn) {
-      // Extract the opening name from the PGN
-      // example:
-      // [ECOUrl "https://www.chess.com/openings/Sicilian-Defense-Open-Accelerated-Dragon-Exchange-Variation-5...bxc6"]
-
-      var fullUrl = pgn.match(/\[ECOUrl "(.+?)"\]/);
-      if (fullUrl && fullUrl.length > 1) {
-        fullUrl = fullUrl[1]; // This captures only the URL part
-      }
-
-      const ecoUrlMatch = pgn.match(
-        /\[ECOUrl \"https:\/\/www\.chess\.com\/openings\/(.+?)\"\]/,
-      );
-      if (!fullUrl) {
-        return { name: "Unknown opening", url: "#" }; // format { "name": "url" }
-      }
-
-      const openingUrl = ecoUrlMatch[1];
-      const openingName = openingUrl
-        .split("/")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ")
-        .split("-")
-        .join(" ");
-      const openingNameFirst50Chars = openingName.substring(0, 50) + "...";
-      return { name: openingNameFirst50Chars, url: fullUrl };
-    },
-    getMoveCountFromPGN(pgn) {
-      const rawSplit = pgn.split(" ");
-      return rawSplit[rawSplit.length - 5];
-    },
-    getGameDurationFromPGN(pgn) {
-      const startTimeMatch = pgn.match(/\[StartTime \"(\d+:\d+:\d+)\"\]/);
-      const endTimeMatch = pgn.match(/\[EndTime \"(\d+:\d+:\d+)\"\]/);
-      if (!startTimeMatch || !endTimeMatch) {
-        return 0;
-      }
-      const parseTime = (timeStr) => {
-        const [hours, minutes, seconds] = timeStr.split(":").map(Number);
-        return hours * 3600 + minutes * 60 + seconds;
-      };
-      const startTime = parseTime(startTimeMatch[1]);
-      const endTime = parseTime(endTimeMatch[1]);
-      return Math.max(endTime - startTime, 0);
-    },
-    updateLastFetched() {
-      this.lastFetch = new Date().toLocaleString();
-      localStorage.setItem("lastFetch", this.lastFetch);
-    },
-    percentage(value, total) {
-      return ((value / total) * 100).toFixed(1);
-    },
-    colorClass(accuracy) {
-      if (accuracy < 60) {
-        return "red";
-      } else if (accuracy >= 60 && accuracy < 80) {
-        return "yellow";
-      } else if (accuracy >= 80 && accuracy < 90) {
-        return "green";
-      } else {
-        return "blue";
-      }
-    },
-    ratingClass(details) {
-      if (details.rating > details.ratingBefore) return "rating-climb";
-      if (details.rating < details.ratingBefore) return "rating-fall";
-      return "";
-    },
-    nonameClass(username) {
-      if (this.usernames.indexOf(username) == -1) return "player-noname";
-    },
-    isTheBest(username) {
-      let maxDuration = Math.max(
-        ...Object.keys(theApp.totalStats).map(function (x) {
-          return theApp.totalStats[x].duration;
-        }),
-      );
-      return (
-        maxDuration > 0 && this.totalStats[username].duration == maxDuration
-      );
-    },
-    handleKeyDown(event) {
-      if (event.key === 'Escape' && this.showModal) {
-        this.closeModal();
-      }
-    },
-  },
-  mounted() {
-    // if query string contains a list of usernames, then set the usernames
-    const urlParams = new URLSearchParams(window.location.search);
-    const usernames = urlParams.get("usernames");
-    if (usernames) {
-      this.usernames = usernames.split(",");
-    }
-
-    const defaultPeriod = urlParams.get("period") || "today";
-    this.fetchStats(defaultPeriod);
-  },
-  created() {
-    document.addEventListener('keydown', this.handleKeyDown);
-  },
-  beforeDestroy() {
-    document.removeEventListener('keydown', this.handleKeyDown);
-  },
-  computed: {
-    periodButtonClass() {
-      return function (period) {
-        return {
-          active: period === this.activePeriod,
-        };
-      };
-    },
-    totalStats() {
-      let totalsHash = {};
-      this.results.forEach((user) => {
-        const totals = {
-          played: 0,
-          won: 0,
-          lost: 0,
-          draw: 0,
-          duration: 0,
-        };
-        Object.entries(user.statsByType).forEach(([gameType, stats]) => {
-          if (gameType == "daily") return;
-
-          totals.played += stats.played;
-          totals.won += stats.won;
-          totals.lost += stats.lost;
-          totals.draw += stats.draw;
-          totals.duration += stats.duration;
-        });
-        // Storing the totals by username in the hash
-        totalsHash[user.username] = totals;
-      });
-      return totalsHash;
-    },
-  },
 });
