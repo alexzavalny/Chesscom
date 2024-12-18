@@ -27,7 +27,7 @@ var theApp = new Vue({
         openGame(gameUrl) {
             window.open(gameUrl, "_blank");
         },
-        openModal(games) {
+        openModal(username, games) {
             this.currentGames = games;
             this.showModal = true;
 
@@ -40,11 +40,11 @@ var theApp = new Vue({
                     this.currentChart.destroy();
                 }
 
+                console.log(games);
                 // Prepare data
                 const ratings = games.map((game) => {
                     const isWhite =
-                        game.white.username.toLowerCase() ===
-                        games[0].white.username.toLowerCase();
+                        game.white.username.toLowerCase() === username;
                     return isWhite ? game.white.rating : game.black.rating;
                 });
 

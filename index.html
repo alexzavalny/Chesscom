@@ -158,7 +158,7 @@
                             <tr
                                 v-for="(details, type) in result.statsByType"
                                 :key="type"
-                                @click="openModal(details.games)"
+                                @click="openModal(result.username, details.games)"
                             >
                                 <td>
                                     <img
