@@ -120,7 +120,7 @@
                         <a
                             :href="`https://www.chess.com/member/${result.username}`"
                             target="_blank"
-                            >{{ result.username }}
+                            >{{ usernamesToNames[result.username] || result.username }}
                                 <span style="font-size: 35px" v-if="Object.entries(result.statsByType).length == 0" class="rocking-span">💩</span>
                                 <span style="font-size: 35px" v-if="Object.entries(result.statsByType).length > 0 && totalStats[result.username].won > totalStats[result.username].lost">🍀</span>
                                 <span style="font-size: 35px" v-if="Object.entries(result.statsByType).length > 0 && totalStats[result.username].won <= totalStats[result.username].lost">☘️</span>

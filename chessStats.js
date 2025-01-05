@@ -7,6 +7,12 @@ var theApp = new Vue({
         gamesList: "",
         results: [],
         usernames: ["sonicspeedmate", "jefimserg", "TheErix", "vadimostapchuk"],
+        usernamesToNames: {
+            sonicspeedmate: "Alex",
+            jefimserg: "Sergey",
+            TheErix: "Erik",
+            vadimostapchuk: "Vadim",
+        },
         periods: ["today", "yesterday", "month", "prevmonth"],
         currentGames: [],
         showOpenings: false,
