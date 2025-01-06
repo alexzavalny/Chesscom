@@ -1,25 +1,23 @@
-var theApp = new Vue({
+import { CONFIG } from './config.js';
+import { ChessApi } from './services/chessApi.js';
+import { GameUtils } from './utils/gameUtils.js';
+
+const app = new Vue({
     el: "#app",
     data: {
         activePeriod: "today",
         lastFetch: "",
         showModal: false,
-        gamesList: "",
         results: [],
-        usernames: ["sonicspeedmate", "jefimserg", "TheErix", "vadimostapchuk"],
-        usernamesToNames: {
-            sonicspeedmate: "Alex",
-            jefimserg: "Sergey",
-            TheErix: "Erik",
-            vadimostapchuk: "Vadim",
-        },
-        periods: ["today", "yesterday", "month", "prevmonth"],
+        usernames: CONFIG.DEFAULT_USERNAMES,
+        usernamesToNames: CONFIG.USERNAMES_TO_NAMES,
+        periods: CONFIG.PERIODS,
         currentGames: [],
         showOpenings: false,
         showTime: true,
         showDate: false,
-        currentChart: null, // Add this new property
-        showChart: true, // Add this line
+        currentChart: null,
+        showChart: true,
         showLeaderboard: false,
         playerStats: {},
         leaderboards: {},
@@ -99,75 +97,43 @@ var theApp = new Vue({
             }
             this.showModal = false;
         },
-        fetchStats(period) {
+        async fetchStats(period) {
             this.activePeriod = period;
-
             this.results = [];
 
             let date = new Date();
             if (period === "yesterday") {
                 date.setDate(date.getDate() - 1);
-            }
-
-            if (period === "prevmonth") {
+            } else if (period === "prevmonth") {
                 date.setMonth(date.getMonth() - 1);
             }
 
-            let year = date.getFullYear();
-            let month = String(date.getMonth() + 1).padStart(2, "0");
-            let day = String(date.getDate()).padStart(2, "0");
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, "0");
+            const day = String(date.getDate()).padStart(2, "0");
 
-            Promise.all(
-                this.usernames.map((username) =>
-                    this.fetchUserStats(username, year, month, day, period),
-                ),
-            )
-                .then(() => {
-                    this.updateLastFetched();
-                })
-                .catch((error) => {
-                    console.error("Error fetching data:", error);
-                });
+            try {
+                await Promise.all(
+                    this.usernames.map(username =>
+                        this.fetchUserStats(username, year, month, day, period)
+                    )
+                );
+                this.updateLastFetched();
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
         },
-        fetchUserStats(username, year, month, day, period) {
-            let url = `https://api.chess.com/pub/player/${username}/games/${year}/${month}`;
-            return this.fetchWithRetry(url, 3)
-                .then((data) =>
-                    this.processGames(data, username, period, year, month, day),
-                )
-                .then((stats) => {
-                    this.results.push({
-                        username: username,
-                        statsByType: stats,
-                    });
+        async fetchUserStats(username, year, month, day, period) {
+            try {
+                const data = await ChessApi.fetchPlayerGames(username, year, month);
+                const stats = this.processGames(data, username, period, year, month, day);
+                this.results.push({
+                    username: username,
+                    statsByType: stats,
                 });
-        },
-        fetchWithRetry(url, retries, delay = 1000) {
-            return new Promise((resolve, reject) => {
-                const attempt = () => {
-                    fetch(url)
-                        .then((response) => {
-                            if (response.ok) {
-                                response
-                                    .json()
-                                    .then((data) => resolve(data))
-                                    .catch((jsonError) => {
-                                        throw jsonError;
-                                    });
-                            } else {
-                                throw new Error("Network response was not ok.");
-                            }
-                        })
-                        .catch((fetchError) => {
-                            if (retries > 0) {
-                                setTimeout(attempt, delay, --retries);
-                            } else {
-                                reject(fetchError);
-                            }
-                        });
-                };
-                attempt();
-            });
+            } catch (error) {
+                console.error(`Error fetching stats for ${username}:`, error);
+            }
         },
         formatDate(date) {
             return date.toISOString().split("T")[0]; // This will return the date in YYYY-MM-DD format
@@ -177,18 +143,15 @@ var theApp = new Vue({
             let ratingBeforeByType = {};
 
             data.games.forEach((game) => {
-                let gameType =
-                    game.rules == "chess" ? game.time_class : game.rules;
-                let userIsWhite =
-                    game.white.username.toLowerCase() ===
-                    username.toLowerCase();
+                let gameType = game.rules == "chess" ? game.time_class : game.rules;
+                let userIsWhite = game.white.username.toLowerCase() === username.toLowerCase();
                 let correctPlayer = userIsWhite ? game.white : game.black;
 
                 let gameDate = new Date(game.end_time * 1000);
                 if (
                     period !== "month" &&
                     period !== "prevmonth" &&
-                    (gameDate.getFullYear() !== year ||
+                    (gameDate.getFullYear() !== parseInt(year) ||
                         gameDate.getMonth() + 1 !== parseInt(month, 10) ||
                         gameDate.getDate() !== parseInt(day, 10))
                 ) {
@@ -209,30 +172,22 @@ var theApp = new Vue({
                     };
                 }
 
-                game.resultSubType =
-                    game.white.username.toLowerCase() === username.toLowerCase()
-                        ? game.white.result
-                        : game.black.result;
-                game.result = this.determineResult(game.resultSubType);
-                if (game.resultSubType === "win")
-                    game.resultSubType =
-                        game.white.username.toLowerCase() ===
-                        username.toLowerCase()
-                            ? game.black.result
-                            : game.white.result;
+                game.resultSubType = userIsWhite ? game.white.result : game.black.result;
+                game.result = GameUtils.determineResult(game.resultSubType);
+                if (game.resultSubType === "win") {
+                    game.resultSubType = userIsWhite ? game.black.result : game.white.result;
+                }
+
                 statsByType[gameType].played++;
                 statsByType[gameType].games.push(game);
                 statsByType[gameType][game.result]++;
-                statsByType[gameType].ratingBefore ||
-                    (statsByType[gameType].ratingBefore =
-                        ratingBeforeByType[gameType] || correctPlayer.rating);
+                statsByType[gameType].ratingBefore ||= ratingBeforeByType[gameType] || correctPlayer.rating;
                 statsByType[gameType].rating = correctPlayer.rating;
-                let duration = this.getGameDurationFromPGN(game.pgn);
-                // convert game.end_time to Date
+                
+                const duration = GameUtils.getGameDurationFromPGN(game.pgn);
                 game.endTime = new Date(game.end_time * 1000);
                 game.moveCount = parseInt(this.getMoveCountFromPGN(game.pgn));
-
-                game.opening = this.getGameOpening(game.pgn);
+                game.opening = GameUtils.getGameOpening(game.pgn);
                 statsByType[gameType].duration += duration;
             });
 
@@ -320,10 +275,8 @@ var theApp = new Vue({
             localStorage.setItem("lastFetch", this.lastFetch);
         },
         async fetchPlayerStats(username) {
-            const url = `https://api.chess.com/pub/player/${username}/stats`;
             try {
-                const response = await this.fetchWithRetry(url, 3);
-                return response;
+                return await ChessApi.fetchPlayerStats(username);
             } catch (error) {
                 console.error(`Error fetching stats for ${username}:`, error);
                 return null;
@@ -422,7 +375,6 @@ var theApp = new Vue({
 
         async toggleLeaderboard() {
             this.showLeaderboard = !this.showLeaderboard;
-
             if (this.showLeaderboard) {
                 await this.loadAllPlayerStats();
             }
@@ -451,14 +403,9 @@ var theApp = new Vue({
         },
         isTheBest(username) {
             let maxDuration = Math.max(
-                ...Object.keys(theApp.totalStats).map(function (x) {
-                    return theApp.totalStats[x].duration;
-                }),
+                ...Object.keys(this.totalStats).map(x => this.totalStats[x].duration)
             );
-            return (
-                maxDuration > 0 &&
-                this.totalStats[username].duration == maxDuration
-            );
+            return maxDuration > 0 && this.totalStats[username].duration == maxDuration;
         },
         handleKeyDown(event) {
             if (event.key === "Escape" && this.showModal) {
