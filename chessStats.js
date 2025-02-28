@@ -1,6 +1,6 @@
-import { CONFIG } from './config.js';
-import { ChessApi } from './services/chessApi.js';
-import { GameUtils } from './utils/gameUtils.js';
+import { CONFIG } from "./config.js";
+import { ChessApi } from "./services/chessApi.js";
+import { GameUtils } from "./utils/gameUtils.js";
 
 const app = new Vue({
     el: "#app",
@@ -43,7 +43,11 @@ const app = new Vue({
                 // Prepare data
                 const ratings = games.map((game) => {
                     const isWhite =
-                        game.white.username.toLowerCase() === username;
+                        game.white.username.toLowerCase() ===
+                        username.toLowerCase();
+                    console.log(game.white.username);
+                    console.log(username);
+                    console.log(isWhite);
                     return isWhite ? game.white.rating : game.black.rating;
                 });
 
@@ -114,9 +118,9 @@ const app = new Vue({
 
             try {
                 await Promise.all(
-                    this.usernames.map(username =>
-                        this.fetchUserStats(username, year, month, day, period)
-                    )
+                    this.usernames.map((username) =>
+                        this.fetchUserStats(username, year, month, day, period),
+                    ),
                 );
                 this.updateLastFetched();
             } catch (error) {
@@ -125,8 +129,19 @@ const app = new Vue({
         },
         async fetchUserStats(username, year, month, day, period) {
             try {
-                const data = await ChessApi.fetchPlayerGames(username, year, month);
-                const stats = this.processGames(data, username, period, year, month, day);
+                const data = await ChessApi.fetchPlayerGames(
+                    username,
+                    year,
+                    month,
+                );
+                const stats = this.processGames(
+                    data,
+                    username,
+                    period,
+                    year,
+                    month,
+                    day,
+                );
                 this.results.push({
                     username: username,
                     statsByType: stats,
@@ -143,8 +158,11 @@ const app = new Vue({
             let ratingBeforeByType = {};
 
             data.games.forEach((game) => {
-                let gameType = game.rules == "chess" ? game.time_class : game.rules;
-                let userIsWhite = game.white.username.toLowerCase() === username.toLowerCase();
+                let gameType =
+                    game.rules == "chess" ? game.time_class : game.rules;
+                let userIsWhite =
+                    game.white.username.toLowerCase() ===
+                    username.toLowerCase();
                 let correctPlayer = userIsWhite ? game.white : game.black;
 
                 let gameDate = new Date(game.end_time * 1000);
@@ -172,18 +190,23 @@ const app = new Vue({
                     };
                 }
 
-                game.resultSubType = userIsWhite ? game.white.result : game.black.result;
+                game.resultSubType = userIsWhite
+                    ? game.white.result
+                    : game.black.result;
                 game.result = GameUtils.determineResult(game.resultSubType);
                 if (game.resultSubType === "win") {
-                    game.resultSubType = userIsWhite ? game.black.result : game.white.result;
+                    game.resultSubType = userIsWhite
+                        ? game.black.result
+                        : game.white.result;
                 }
 
                 statsByType[gameType].played++;
                 statsByType[gameType].games.push(game);
                 statsByType[gameType][game.result]++;
-                statsByType[gameType].ratingBefore ||= ratingBeforeByType[gameType] || correctPlayer.rating;
+                statsByType[gameType].ratingBefore ||=
+                    ratingBeforeByType[gameType] || correctPlayer.rating;
                 statsByType[gameType].rating = correctPlayer.rating;
-                
+
                 const duration = GameUtils.getGameDurationFromPGN(game.pgn);
                 game.endTime = new Date(game.end_time * 1000);
                 game.moveCount = parseInt(this.getMoveCountFromPGN(game.pgn));
@@ -403,9 +426,14 @@ const app = new Vue({
         },
         isTheBest(username) {
             let maxDuration = Math.max(
-                ...Object.keys(this.totalStats).map(x => this.totalStats[x].duration)
+                ...Object.keys(this.totalStats).map(
+                    (x) => this.totalStats[x].duration,
+                ),
             );
-            return maxDuration > 0 && this.totalStats[username].duration == maxDuration;
+            return (
+                maxDuration > 0 &&
+                this.totalStats[username].duration == maxDuration
+            );
         },
         handleKeyDown(event) {
             if (event.key === "Escape" && this.showModal) {
