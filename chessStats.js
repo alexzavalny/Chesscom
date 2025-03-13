@@ -122,6 +122,7 @@ const app = new Vue({
                         this.fetchUserStats(username, year, month, day, period),
                     ),
                 );
+                this.sortResultsByGameDuration();
                 this.updateLastFetched();
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -439,6 +440,27 @@ const app = new Vue({
             if (event.key === "Escape" && this.showModal) {
                 this.closeModal();
             }
+        },
+        sortResultsByGameDuration() {
+            // Calculate total duration for each user
+            const userDurations = {};
+            this.results.forEach(result => {
+                const username = result.username;
+                let totalDuration = 0;
+                
+                Object.entries(result.statsByType).forEach(([gameType, stats]) => {
+                    if (gameType !== "daily") {
+                        totalDuration += stats.duration;
+                    }
+                });
+                
+                userDurations[username] = totalDuration;
+            });
+            
+            // Sort results array by total duration (descending)
+            this.results.sort((a, b) => {
+                return userDurations[b.username] - userDurations[a.username];
+            });
         },
     },
     mounted() {
