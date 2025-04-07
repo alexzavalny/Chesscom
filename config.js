@@ -6,6 +6,7 @@ export const CONFIG = {
         TheErix: "Erik",
         vadimostapchuk: "Vadim",
         KsenijaTojeckina: "Ksjuwa",
+        gregory_z: "Gregory",
     },
     DEFAULT_USERNAMES: [
         "sonicspeedmate",
@@ -13,6 +14,7 @@ export const CONFIG = {
         "TheErix",
         "vadimostapchuk",
         "KsenijaTojeckina",
+        "gregory_z"
     ],
     GAME_TYPE_MAP: {
         chess_blitz: "blitz",
