@@ -41,6 +41,7 @@
                           <th>Rating</th>
                           <th>Best Rating</th>
                           <th>W/L/D</th>
+                          <th>Avg Acc</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -60,6 +61,7 @@
                           <td>{{ player.rating }}</td>
                           <td>{{ player.bestRating || '-' }}</td>
                           <td>{{ player.gamesWon }}/{{ player.gamesLost }}/{{ player.gamesDraw }}</td>
+                          <td>{{ player.averageAccuracy ? player.averageAccuracy.toFixed(1) + '%' : '-' }}</td>
                         </tr>
                       </tbody>
                     </table>
@@ -74,6 +76,7 @@
                           <th>Rank</th>
                           <th>Player</th>
                           <th>Highest Rating</th>
+                          <th>Avg Acc</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -91,6 +94,7 @@
                           </td>
                           <td>{{ player.username }}</td>
                           <td>{{ player.bestRating }}</td>
+                          <td>{{ player.averageAccuracy ? player.averageAccuracy.toFixed(1) + '%' : '-' }}</td>
                         </tr>
                       </tbody>
                     </table>
@@ -157,6 +161,7 @@
                             <col style="width: 10%" />
                             <col style="width: 10%" />
                             <col style="width: 10%" />
+                            <col style="width: 10%" />
                         </colgroup>
                         <thead>
                             <tr>
@@ -167,6 +172,7 @@
                                 <th colspan="2">Draw</th>
                                 <th>Time</th>
                                 <th>Rating</th>
+                                <th>Avg Acc</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -196,6 +202,7 @@
                                 </td>
                                 <td class="time">{{ formatDuration(details.duration) }}</td>
                                 <td><span class="rating-before">{{ details.ratingBefore }}</span><br><span :class="ratingClass(details)">{{ details.rating }}</span></td>
+                                <td>{{ details.averageAccuracy ? details.averageAccuracy.toFixed(1) + '%' : '-' }}</td>
                             </tr>
                             <tr class="totals" v-if="totalStats[result.username].played > 0">
                                 <td><strong>Total</strong></td>
@@ -241,7 +248,11 @@
                                     </strong>
                                 </td>
                                 <td></td>
-                                <!-- Rating is not totalled; you may calculate an average or similar if appropriate -->
+                                <td>
+                                    <strong>
+                                        {{totalStats[result.username].averageAccuracy ? totalStats[result.username].averageAccuracy.toFixed(1) + '%' : '-'}}
+                                    </strong>
+                                </td>
                             </tr>
                         </tbody>
                     </table>

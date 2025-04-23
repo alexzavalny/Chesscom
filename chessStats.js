@@ -188,6 +188,9 @@ const app = new Vue({
                         ratingBefore: 0,
                         rating: 0,
                         games: [],
+                        totalAccuracy: 0,
+                        gamesWithAccuracy: 0,
+                        averageAccuracy: 0
                     };
                 }
 
@@ -199,6 +202,13 @@ const app = new Vue({
                     game.resultSubType = userIsWhite
                         ? game.black.result
                         : game.white.result;
+                }
+
+                // Calculate accuracy if available
+                if (game.accuracies) {
+                    const playerAccuracy = userIsWhite ? game.accuracies.white : game.accuracies.black;
+                    statsByType[gameType].totalAccuracy += playerAccuracy;
+                    statsByType[gameType].gamesWithAccuracy++;
                 }
 
                 statsByType[gameType].played++;
@@ -213,6 +223,11 @@ const app = new Vue({
                 game.moveCount = parseInt(this.getMoveCountFromPGN(game.pgn));
                 game.opening = GameUtils.getGameOpening(game.pgn);
                 statsByType[gameType].duration += duration;
+
+                // Calculate average accuracy
+                if (statsByType[gameType].gamesWithAccuracy > 0) {
+                    statsByType[gameType].averageAccuracy = statsByType[gameType].totalAccuracy / statsByType[gameType].gamesWithAccuracy;
+                }
             });
 
             return statsByType;
@@ -361,6 +376,7 @@ const app = new Vue({
                                     bestRating: stats[apiKey].best
                                         ? stats[apiKey].best.rating
                                         : null,
+                                    averageAccuracy: stats[apiKey].averageAccuracy || 0
                                 });
                             }
                         } else if (apiKey === "tactics") {
@@ -497,6 +513,9 @@ const app = new Vue({
                     lost: 0,
                     draw: 0,
                     duration: 0,
+                    totalAccuracy: 0,
+                    gamesWithAccuracy: 0,
+                    averageAccuracy: 0
                 };
                 Object.entries(user.statsByType).forEach(
                     ([gameType, stats]) => {
@@ -507,8 +526,14 @@ const app = new Vue({
                         totals.lost += stats.lost;
                         totals.draw += stats.draw;
                         totals.duration += stats.duration;
+                        totals.totalAccuracy += stats.totalAccuracy || 0;
+                        totals.gamesWithAccuracy += stats.gamesWithAccuracy || 0;
                     },
                 );
+                // Calculate total average accuracy
+                if (totals.gamesWithAccuracy > 0) {
+                    totals.averageAccuracy = totals.totalAccuracy / totals.gamesWithAccuracy;
+                }
                 // Storing the totals by username in the hash
                 totalsHash[user.username] = totals;
             });
