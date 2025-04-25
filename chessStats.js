@@ -341,6 +341,7 @@ const app = new Vue({
                 blitz: [],
                 rapid: [],
                 bullet: [],
+                daily: [],
                 tactics: [],
                 puzzle_rush: [],
             };
@@ -350,6 +351,7 @@ const app = new Vue({
                 chess_blitz: "blitz",
                 chess_rapid: "rapid",
                 chess_bullet: "bullet",
+                chess_daily: "daily",
                 tactics: "tactics",
                 puzzle_rush: "puzzle_rush",
             };
@@ -363,6 +365,7 @@ const app = new Vue({
                                 "chess_blitz",
                                 "chess_rapid",
                                 "chess_bullet",
+                                "chess_daily",
                             ].includes(apiKey)
                         ) {
                             // Handle regular chess ratings

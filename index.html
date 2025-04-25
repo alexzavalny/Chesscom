@@ -31,7 +31,7 @@
 
                 <div v-if="showLeaderboard" class="stats">
                   <!-- Chess Game Types -->
-                  <div v-for="type in ['blitz', 'rapid', 'bullet']" :key="type" class="leaderboard-section">
+                  <div v-for="type in ['blitz', 'rapid', 'bullet', 'daily']" :key="type" class="leaderboard-section">
                     <h3>{{ type.charAt(0).toUpperCase() + type.slice(1) }}</h3>
                     <table>
                       <thead>
@@ -41,7 +41,6 @@
                           <th>Rating</th>
                           <th>Best Rating</th>
                           <th>W/L/D</th>
-                          <th>Avg Acc</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -61,7 +60,6 @@
                           <td>{{ player.rating }}</td>
                           <td>{{ player.bestRating || '-' }}</td>
                           <td>{{ player.gamesWon }}/{{ player.gamesLost }}/{{ player.gamesDraw }}</td>
-                          <td>{{ player.averageAccuracy ? player.averageAccuracy.toFixed(1) + '%' : '-' }}</td>
                         </tr>
                       </tbody>
                     </table>
@@ -76,7 +74,6 @@
                           <th>Rank</th>
                           <th>Player</th>
                           <th>Highest Rating</th>
-                          <th>Avg Acc</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -94,7 +91,6 @@
                           </td>
                           <td>{{ player.username }}</td>
                           <td>{{ player.bestRating }}</td>
-                          <td>{{ player.averageAccuracy ? player.averageAccuracy.toFixed(1) + '%' : '-' }}</td>
                         </tr>
                       </tbody>
                     </table>
