@@ -16,6 +16,7 @@ export const CONFIG = {
         "vadimostapchuk",
         "KsenijaTojeckina",
         "gregory_z",
+        "ASG_real",
     ],
     GAME_TYPE_MAP: {
         chess_blitz: "blitz",
