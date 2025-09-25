@@ -91,7 +91,7 @@
                             <span v-else-if="index === 7">8️⃣</span>
                             <span v-else-if="index === 8">9️⃣</span>
                           </td>
-                          <td>{{ player.username }}</td>
+                          <td>{{ player.displayName }}</td>
                           <td>{{ player.rating }}</td>
                           <td>{{ player.bestRating || '-' }}</td>
                           <td>{{ player.gamesWon }}/{{ player.gamesLost }}/{{ player.gamesDraw }}</td>
@@ -124,7 +124,7 @@
                             <span v-else-if="index === 7">8️⃣</span>
                             <span v-else-if="index === 8">9️⃣</span>
                           </td>
-                          <td>{{ player.username }}</td>
+                          <td>{{ player.displayName }}</td>
                           <td>{{ player.bestRating }}</td>
                         </tr>
                       </tbody>
@@ -156,7 +156,7 @@
                             <span v-else-if="index === 7">8️⃣</span>
                             <span v-else-if="index === 8">9️⃣</span>
                           </td>
-                          <td>{{ player.username }}</td>
+                          <td>{{ player.displayName }}</td>
                           <td>{{ player.score }}</td>
                           <td>{{ player.attempts }}</td>
                         </tr>

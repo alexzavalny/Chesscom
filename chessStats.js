@@ -376,6 +376,7 @@ const app = new Vue({
                             if (stats[apiKey].last) {
                                 leaderboards[ourKey].push({
                                     username,
+                                    displayName: this.usernamesToNames[username] || username,
                                     rating: stats[apiKey].last.rating,
                                     gamesWon: stats[apiKey].record.win,
                                     gamesLost: stats[apiKey].record.loss,
@@ -390,6 +391,7 @@ const app = new Vue({
                             // Handle tactics ratings
                             leaderboards[ourKey].push({
                                 username,
+                                displayName: this.usernamesToNames[username] || username,
                                 rating: stats[apiKey].highest.rating,
                                 bestRating: stats[apiKey].highest.rating,
                                 lowestRating: stats[apiKey].lowest.rating,
@@ -399,6 +401,7 @@ const app = new Vue({
                             if (stats[apiKey].best) {
                                 leaderboards[ourKey].push({
                                     username,
+                                    displayName: this.usernamesToNames[username] || username,
                                     score: stats[apiKey].best.score,
                                     attempts: stats[apiKey].best.total_attempts,
                                 });
