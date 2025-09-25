@@ -23,6 +23,8 @@ const app = new Vue({
         leaderboards: {},
         showUsernameInput: false,
         inputUsername: "",
+        showAddUserModal: false,
+        newUsername: "",
     },
     methods: {
         openGame(gameUrl) {
@@ -490,6 +492,51 @@ const app = new Vue({
                 url.searchParams.set('usernames', this.inputUsername.trim());
                 window.location.href = url.toString();
             }
+        },
+        removeUsername(usernameToRemove) {
+            // Remove username from the list
+            this.usernames = this.usernames.filter(username => username !== usernameToRemove);
+            
+            // Update URL
+            this.updateUrlFromUsernames();
+            
+            // If no usernames left, show the input form
+            if (this.usernames.length === 0) {
+                this.showUsernameInput = true;
+                return;
+            }
+            
+            // Refresh stats with updated usernames
+            this.fetchStats(this.activePeriod);
+        },
+        addUsername() {
+            if (this.newUsername.trim() && !this.usernames.includes(this.newUsername.trim())) {
+                // Add username to the list
+                this.usernames.push(this.newUsername.trim());
+                
+                // Update URL
+                this.updateUrlFromUsernames();
+                
+                // Close modal and clear input
+                this.closeAddUserModal();
+                
+                // Refresh stats with updated usernames
+                this.fetchStats(this.activePeriod);
+            }
+        },
+        closeAddUserModal() {
+            this.showAddUserModal = false;
+            this.newUsername = "";
+        },
+        updateUrlFromUsernames() {
+            const url = new URL(window.location);
+            if (this.usernames.length > 0) {
+                url.searchParams.set('usernames', this.usernames.join(','));
+            } else {
+                url.searchParams.delete('usernames');
+            }
+            // Update URL without reloading the page
+            window.history.replaceState({}, '', url.toString());
         },
     },
     mounted() {

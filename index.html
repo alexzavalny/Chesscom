@@ -31,6 +31,23 @@
             </div>
 
             <main class="container" v-if="!showUsernameInput">
+                <!-- Username Tags Section -->
+                <div class="username-tags-container">
+                    <div class="username-tags">
+                        <span 
+                            v-for="username in usernames" 
+                            :key="username" 
+                            class="username-tag"
+                        >
+                            {{ usernamesToNames[username] || username }}
+                            <span class="tag-close" @click="removeUsername(username)">&times;</span>
+                        </span>
+                        <button class="add-user-btn" @click="showAddUserModal = true" title="Add another user">
+                            <span class="plus-icon">+</span>
+                        </button>
+                    </div>
+                </div>
+
                 <div class="panel">
                     <button @click="toggleLeaderboard" :class="{ active: showLeaderboard, leaderboard: true }">
                       Leaderboard
@@ -347,6 +364,32 @@
                     </div>
                 </div>
             </main>
+
+            <!-- Add User Modal -->
+            <div v-if="showAddUserModal" class="modal">
+                <div class="modal-content add-user-modal">
+                    <div class="modal-header">
+                        <span class="close" @click="closeAddUserModal">&times;</span>
+                        <h2>Add User</h2>
+                    </div>
+                    <div class="modal-body">
+                        <form @submit.prevent="addUsername">
+                            <input 
+                                type="text" 
+                                v-model="newUsername" 
+                                placeholder="Enter Chess.com username"
+                                required
+                                class="add-user-input"
+                                ref="addUserInput"
+                            />
+                            <div class="modal-buttons">
+                                <button type="button" @click="closeAddUserModal" class="cancel-btn">Cancel</button>
+                                <button type="submit" class="add-btn">Add User</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
         <script type="module" src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.esm.browser.js"></script>
         <script type="module" src="config.js"></script>
