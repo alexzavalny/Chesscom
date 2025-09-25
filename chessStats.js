@@ -21,6 +21,8 @@ const app = new Vue({
         showLeaderboard: false,
         playerStats: {},
         leaderboards: {},
+        showUsernameInput: false,
+        inputUsername: "",
     },
     methods: {
         openGame(gameUrl) {
@@ -481,13 +483,34 @@ const app = new Vue({
                 return userDurations[b.username] - userDurations[a.username];
             });
         },
+        handleUsernameSubmit() {
+            if (this.inputUsername.trim()) {
+                // Redirect to ?usernames=USERNAME
+                const url = new URL(window.location);
+                url.searchParams.set('usernames', this.inputUsername.trim());
+                window.location.href = url.toString();
+            }
+        },
     },
     mounted() {
-        // if query string contains a list of usernames, then set the usernames
         const urlParams = new URLSearchParams(window.location.search);
         const usernames = urlParams.get("usernames");
-        if (usernames) {
+        const backdoor = urlParams.get("x");
+        
+        // Check for backdoor parameter (?x) - use hardcoded usernames
+        if (backdoor !== null) {
+            this.usernames = CONFIG.DEFAULT_USERNAMES;
+            this.showUsernameInput = false;
+        }
+        // Check for usernames parameter
+        else if (usernames) {
             this.usernames = usernames.split(",");
+            this.showUsernameInput = false;
+        }
+        // No parameters - show username input form
+        else {
+            this.showUsernameInput = true;
+            return; // Don't fetch stats, just show the input form
         }
 
         const defaultPeriod = urlParams.get("period") || "today";

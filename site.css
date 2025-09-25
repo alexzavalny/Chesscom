@@ -409,3 +409,82 @@ button.leaderboard {
         min-width: 500px;
     }
 }
+
+/* Username Input Form Styles */
+.username-input-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f4f4f4;
+    padding: 20px;
+}
+
+.username-input-form {
+    background: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+}
+
+.username-input-form h1 {
+    color: #4caf50;
+    margin-bottom: 10px;
+    font-size: 2.5em;
+}
+
+.username-input-form p {
+    color: #666;
+    margin-bottom: 30px;
+    font-size: 1.1em;
+}
+
+.username-input {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-bottom: 20px;
+    transition: border-color 0.3s ease;
+}
+
+.username-input:focus {
+    outline: none;
+    border-color: #4caf50;
+}
+
+.username-submit-btn {
+    background-color: #4caf50;
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+}
+
+.username-submit-btn:hover {
+    background-color: #45a049;
+}
+
+.username-submit-btn:active {
+    transform: translateY(1px);
+}
+
+/* Mobile responsiveness for username input */
+@media screen and (max-width: 600px) {
+    .username-input-form {
+        padding: 20px;
+        margin: 10px;
+    }
+    
+    .username-input-form h1 {
+        font-size: 2em;
+    }
+}

@@ -12,7 +12,25 @@
     </head>
     <body>
         <div id="app">
-            <main class="container">
+            <!-- Username Input Form -->
+            <div v-if="showUsernameInput" class="username-input-container">
+                <div class="username-input-form">
+                    <h1>Pawn Patrol</h1>
+                    <p>Enter a Chess.com username to view their stats</p>
+                    <form @submit.prevent="handleUsernameSubmit">
+                        <input 
+                            type="text" 
+                            v-model="inputUsername" 
+                            placeholder="Enter Chess.com username"
+                            required
+                            class="username-input"
+                        />
+                        <button type="submit" class="username-submit-btn">View Stats</button>
+                    </form>
+                </div>
+            </div>
+
+            <main class="container" v-if="!showUsernameInput">
                 <div class="panel">
                     <button @click="toggleLeaderboard" :class="{ active: showLeaderboard, leaderboard: true }">
                       Leaderboard
