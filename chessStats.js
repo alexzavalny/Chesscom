@@ -490,6 +490,19 @@ const app = new Vue({
         },
         handleUsernameSubmit() {
             if (this.inputUsername.trim()) {
+                // Push GTM event for initial username submission
+                if (typeof gtag !== 'undefined') {
+                    try {
+                        gtag('event', 'username_added', {
+                            'custom_parameter_1': this.inputUsername.trim(),
+                            'total_usernames': 1,
+                            'method': 'initial'
+                        });
+                    } catch (error) {
+                        console.warn('GTM event tracking failed:', error);
+                    }
+                }
+                
                 // Redirect to ?usernames=USERNAME
                 const url = new URL(window.location);
                 url.searchParams.set('usernames', this.inputUsername.trim());
@@ -499,6 +512,18 @@ const app = new Vue({
         removeUsername(usernameToRemove) {
             // Remove username from the list
             this.usernames = this.usernames.filter(username => username !== usernameToRemove);
+            
+            // Push GTM event for username removal
+            if (typeof gtag !== 'undefined') {
+                try {
+                    gtag('event', 'username_removed', {
+                        'custom_parameter_1': usernameToRemove,
+                        'total_usernames': this.usernames.length
+                    });
+                } catch (error) {
+                    console.warn('GTM event tracking failed:', error);
+                }
+            }
             
             // Update URL
             this.updateUrlFromUsernames();
@@ -516,6 +541,19 @@ const app = new Vue({
             if (this.newUsername.trim() && !this.usernames.includes(this.newUsername.trim())) {
                 // Add username to the list
                 this.usernames.push(this.newUsername.trim());
+                
+                // Push GTM event for username addition
+                if (typeof gtag !== 'undefined') {
+                    try {
+                        gtag('event', 'username_added', {
+                            'custom_parameter_1': this.newUsername.trim(),
+                            'total_usernames': this.usernames.length,
+                            'method': 'modal'
+                        });
+                    } catch (error) {
+                        console.warn('GTM event tracking failed:', error);
+                    }
+                }
                 
                 // Update URL
                 this.updateUrlFromUsernames();
