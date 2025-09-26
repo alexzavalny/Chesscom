@@ -647,3 +647,42 @@ button.leaderboard {
         width: 100%;
     }
 }
+
+/* Empty State Styles */
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+    border-radius: 10px;
+    color: white;
+    margin: 20px auto;
+    max-width: 600px;
+}
+
+.empty-state-content h3 {
+    margin: 15px 0;
+    font-size: 24px;
+    color: white;
+}
+
+.empty-state p {
+    margin: 10px 0;
+    font-size: 16px;
+}
+
+.empty-state-icon {
+    font-size: 48px;
+    margin-bottom: 10px;
+}
+
+.empty-state-tip {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 20px;
+    font-style: italic;
+}
+
+.empty-state strong {
+    color: #fffccc;
+}

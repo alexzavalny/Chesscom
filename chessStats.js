@@ -610,6 +610,12 @@ const app = new Vue({
     beforeDestroy() {
         document.removeEventListener("keydown", this.handleKeyDown);
     },
+    filters: {
+        capitalize: function(value) {
+            if (!value) return '';
+            return value.charAt(0).toUpperCase() + value.slice(1);
+        }
+    },
     computed: {
         periodButtonClass() {
             return function (period) {
@@ -652,6 +658,13 @@ const app = new Vue({
                 totalsHash[user.username] = totals;
             });
             return totalsHash;
+        },
+        hasNoResults() {
+            // Check if there are no results or all results have empty stats
+            return this.results.length === 0 || this.results.every(result => 
+                Object.keys(result.statsByType).length === 0 || 
+                Object.values(result.statsByType).every(stats => stats.played === 0)
+            );
         },
     },
 });

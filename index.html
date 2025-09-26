@@ -175,6 +175,18 @@
                   </div>
                 </div>
 
+                <!-- Empty State Message -->
+                <div v-if="!showLeaderboard && hasNoResults" class="empty-state">
+                    <div class="empty-state-content">
+                        <div class="empty-state-icon">🤔</div>
+                        <h3>No games found!</h3>
+                        <p>No one played chess during the selected time period: <strong>{{ activePeriod | capitalize }}</strong></p>
+                        <p class="empty-state-tip">
+                            💡 <strong>Tip:</strong> Try selecting a different time period or check if you've entered the correct Chess.com usernames.
+                        </p>
+                    </div>
+                </div>
+
                 <div class="stats" v-for="result in results" :key="result.username" v-if="Object.entries(result.statsByType).length > 0">
                     <h2>
                         <a
