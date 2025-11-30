@@ -16,6 +16,7 @@ const app = new Vue({
         showOpenings: false,
         showTime: true,
         showDate: false,
+        showWeekDay: false,
         currentChart: null,
         showChart: true,
         showLeaderboard: false,
@@ -157,6 +158,9 @@ const app = new Vue({
         },
         formatDate(date) {
             return date.toISOString().split("T")[0]; // This will return the date in YYYY-MM-DD format
+        },
+        formatWeekday(date) {
+            return date.toLocaleDateString("en-US", { weekday: "long" });
         },
         processGames(data, username, period, year, month, day) {
             let statsByType = {};

@@ -331,6 +331,10 @@
                                     <input type="checkbox" id="showDate" v-model="showDate" />
                                     <label for="showDate">Date</label>
                                 </span>
+                                <span class="checkbox">
+                                    <input type="checkbox" id="showWeekDay" v-model="showWeekDay" />
+                                    <label for="showWeekDay">Week Day</label>
+                                </span>
                                 <span class="checkbox desktop">
                                     <input type="checkbox" id="showChart" v-model="showChart" />
                                     <label for="showChart">Chart</label>
@@ -344,12 +348,16 @@
                                     :key="game.id"
                                     @click="openGame(game.url)"
                                 >
+                                <td v-if="showWeekDay">
+                                    {{ formatWeekday(game.endTime) }}
+                                </td>
                                 <td v-if="showDate">
                                     {{ formatDate(game.endTime) }}
                                 </td>
                                 <td v-if="showTime">
                                     <!-- game.endTime to time hh:mm -->
                                     {{ game.endTime.toLocaleTimeString([],{ hour12: false, hour: "2-digit", minute: "2-digit" }) }}
+                                </td>
                                 <td>
                                     <span
                                         class="chess-icon"
