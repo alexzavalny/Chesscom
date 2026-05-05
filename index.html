@@ -14,9 +14,9 @@
         <title>Pawn Patrol</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
-        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
         <link rel="icon" type="image/x-icon" href="favicon.ico">
-        <link rel="stylesheet" href="site.css?13" />
+        <link rel="stylesheet" href="site.css?14" />
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     </head>
@@ -24,13 +24,18 @@
         <div id="app">
             <!-- Username Input Form -->
             <div v-if="showUsernameInput" class="username-input-container">
+                <div class="site-nav">
+                    <div class="brand-mark">Pawn Patrol</div>
+                    <a class="nav-link" href="https://www.chess.com" target="_blank">Chess.com</a>
+                </div>
                 <div class="username-input-form">
+                    <span class="section-pill">Chess.com stats</span>
                     <h1>Pawn Patrol</h1>
-                    <p>Enter a Chess.com username to view their stats</p>
+                    <p>Enter a Chess.com username to view recent results, ratings, accuracy, and game time.</p>
                     <form @submit.prevent="handleUsernameSubmit">
-                        <input 
-                            type="text" 
-                            v-model="inputUsername" 
+                        <input
+                            type="text"
+                            v-model="inputUsername"
                             placeholder="Enter Chess.com username"
                             required
                             class="username-input"
@@ -41,18 +46,26 @@
             </div>
 
             <main class="container" v-if="!showUsernameInput">
+                <header class="site-header">
+                    <div class="site-nav">
+                        <div class="brand-mark">Pawn Patrol</div>
+                        <a class="nav-link" href="https://www.chess.com" target="_blank">Chess.com</a>
+                    </div>
+
+                </header>
+
                 <!-- Username Tags Section -->
                 <div class="username-tags-container">
                     <div class="username-tags">
-                        <span 
-                            v-for="username in usernames" 
-                            :key="username" 
+                        <span
+                            v-for="username in usernames"
+                            :key="username"
                             class="username-tag"
                         >
                             {{ usernamesToNames[username] || username }}
                             <span class="tag-close" @click="removeUsername(username)">&times;</span>
                         </span>
-                        <button class="add-user-btn" @click="showAddUserModal = true" title="Add another user">
+                        <button class="add-user-btn" @click="showAddUserModal = true" title="Add another user" aria-label="Add another user">
                             <span class="plus-icon">+</span>
                         </button>
                     </div>
@@ -91,15 +104,7 @@
                       <tbody>
                         <tr v-for="(player, index) in leaderboards[type]" :key="player.username">
                           <td>
-                            <span v-if="index === 0">🥇</span>
-                            <span v-else-if="index === 1">🥈</span>
-                            <span v-else-if="index === 2">🥉</span>
-                            <span v-else-if="index === 3">4️⃣</span>
-                            <span v-else-if="index === 4">5️⃣</span>
-                            <span v-else-if="index === 5">6️⃣</span>
-                            <span v-else-if="index === 6">7️⃣</span>
-                            <span v-else-if="index === 7">8️⃣</span>
-                            <span v-else-if="index === 8">9️⃣</span>
+                            {{ index + 1 }}
                           </td>
                           <td>{{ player.displayName }}</td>
                           <td>{{ player.rating }}</td>
@@ -124,15 +129,7 @@
                       <tbody>
                         <tr v-for="(player, index) in leaderboards.tactics" :key="player.username">
                           <td>
-                            <span v-if="index === 0">🥇</span>
-                            <span v-else-if="index === 1">🥈</span>
-                            <span v-else-if="index === 2">🥉</span>
-                            <span v-else-if="index === 3">4️⃣</span>
-                            <span v-else-if="index === 4">5️⃣</span>
-                            <span v-else-if="index === 5">6️⃣</span>
-                            <span v-else-if="index === 6">7️⃣</span>
-                            <span v-else-if="index === 7">8️⃣</span>
-                            <span v-else-if="index === 8">9️⃣</span>
+                            {{ index + 1 }}
                           </td>
                           <td>{{ player.displayName }}</td>
                           <td>{{ player.bestRating }}</td>
@@ -156,15 +153,7 @@
                       <tbody>
                         <tr v-for="(player, index) in leaderboards.puzzle_rush" :key="player.username">
                           <td>
-                            <span v-if="index === 0">🥇</span>
-                            <span v-else-if="index === 1">🥈</span>
-                            <span v-else-if="index === 2">🥉</span>
-                            <span v-else-if="index === 3">4️⃣</span>
-                            <span v-else-if="index === 4">5️⃣</span>
-                            <span v-else-if="index === 5">6️⃣</span>
-                            <span v-else-if="index === 6">7️⃣</span>
-                            <span v-else-if="index === 7">8️⃣</span>
-                            <span v-else-if="index === 8">9️⃣</span>
+                            {{ index + 1 }}
                           </td>
                           <td>{{ player.displayName }}</td>
                           <td>{{ player.score }}</td>
@@ -178,11 +167,10 @@
                 <!-- Empty State Message -->
                 <div v-if="!showLeaderboard && hasNoResults" class="empty-state">
                     <div class="empty-state-content">
-                        <div class="empty-state-icon">🤔</div>
                         <h3>No games found!</h3>
                         <p>No one played chess during the selected time period: <strong>{{ activePeriod | capitalize }}</strong></p>
                         <p class="empty-state-tip">
-                            💡 <strong>Tip:</strong> Try selecting a different time period or check if you've entered the correct Chess.com usernames.
+                            Try selecting a different time period or check if you've entered the correct Chess.com usernames.
                         </p>
                     </div>
                 </div>
@@ -193,10 +181,9 @@
                             :href="`https://www.chess.com/member/${result.username}`"
                             target="_blank"
                             >{{ usernamesToNames[result.username] || result.username }}
-                                <span style="font-size: 35px" v-if="Object.entries(result.statsByType).length == 0" class="rocking-span">💩</span>
-                                <span style="font-size: 35px" v-if="Object.entries(result.statsByType).length > 0 && totalStats[result.username].won > totalStats[result.username].lost">🍀</span>
-                                <span style="font-size: 35px" v-if="Object.entries(result.statsByType).length > 0 && totalStats[result.username].won <= totalStats[result.username].lost">☘️</span>
-                                <span style="font-size: 35px" v-if="isTheBest(result.username)">&#x1F451;</span>
+                                <span class="player-badge" v-if="Object.entries(result.statsByType).length > 0 && totalStats[result.username].won > totalStats[result.username].lost">Winning</span>
+                                <span class="player-badge" v-if="Object.entries(result.statsByType).length > 0 && totalStats[result.username].won <= totalStats[result.username].lost">Trying their best</span>
+                                <span class="player-badge" v-if="isTheBest(result.username)">Most time</span>
                             </a
                         >
                     </h2>
@@ -387,7 +374,7 @@
                                 <td class="desktop" v-if="showOpenings">
                                     <!-- game.opening is in format { "name" => "url" } -->
                                     <a :href="game.opening.url" target="_blank">
-                                        {{ game.opening.name }}
+                                        {{ game.opening.name }}</a>
                                 </td>
                             </tr>
                         </table>
@@ -404,9 +391,9 @@
                     </div>
                     <div class="modal-body">
                         <form @submit.prevent="addUsername">
-                            <input 
-                                type="text" 
-                                v-model="newUsername" 
+                            <input
+                                type="text"
+                                v-model="newUsername"
                                 placeholder="Enter Chess.com username"
                                 required
                                 class="add-user-input"
