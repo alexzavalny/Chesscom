@@ -711,4 +711,9 @@ canvas#ratingChart {
     .stats h2 + table td:last-child {
         display: none;
     }
+
+    .stats h2 + table col:last-child {
+        visibility: collapse;
+        width: 0 !important;
+    }
 }
