@@ -598,12 +598,11 @@ canvas#ratingChart {
         justify-content: flex-start;
     }
 
-    .stats,
     .leaderboard-section {
         overflow-x: auto;
     }
 
-    table {
+    .leaderboard-section table {
         min-width: 780px;
     }
 }
@@ -670,5 +669,46 @@ canvas#ratingChart {
     .username-tags-container {
         padding-left: 16px;
         padding-right: 16px;
+    }
+
+    .stats {
+        overflow-x: hidden;
+    }
+
+    .stats table {
+        min-width: 0;
+        table-layout: fixed;
+        font-size: 11px;
+    }
+
+    .stats col {
+        width: auto !important;
+    }
+
+    .stats th,
+    .stats td {
+        padding: 8px 1px;
+    }
+
+    .stats th {
+        font-size: 10px;
+    }
+
+    .stats td.percentage {
+        font-size: 10px;
+        padding-left: 2px;
+    }
+
+    .stats td.score {
+        padding-right: 2px;
+    }
+
+    .stats img {
+        max-height: 24px;
+    }
+
+    .stats h2 + table th:last-child,
+    .stats h2 + table td:last-child {
+        display: none;
     }
 }
