@@ -275,8 +275,20 @@ button.leaderboard.active,
 }
 
 .stats {
+    position: relative;
     padding: 24px;
     overflow: hidden;
+}
+
+.stats::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 24px;
+    right: 24px;
+    height: 3px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(246, 146, 81, 0.9), rgba(255, 226, 124, 0.72));
 }
 
 .stats + .stats {
@@ -669,6 +681,11 @@ canvas#ratingChart {
     .username-tags-container {
         padding-left: 16px;
         padding-right: 16px;
+    }
+
+    .stats::before {
+        left: 16px;
+        right: 16px;
     }
 
     .stats {
