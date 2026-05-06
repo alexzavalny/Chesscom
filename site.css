@@ -1,5 +1,5 @@
 :root {
-    --color-tangerine-tag: #f69251;
+    --color-green-tag: #3fb950;
     --color-midnight-ink: #181825;
     --color-graphite: #484758;
     --color-deep-slate: #242433;
@@ -93,7 +93,7 @@ button {
     border-radius: 28px;
     padding: 12px 24px;
     color: var(--color-carbon);
-    background: var(--color-tangerine-tag);
+    background: var(--color-green-tag);
     box-shadow: var(--shadow-button);
     cursor: pointer;
     font-family: var(--font-body);
@@ -220,7 +220,7 @@ button.leaderboard.active,
 .username-submit-btn,
 .add-btn {
     color: var(--color-carbon);
-    background: var(--color-tangerine-tag);
+    background: var(--color-green-tag);
     box-shadow: var(--shadow-button);
 }
 
@@ -288,7 +288,7 @@ button.leaderboard.active,
     right: 24px;
     height: 3px;
     border-radius: 999px;
-    background: linear-gradient(90deg, rgba(246, 146, 81, 0.9), rgba(255, 226, 124, 0.72));
+    background: linear-gradient(90deg, rgba(45, 164, 78, 0.95), rgba(126, 231, 135, 0.78));
 }
 
 .stats + .stats {
