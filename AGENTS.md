@@ -1,15 +1,15 @@
 # Dialog — Style Reference
-> Neutral showroom with one warm price tag. Every surface is a different tone of off-white; the orange CTA is the only color in the room.
+> Neutral showroom with one warm price tag. Every surface is a different tone of off-white; the green CTA is the only color in the room.
 
 **Theme:** light
 
-Dialog feels like a high-end retail floor plan rendered in digital form — neutral, airy, and unhurried, with one warm accent that acts like a price tag sticker on white linen. The #f7f7f7 near-white background and pure white cards create a surface hierarchy so subtle it reads as continuous space rather than layered depth. PP Radio Grotesk Light at 50-70px is the defining move: a geometric grotesque rendered at its lightest weight makes large headlines feel handwritten on paper rather than stamped — zero aggression, maximum presence. The single orange #f69251 appears exclusively on CTAs, pulling attention the way a sale tag pops in a neutral showroom. Pill-shaped buttons (28px radius) float against square-cornered containers, the only soft shape in an otherwise rectilinear system.
+Dialog feels like a high-end retail floor plan rendered in digital form — neutral, airy, and unhurried, with one warm accent that acts like a price tag sticker on white linen. The #f7f7f7 near-white background and pure white cards create a surface hierarchy so subtle it reads as continuous space rather than layered depth. PP Radio Grotesk Light at 50-70px is the defining move: a geometric grotesque rendered at its lightest weight makes large headlines feel handwritten on paper rather than stamped — zero aggression, maximum presence. The single green #3fb950 appears exclusively on CTAs, pulling attention the way a sale tag pops in a neutral showroom. Pill-shaped buttons (28px radius) float against square-cornered containers, the only soft shape in an otherwise rectilinear system.
 
 ## Tokens — Colors
 
 | Name | Value | Token | Role |
 |------|-------|-------|------|
-| Tangerine Tag | `#f69251` | `--color-tangerine-tag` | Primary CTA buttons, 'Book a demo' pill — warm orange against near-white backgrounds signals action without urgency, echoing the palette of premium retail labels |
+| Green Tag | `#3fb950` | `--color-green-tag` | Primary CTA buttons, 'Book a demo' pill — fresh green against near-white backgrounds signals action without urgency, echoing the palette of premium retail labels |
 | Midnight Ink | `#181825` | `--color-midnight-ink` | Body text, borders — near-black with a barely perceptible blue undertone, softer than pure black for long-form reading |
 | Graphite | `#484758` | `--color-graphite` | Secondary body text, descriptive copy, meta information |
 | Deep Slate | `#242433` | `--color-deep-slate` | Dark surface backgrounds, card overlays in dark sections |
@@ -19,7 +19,7 @@ Dialog feels like a high-end retail floor plan rendered in digital form — neut
 | Ash | `#8b8b8b` | `--color-ash` | Tertiary text, icon strokes, faint borders |
 | Fog | `#f7f7f7` | `--color-fog` | Page background, section fills — the dominant surface of the entire site |
 | Snow | `#ffffff` | `--color-snow` | Card surfaces, nav background, button fill for ghost variant |
-| Peach Whisper | `linear-gradient(rgba(255, 219, 184, 0.06) 0%, rgba(255, 255, 255, 0.03) 100%)` | `--color-peach-whisper` | Decorative SVG fills, illustration accent highlights |
+| Mint Whisper | `linear-gradient(rgba(126, 231, 135, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%)` | `--color-mint-whisper` | Decorative SVG fills, illustration accent highlights |
 | Dusty Rose | `#c97b84` | `--color-dusty-rose` | Semantic accent — appears in hover or highlight states on certain interactive elements |
 
 ## Tokens — Typography
@@ -134,20 +134,20 @@ Dialog feels like a high-end retail floor plan rendered in digital form — neut
 
 ## Components
 
-### Primary CTA Button (Orange Pill)
+### Primary CTA Button (Green Pill)
 **Role:** Hero and nav primary action — 'Book a demo'
 
-Background #f69251, text #000000, border-radius 28px, padding 12px 24px. The fully pill-shaped silhouette at 28px radius is the only rounded element class in an otherwise angular layout. Subtle layered shadow: rgba(0,0,0,0.04) 0px 1px 2px, rgba(0,0,0,0.02) 0px 2px 4px, rgba(0,0,0,0.02) 0px 4px 8px. Font: Inter 14-16px weight 500.
+Background #3fb950, text #000000, border-radius 28px, padding 12px 24px. The fully pill-shaped silhouette at 28px radius is the only rounded element class in an otherwise angular layout. Subtle layered shadow: rgba(0,0,0,0.04) 0px 1px 2px, rgba(0,0,0,0.02) 0px 2px 4px, rgba(0,0,0,0.02) 0px 4px 8px. Font: Inter 14-16px weight 500.
 
 ### Ghost CTA Button (White Pill)
 **Role:** Secondary actions on dark or image-backed surfaces
 
-Background #ffffff, text #000000, border-radius 28px, padding 12px 24px. Same pill shape as primary, but inverted to white fill — reads as outline-adjacent without an explicit border. Used where orange would clash with background.
+Background #ffffff, text #000000, border-radius 28px, padding 12px 24px. Same pill shape as primary, but inverted to white fill — reads as outline-adjacent without an explicit border. Used where green would clash with background.
 
 ### Email Input + CTA Inline Form
 **Role:** Hero email capture row
 
-Input field: transparent background, border-radius 0px, no padding — appears as a bare underline or bordered rectangle. Paired inline with the orange pill button. Input text #000000, placeholder color #949494 (Pebble). The zero-radius input contrasts sharply with the 28px pill button beside it, creating a deliberate tension between form and function.
+Input field: transparent background, border-radius 0px, no padding — appears as a bare underline or bordered rectangle. Paired inline with the green pill button. Input text #000000, placeholder color #949494 (Pebble). The zero-radius input contrasts sharply with the 28px pill button beside it, creating a deliberate tension between form and function.
 
 ### Testimonial Card
 **Role:** Social proof in scrolling testimonials section
@@ -157,12 +157,12 @@ White (#ffffff) card surface, border-radius 24px, padding 24px. Quote text in In
 ### Product Screenshot Browser Frame
 **Role:** Product tour / hero UI illustration
 
-White (#ffffff) card at border-radius 24px with decorative browser chrome: three colored dots (red #c97b84, yellow, green) in top-left at 12px circles. Interior filled with skeleton placeholder blocks at #f7f7f7 and #b2b2b2. Card uses rgba(247,247,247,0.5) 0px -40px 40px 0px shadow at bottom edge — a fade-up vignette that blends the mockup into the page background.
+White (#ffffff) card at border-radius 24px with decorative browser chrome: three colored dots (red #c97b84, light green, deep green) in top-left at 12px circles. Interior filled with skeleton placeholder blocks at #f7f7f7 and #b2b2b2. Card uses rgba(247,247,247,0.5) 0px -40px 40px 0px shadow at bottom edge — a fade-up vignette that blends the mockup into the page background.
 
 ### Navigation Bar
 **Role:** Global top navigation
 
-White (#ffffff) background, height ~64px, max-width contained. Logo (Dialog wordmark with arrow icon) left-aligned. Links in Inter 400 14px #636363, spacing 6-8px gaps. 'Book a demo' orange pill button right-aligned. Border-radius 32px on the nav container when scrolled (floating pill nav pattern). No visible bottom border — separates from page via background contrast.
+White (#ffffff) background, height ~64px, max-width contained. Logo (Dialog wordmark with arrow icon) left-aligned. Links in Inter 400 14px #636363, spacing 6-8px gaps. 'Book a demo' green pill button right-aligned. Border-radius 32px on the nav container when scrolled (floating pill nav pattern). No visible bottom border — separates from page via background contrast.
 
 ### Feature Badge / Pill Label
 **Role:** Category tags, section labels like 'AI product recommender'
@@ -177,13 +177,13 @@ Headline: PP Radio Grotesk Light 50px, letter-spacing -0.01em, color #000000, li
 ### Star Rating Row
 **Role:** Social proof trust indicators below hero CTA
 
-Inline row of icon + 5-star glyphs in #f69251 orange. Icon badge (Shopify/G2 logo) at 20px followed by five ★ characters. Text Inter 400 12px #636363. Two rating rows displayed side-by-side with 16-24px gap. Acts as micro-credibility anchor beneath the email capture form.
+Inline row of icon + 5-star glyphs in #3fb950 green. Icon badge (Shopify/G2 logo) at 20px followed by five ★ characters. Text Inter 400 12px #636363. Two rating rows displayed side-by-side with 16-24px gap. Acts as micro-credibility anchor beneath the email capture form.
 
 ## Do's and Don'ts
 
 ### Do
 - Use PP Radio Grotesk Light (weight 400) exclusively for headings at 32px+; never substitute Inter for headlines at large sizes
-- Apply #f69251 only to primary CTA buttons — never to text, icons, decorative shapes, or backgrounds
+- Apply #3fb950 only to primary CTA buttons — never to text, icons, decorative shapes, or backgrounds
 - Set all buttons to border-radius 28px (pill shape) regardless of button width; this is the only rounded UI element in the system
 - Maintain #f7f7f7 as the page background and #ffffff for all card surfaces — the 2-tone near-white surface system defines the visual plane
 - Use Inter at -0.01em to -0.02em letter-spacing for body and nav text — never at default or positive tracking
@@ -191,7 +191,7 @@ Inline row of icon + 5-star glyphs in #f69251 orange. Icon badge (Shopify/G2 log
 - Give testimonial and feature cards border-radius 24px with 24px internal padding — do not use smaller radii for large containers
 
 ### Don't
-- Do not use #f69251 for more than one element category (CTAs only) — introducing orange to icons, text, or decoration breaks the single-accent discipline
+- Do not use #3fb950 for more than one element category (CTAs only) — introducing green to icons, text, or decoration breaks the single-accent discipline
 - Do not apply border-radius less than 24px to card containers — 8px or 12px radii belong to inner UI chips, not layout-level cards
 - Do not use bold or heavy weights (600+) with PP Radio Grotesk — the light grotesque loses its identity at high weight
 - Do not introduce colored section backgrounds (blue, green, purple bands) — section variation comes from #f7f7f7 vs #ffffff swaps only
@@ -226,27 +226,27 @@ Max-width ~1200px centered on a #f7f7f7 full-bleed background. Hero is a center-
 - Card surface: #ffffff
 - Primary text / headings: #000000
 - Body / secondary text: #636363
-- CTA button fill: #f69251
+- CTA button fill: #3fb950
 - CTA button text: #000000
 - Border / subtle divider: #b2b2b2
 - Muted / placeholder text: #949494
 
 **Example Component Prompts**
 
-1. **Hero Section**: #f7f7f7 background, full-width centered layout. Headline 'The AI shopping agent that boosts your sales' in PP Radio Grotesk Light 70px, color #000000, letter-spacing -0.70px, line-height 1.15. Subtext 'Guide shoppers in real time, like you would in store.' in Inter 400 18px, color #636363, line-height 1.50. Below: inline row with a bare text input (transparent bg, 0px radius, border-bottom 1px #000) and an orange pill button (#f69251 fill, #000 text, 28px radius, 12px 24px padding, Inter 500 14px). Below that: two star-rating badge rows in #f69251 stars, Inter 400 12px #636363.
+1. **Hero Section**: #f7f7f7 background, full-width centered layout. Headline 'The AI shopping agent that boosts your sales' in PP Radio Grotesk Light 70px, color #000000, letter-spacing -0.70px, line-height 1.15. Subtext 'Guide shoppers in real time, like you would in store.' in Inter 400 18px, color #636363, line-height 1.50. Below: inline row with a bare text input (transparent bg, 0px radius, border-bottom 1px #000) and a green pill button (#3fb950 fill, #000 text, 28px radius, 12px 24px padding, Inter 500 14px). Below that: two star-rating badge rows in #3fb950 stars, Inter 400 12px #636363.
 
 2. **Testimonial Card**: White (#ffffff) card, border-radius 24px, padding 24px, shadow rgba(24,24,37,0.12) 0px 2px 3px -2px. Quote in Inter 400 14px #181825, line-height 1.50. Author row: circular avatar 36px, name in Inter 500 14px #000, handle in Inter 400 12px #636363, gap 8px.
 
-3. **Navigation Bar**: White #ffffff pill container, border-radius 32px. Logo left. Nav links in Inter 400 14px #636363 with 6px column gap. 'Book a demo' orange pill button right (#f69251, #000 text, 28px radius, 12px 24px padding).
+3. **Navigation Bar**: White #ffffff pill container, border-radius 32px. Logo left. Nav links in Inter 400 14px #636363 with 6px column gap. 'Book a demo' green pill button right (#3fb950, #000 text, 28px radius, 12px 24px padding).
 
 4. **Feature Section**: #f7f7f7 background, 2-column layout: left = section label pill (100px radius, #f7f7f7 bg, Inter 500 12px #484758) + heading in PP Radio Grotesk Light 50px #000 + body Inter 400 16px #636363; right = white card (24px radius) containing UI screenshot or product mockup.
 
-5. **Browser Mockup Frame**: White card, border-radius 24px, shadow rgba(247,247,247,0.5) 0px -40px 40px 0px at bottom edge. Top-left: three dots at 10px circle (colors: #c97b84, #f69251, #8b8b8b). Interior: skeleton blocks at #f7f7f7 and #b2b2b2 varying widths, row-gap 8px.
+5. **Browser Mockup Frame**: White card, border-radius 24px, shadow rgba(247,247,247,0.5) 0px -40px 40px 0px at bottom edge. Top-left: three dots at 10px circle (colors: #c97b84, #3fb950, #8b8b8b). Interior: skeleton blocks at #f7f7f7 and #b2b2b2 varying widths, row-gap 8px.
 
 ## Similar Brands
 
 - **Intercom** — Neutral off-white backgrounds, single warm-brand CTA color, testimonial carousel pattern, Inter-based body type
-- **Typeform** — Geometric grotesque display type at light weight for hero headlines, orange-family accent color on pill buttons
+- **Typeform** — Geometric grotesque display type at light weight for hero headlines, green-family accent color on pill buttons
 - **Gorgias** — AI/e-commerce SaaS with editorial product photography mixed with UI mockup screenshots, near-identical testimonial card layout
 - **Klaviyo** — Same pill-nav-bar pattern floating above #f7f7f7 backgrounds, Inter body text with tight letter-spacing
 - **Rebuy Commerce** — Shopify-native AI commerce tool with warm accent buttons, light muted surfaces, and wireframe-style product preview mockups
@@ -258,7 +258,7 @@ Max-width ~1200px centered on a #f7f7f7 full-bleed background. Hero is a center-
 ```css
 :root {
   /* Colors */
-  --color-tangerine-tag: #f69251;
+  --color-green-tag: #3fb950;
   --color-midnight-ink: #181825;
   --color-graphite: #484758;
   --color-deep-slate: #242433;
@@ -268,8 +268,8 @@ Max-width ~1200px centered on a #f7f7f7 full-bleed background. Hero is a center-
   --color-ash: #8b8b8b;
   --color-fog: #f7f7f7;
   --color-snow: #ffffff;
-  --color-peach-whisper: #fad7c1;
-  --gradient-peach-whisper: linear-gradient(rgba(255, 219, 184, 0.06) 0%, rgba(255, 255, 255, 0.03) 100%);
+  --color-mint-whisper: #b7f5bf;
+  --gradient-mint-whisper: linear-gradient(rgba(126, 231, 135, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
   --color-dusty-rose: #c97b84;
 
   /* Typography — Font Families */
@@ -365,7 +365,7 @@ Max-width ~1200px centered on a #f7f7f7 full-bleed background. Hero is a center-
 ```css
 @theme {
   /* Colors */
-  --color-tangerine-tag: #f69251;
+  --color-green-tag: #3fb950;
   --color-midnight-ink: #181825;
   --color-graphite: #484758;
   --color-deep-slate: #242433;
@@ -375,7 +375,7 @@ Max-width ~1200px centered on a #f7f7f7 full-bleed background. Hero is a center-
   --color-ash: #8b8b8b;
   --color-fog: #f7f7f7;
   --color-snow: #ffffff;
-  --color-peach-whisper: #fad7c1;
+  --color-mint-whisper: #b7f5bf;
   --color-dusty-rose: #c97b84;
 
   /* Typography */
