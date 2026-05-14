@@ -364,14 +364,21 @@ td.time {
     font-size: 11px;
 }
 
-.rating-climb,
+.rating-climb {
+    color: #3fb950;
+    font-weight: 500;
+}
+
+.rating-fall {
+    color: #e5534b;
+}
+
 .green,
 .blue {
     color: var(--color-midnight-ink);
     font-weight: 500;
 }
 
-.rating-fall,
 .red,
 .yellow {
     color: var(--color-stone);
