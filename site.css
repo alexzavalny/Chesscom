@@ -394,8 +394,14 @@ span.chess-icon {
     font-size: 24px;
 }
 
-span.chess-icon-won::before,
-span.chess-icon-lost::before,
+span.chess-icon-won::before {
+    color: #3fb950;
+}
+
+span.chess-icon-lost::before {
+    color: #e5534b;
+}
+
 span.chess-icon-draw::before {
     color: var(--color-midnight-ink);
 }
