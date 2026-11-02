@@ -1,0 +1,108 @@
+/*
+ * Pawn Patrol look for FEN Player (synced from FenPlayer).
+ *
+ * FEN Player is built dark-first with Tailwind v4, whose colours are CSS variables.
+ * Instead of restyling every utility, the slate scale is inverted (950 = page,
+ * 900 = cards, 100 = strongest text) and sky is swapped for tangerine.
+ * Tailwind's rules live in cascade layers, so these unlayered rules always win.
+ */
+
+:root {
+    color-scheme: light;
+    --font-sans: var(--pp-font-body);
+
+    --color-slate-950: var(--pp-fog);
+    --color-slate-900: var(--pp-snow);
+    --color-slate-800: #ececef;
+    --color-slate-700: #dedee3;
+    --color-slate-600: #b9b9c2;
+    --color-slate-500: var(--pp-pebble);
+    --color-slate-400: var(--pp-stone);
+    --color-slate-300: var(--pp-graphite);
+    --color-slate-200: var(--pp-midnight);
+    --color-slate-100: var(--pp-carbon);
+
+    --color-sky-400: var(--pp-tangerine);
+    --color-sky-500: var(--pp-tangerine);
+    --color-sky-600: var(--pp-tangerine);
+
+    /* Status colours, darkened for a light background. */
+    --color-rose-400: #c0392b;
+    --color-emerald-400: #23784f;
+    --color-amber-400: #b26a00;
+}
+
+body {
+    letter-spacing: -0.01em;
+}
+
+header h1 {
+    color: var(--pp-carbon);
+    font-family: var(--pp-font-heading);
+    font-size: 40px;
+    font-weight: 300;
+    line-height: 1.1;
+    letter-spacing: 0;
+}
+
+/* Cards: white, borderless, soft shadow, like the rest of Pawn Patrol. */
+.bg-slate-900\/60 {
+    border-color: transparent;
+    border-radius: 24px;
+    background-color: var(--pp-snow);
+    box-shadow: var(--pp-shadow);
+}
+
+#setup {
+    padding: 28px;
+}
+
+.control,
+#fen {
+    border-radius: 14px;
+}
+
+.preset-btn,
+.action-btn {
+    border-radius: 100px;
+    color: var(--pp-graphite);
+    background-color: var(--pp-snow);
+}
+
+.preset-btn {
+    padding: 6px 12px;
+}
+
+.action-btn {
+    padding: 8px 14px;
+}
+
+.preset-btn:hover,
+.action-btn:hover {
+    border-color: var(--pp-pebble);
+    color: var(--pp-midnight);
+    background-color: var(--pp-snow);
+}
+
+#start {
+    min-height: 44px;
+    border-radius: 28px;
+    padding: 12px 24px;
+    color: var(--pp-carbon);
+    box-shadow: rgba(0, 0, 0, 0.04) 0 1px 2px, rgba(0, 0, 0, 0.02) 0 2px 4px, rgba(0, 0, 0, 0.02) 0 4px 8px;
+    font-weight: 500;
+    transition: transform 160ms ease;
+}
+
+#start:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+/* The eval bar must stay literal: dark = Black's share, white = White's share. */
+#evalbar {
+    background-color: var(--pp-slate);
+}
+
+#evalbar-fill {
+    background-color: var(--pp-snow);
+}

@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light" />
+    <meta name="theme-color" content="#f7f7f7" />
+    <link rel="manifest" href="./site.webmanifest" />
+    <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png" />
+    <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
+    <title>Tournament Results · Pawn Patrol</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css?v=20260719-api-1" />
+      <!-- Synced from EasyChessResults@fad42f2 by scripts/sync-tools.mjs. Do not edit here. -->
+    <link rel="stylesheet" href="../shared/pawnpatrol.css" />
+    <link rel="stylesheet" href="../shared/themes/tournaments.css" />
+  </head>
+  <body>
+    <script src="../shared/pp-bar.js" data-tool="tournaments"></script>
+    <main class="shell">
+      <section class="hero" id="hero-section">
+        <div class="topbar">
+          <p class="eyebrow" data-i18n="hero.eyebrow">Chess-Results, simplified</p>
+          <div class="language-switch" role="group" aria-label="Language">
+            <button type="button" class="language-option" data-language-option="en">EN</button>
+            <button type="button" class="language-option" data-language-option="ru">RU</button>
+          </div>
+        </div>
+        <h1 data-i18n="hero.title">Minimal tournament and player views</h1>
+        <p class="lede" data-i18n="hero.lede">
+          Paste a Chess-Results tournament ranking or player URL. The API handles loading and normalization.
+        </p>
+      </section>
+
+      <section class="panel controls" id="controls-panel">
+        <form id="load-form" class="stack">
+          <label class="field">
+            <span data-i18n="form.urlLabel">Chess-Results URL</span>
+            <input
+              id="url-input"
+              name="url"
+              type="url"
+              spellcheck="false"
+              placeholder="https://s3.chess-results.com/tnr....aspx?art=1 or art=9..."
+            />
+          </label>
+
+          <div class="actions">
+            <button type="submit" id="load-button" data-i18n="form.loadPage">Load page</button>
+            <button type="button" id="demo-button" class="ghost" data-i18n="form.loadDemo">Load demo player</button>
+          </div>
+        </form>
+
+        <form id="search-form" class="stack tournament-search" onsubmit="return false">
+          <p class="form-note" data-i18n="search.tournamentNote">Or search tournaments through the Easy Chess Results API.</p>
+          <div class="search-grid">
+            <label class="field">
+              <span data-i18n="search.endFrom">End date from</span>
+              <input id="search-date-from" name="dateFrom" type="date" />
+            </label>
+            <label class="field">
+              <span data-i18n="search.endTo">End date to</span>
+              <input id="search-date-to" name="dateTo" type="date" />
+            </label>
+          </div>
+          <div class="actions">
+            <button type="submit" id="search-button" data-i18n="search.tournamentsButton">Search tournaments</button>
+          </div>
+        </form>
+
+        <form id="player-search-form" class="stack tournament-search" onsubmit="return false">
+          <p class="form-note" data-i18n="search.playerNote">Or search players by first and last name. Country defaults to LAT.</p>
+          <div class="search-grid">
+            <label class="field">
+              <span data-i18n="search.firstName">First name</span>
+              <input id="player-first-name" name="firstName" type="text" autocomplete="given-name" spellcheck="false" />
+            </label>
+            <label class="field">
+              <span data-i18n="search.lastName">Last name</span>
+              <input id="player-last-name" name="lastName" type="text" autocomplete="family-name" spellcheck="false" />
+            </label>
+            <label class="field compact-field">
+              <span data-i18n="search.country">Country</span>
+              <input id="player-country" name="country" type="text" maxlength="3" placeholder="LAT" value="LAT" spellcheck="false" />
+            </label>
+          </div>
+          <div class="actions">
+            <button type="submit" id="player-search-button" data-i18n="search.playersButton">Search players</button>
+          </div>
+        </form>
+
+        <p id="status" class="status" aria-live="polite"></p>
+      </section>
+
+      <section id="result-panel" class="panel result" hidden>
+        <div class="result-head">
+          <div>
+            <p class="label" id="result-kind">View</p>
+            <div class="player-title-row">
+              <h2 id="result-title">-</h2>
+              <button type="button" id="clear-button" class="clear-button" hidden aria-label="Clear view">
+                ×
+              </button>
+            </div>
+            <div class="result-links">
+              <a id="back-link" class="back-link" href="#" hidden data-i18n="result.back">Back to tournament</a>
+              <button type="button" id="bookmark-button" class="bookmark-button" hidden>Bookmark</button>
+              <button type="button" id="watch-button" class="watch-button" hidden>Watch player</button>
+              <a id="fide-link" class="fide-link" href="#" target="_blank" rel="noopener noreferrer" hidden>FIDE</a>
+              <a id="original-link" class="original-link" href="#" target="_blank" rel="noopener noreferrer" hidden>Original</a>
+            </div>
+            <p id="result-subtitle" class="result-subtitle" hidden></p>
+          </div>
+          <div class="chips-wrap">
+            <div class="chips" id="result-meta"></div>
+            <div class="chip-links" id="result-meta-links" hidden></div>
+            <label id="type-filter-wrap" class="type-filter" hidden>
+              <span data-i18n="result.type">Typ</span>
+              <select id="type-filter-select" aria-label="Filter tournament rows by Typ"></select>
+            </label>
+          </div>
+        </div>
+
+        <section id="player-story" class="player-story" hidden aria-label="Player tournament story"></section>
+
+        <div class="table-wrap">
+          <table>
+            <thead id="results-head"></thead>
+            <tbody id="results-body"></tbody>
+          </table>
+        </div>
+
+        <div id="mobile-list" class="mobile-list" hidden></div>
+      </section>
+
+      <button type="button" id="mobile-reload" class="mobile-reload" hidden data-i18n="result.reload">Reload</button>
+    </main>
+
+    <script src="./lib/chess-results.js?v=20260719-api-1"></script>
+    <script src="./script.js?v=20260719-api-1"></script>
+  </body>
+</html>

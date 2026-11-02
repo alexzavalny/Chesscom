@@ -1,0 +1,1151 @@
+const form = document.querySelector("#load-form");
+const searchForm = document.querySelector("#search-form");
+const playerSearchForm = document.querySelector("#player-search-form");
+const heroSection = document.querySelector("#hero-section");
+const controlsPanel = document.querySelector("#controls-panel");
+const urlInput = document.querySelector("#url-input");
+const searchDateFromInput = document.querySelector("#search-date-from");
+const searchDateToInput = document.querySelector("#search-date-to");
+const playerFirstNameInput = document.querySelector("#player-first-name");
+const playerLastNameInput = document.querySelector("#player-last-name");
+const playerCountryInput = document.querySelector("#player-country");
+const languageOptions = document.querySelectorAll("[data-language-option]");
+const demoButton = document.querySelector("#demo-button");
+const statusNode = document.querySelector("#status");
+const resultPanel = document.querySelector("#result-panel");
+const resultKindNode = document.querySelector("#result-kind");
+const resultTitleNode = document.querySelector("#result-title");
+const backLinkNode = document.querySelector("#back-link");
+const bookmarkButtonNode = document.querySelector("#bookmark-button");
+const watchButtonNode = document.querySelector("#watch-button");
+const fideLinkNode = document.querySelector("#fide-link");
+const originalLinkNode = document.querySelector("#original-link");
+const resultSubtitleNode = document.querySelector("#result-subtitle");
+const resultMetaNode = document.querySelector("#result-meta");
+const resultMetaLinksNode = document.querySelector("#result-meta-links");
+const playerStoryNode = document.querySelector("#player-story");
+const typeFilterWrapNode = document.querySelector("#type-filter-wrap");
+const typeFilterSelectNode = document.querySelector("#type-filter-select");
+const resultsHeadNode = document.querySelector("#results-head");
+const resultsBodyNode = document.querySelector("#results-body");
+const mobileListNode = document.querySelector("#mobile-list");
+const mobileReloadButton = document.querySelector("#mobile-reload");
+const clearButton = document.querySelector("#clear-button");
+const DEFAULT_DOCUMENT_TITLE = document.title;
+
+const {
+  DEMO_URL,
+  buildApiUrl,
+  buildInternalPageUrl,
+  buildPlayerSearchView,
+  buildPlayerView,
+  buildTournamentSearchView,
+  buildTournamentView,
+  chip,
+  collectUniqueColumnValues,
+  debugLog,
+  escapeHtml,
+  filterRowsByColumnValue,
+  findColumnIndex,
+  isTournamentUrl,
+  normalizeFideId,
+  normalizeSupportedUrl,
+  extractChessResultsTarget,
+  prependBookmarkMarker,
+  readQueryState,
+  renderMobileRows,
+  renderTableHead,
+  renderTableRows,
+  writeQueryState
+} = window.ChessResults;
+
+const BOOKMARK_STORAGE_KEY = "easy-chess-results:bookmarked-players";
+const WATCH_STORAGE_KEY = "easy-chess-results:watched-players";
+const LANGUAGE_STORAGE_KEY = "easy-chess-results:language";
+const WATCH_INTERVAL_MS = 60000;
+const TRANSLATIONS = {
+  en: {
+    "hero.eyebrow": "Chess-Results, simplified",
+    "hero.title": "Minimal tournament and player views",
+    "hero.lede": "Paste a Chess-Results tournament ranking or player URL. The API handles loading and normalization.",
+
+    "form.urlLabel": "Chess-Results URL",
+    "form.loadPage": "Load page",
+    "form.loadDemo": "Load demo player",
+    "search.tournamentNote": "Or search tournaments through the Easy Chess Results API.",
+    "search.endFrom": "End date from",
+    "search.endTo": "End date to",
+    "search.tournamentsButton": "Search tournaments",
+    "search.playerNote": "Or search players indexed by the Easy Chess Results API. Country defaults to LAT.",
+    "search.firstName": "First name",
+    "search.lastName": "Last name",
+    "search.country": "Country",
+    "search.playersButton": "Search players",
+    "result.back": "Back to tournament",
+    "result.type": "Typ",
+    "result.reload": "Reload",
+    "result.view": "View",
+    "bookmark.add": "Bookmark",
+    "bookmark.added": "Bookmarked",
+    "watch.add": "Watch player",
+    "watch.on": "Watching",
+    "filter.allGroups": "All groups",
+    "status.removedBookmark": "Removed bookmark for {player}.",
+    "status.bookmarked": "Bookmarked {player}.",
+    "status.watchStarted": "Watching {player}. This page will check for changes every minute while open.",
+    "status.watchStopped": "Stopped watching {player}.",
+    "status.notificationsOn": "Browser notifications enabled.",
+    "status.playerChanged": "New Chess-Results data for {player}.",
+    "status.loading": "Loading Chess-Results data from the API...",
+    "status.loadingNormalized": "Loading the supported Chess-Results view from the API...",
+    "status.loaded": "Loaded {rows} rows from the API.",
+    "status.loadedNormalized": "Loaded {rows} rows. Converted unsupported art=0 link to ranking view (art=1).",
+    "status.enterUrl": "Enter a Chess-Results page URL.",
+    "status.demoLoaded": "Loaded demo data for {player}.",
+    "status.searchingTournaments": "Searching tournaments through the API...",
+    "status.tournamentsFound": "Found {rows} tournaments.",
+    "status.searchingPlayers": "Searching indexed players through the API...",
+    "status.playersFound": "Found {rows} player entries.",
+    "label.country": "Country",
+    "label.endFrom": "End from",
+    "label.endTo": "End to",
+    "label.firstName": "First name",
+    "label.lastName": "Last name",
+    "story.title": "Tournament story",
+    "story.scoreJourney": "Score journey",
+    "story.opponentStrength": "Opponent strength",
+    "story.highlights": "Highlights",
+    "story.finalScore": "Final score",
+    "story.expected": "Expected score",
+    "story.bestResult": "Best result",
+    "story.worstLoss": "Worst loss",
+    "story.toughestOpponent": "Toughest opponent",
+    "story.colorSplit": "Color split",
+    "story.white": "White",
+    "story.black": "Black",
+    "story.noRating": "no rating"
+  },
+  ru: {
+    "hero.eyebrow": "Chess-Results — удобно",
+    "hero.title": "Удобные турниры и игроки",
+    "hero.lede": "Вставь ссылку на турнир или игрока Chess-Results. Загрузкой и обработкой занимается API.",
+
+    "form.urlLabel": "Ссылка Chess-Results",
+    "form.loadPage": "Загрузить",
+    "form.loadDemo": "Демо игрок",
+    "search.tournamentNote": "Или ищи турниры через Easy Chess Results API.",
+    "search.endFrom": "Дата окончания от",
+    "search.endTo": "Дата окончания до",
+    "search.tournamentsButton": "Искать турниры",
+    "search.playerNote": "Или ищи игроков, уже добавленных в индекс API. Страна по умолчанию LAT.",
+    "search.firstName": "Имя",
+    "search.lastName": "Фамилия",
+    "search.country": "Страна",
+    "search.playersButton": "Искать игроков",
+    "result.back": "Назад к турниру",
+    "result.type": "Тип",
+    "result.reload": "Обновить",
+    "result.view": "Вид",
+    "bookmark.add": "В закладки",
+    "bookmark.added": "В закладках",
+    "watch.add": "Следить за игроком",
+    "watch.on": "Следим",
+    "filter.allGroups": "Все группы",
+    "status.removedBookmark": "Убрали закладку для {player}.",
+    "status.bookmarked": "Добавили {player} в закладки.",
+    "status.watchStarted": "Следим за {player}. Пока страница открыта, проверяем изменения раз в минуту.",
+    "status.watchStopped": "Больше не следим за {player}.",
+    "status.notificationsOn": "Уведомления браузера включены.",
+    "status.playerChanged": "На Chess-Results появились изменения для {player}.",
+    "status.loading": "Загружаем данные Chess-Results через API...",
+    "status.loadingNormalized": "Загружаем поддерживаемый вид Chess-Results через API...",
+    "status.loaded": "Загружено строк через API: {rows}.",
+    "status.loadedNormalized": "Загружено строк: {rows}. Неподдерживаемая ссылка art=0 преобразована в таблицу art=1.",
+    "status.enterUrl": "Вставь ссылку на страницу Chess-Results.",
+    "status.demoLoaded": "Загружены демо-данные для {player}.",
+    "status.searchingTournaments": "Ищем турниры через API...",
+    "status.tournamentsFound": "Найдено турниров: {rows}.",
+    "status.searchingPlayers": "Ищем игроков в индексе API...",
+    "status.playersFound": "Найдено записей игроков: {rows}.",
+    "label.country": "Страна",
+    "label.endFrom": "Окончание от",
+    "label.endTo": "Окончание до",
+    "label.firstName": "Имя",
+    "label.lastName": "Фамилия",
+    "story.title": "История турнира",
+    "story.scoreJourney": "Ход очков",
+    "story.opponentStrength": "Сила соперников",
+    "story.highlights": "Моменты",
+    "story.finalScore": "Итог",
+    "story.expected": "Ожидание",
+    "story.bestResult": "Лучший результат",
+    "story.worstLoss": "Худший проигрыш",
+    "story.toughestOpponent": "Самый сильный соперник",
+    "story.colorSplit": "По цветам",
+    "story.white": "Белыми",
+    "story.black": "Чёрными",
+    "story.noRating": "без рейтинга"
+  }
+};
+const TOURNAMENT_SEARCH_COUNTRY = "LAT";
+let currentView = null;
+let currentTypeFilter = "";
+
+let currentLanguage = readStoredLanguage();
+let watchTimer = null;
+let silentWatchReload = false;
+
+function readStoredLanguage() {
+  try {
+    const stored = window.localStorage?.getItem(LANGUAGE_STORAGE_KEY);
+    return stored === "ru" || stored === "en" ? stored : "en";
+  } catch {
+    return "en";
+  }
+}
+
+function t(key, params = {}) {
+  const template = TRANSLATIONS[currentLanguage]?.[key] || TRANSLATIONS.en[key] || key;
+  return template.replace(/\{(\w+)\}/g, (_, name) => String(params[name] ?? ""));
+}
+
+function applyLanguage() {
+  document.documentElement.lang = currentLanguage;
+  languageOptions.forEach((option) => {
+    const isActive = option.dataset.languageOption === currentLanguage;
+    option.classList.toggle("is-active", isActive);
+    option.setAttribute("aria-pressed", String(isActive));
+  });
+  document.querySelectorAll("[data-i18n]").forEach((node) => {
+    node.textContent = t(node.dataset.i18n);
+  });
+  if (currentView?.kind === "player") {
+    renderPlayerStory(currentView);
+  }
+  updateBookmarkButton(currentView);
+  updateWatchButton(currentView);
+  if (!currentView) {
+    resultKindNode.textContent = t("result.view");
+  } else {
+    renderTypeFilter(currentView);
+  }
+}
+
+function readJsonStorage(key, fallback = {}) {
+  if (!window.localStorage) return fallback;
+  try {
+    const raw = window.localStorage.getItem(key);
+    const parsed = raw ? JSON.parse(raw) : fallback;
+    return parsed && typeof parsed === "object" ? parsed : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function writeJsonStorage(key, value) {
+  if (window.localStorage) window.localStorage.setItem(key, JSON.stringify(value));
+}
+
+function setStatus(message, tone = "") {
+  debugLog("setStatus", { message, tone });
+  statusNode.textContent = message;
+  statusNode.className = `status ${tone}`.trim();
+}
+
+function updateOriginalLink(url = "") {
+  originalLinkNode.href = url || "#";
+  originalLinkNode.hidden = !url;
+}
+
+function updateFideLink(url = "") {
+  fideLinkNode.href = url || "#";
+  fideLinkNode.hidden = !url;
+}
+
+function updateDocumentTitle(view = null) {
+  const viewTitle = String(view?.title || "").trim();
+  document.title = viewTitle ? `${viewTitle} | ${DEFAULT_DOCUMENT_TITLE}` : DEFAULT_DOCUMENT_TITLE;
+}
+
+function readBookmarks() {
+  return readJsonStorage(BOOKMARK_STORAGE_KEY, {});
+}
+
+function writeBookmarks(bookmarks) {
+  writeJsonStorage(BOOKMARK_STORAGE_KEY, bookmarks);
+}
+
+function readWatchedPlayers() {
+  return readJsonStorage(WATCH_STORAGE_KEY, {});
+}
+
+function writeWatchedPlayers(players) {
+  writeJsonStorage(WATCH_STORAGE_KEY, players);
+}
+
+function normalizeBookmarkName(name = "") {
+  return String(name || "").replace(/^(🔖|⭐)\s+/g, "").trim();
+}
+
+function updateBookmarkButton(view = null) {
+  const playerName = normalizeBookmarkName(view?.title || "");
+  if (view?.kind !== "player" || !playerName) {
+    bookmarkButtonNode.hidden = true;
+    bookmarkButtonNode.textContent = t("bookmark.add");
+    bookmarkButtonNode.dataset.bookmarkKey = "";
+    bookmarkButtonNode.dataset.playerName = "";
+    bookmarkButtonNode.dataset.fideId = "";
+    return;
+  }
+
+  const bookmarked = Boolean(readBookmarks()[playerName]);
+  bookmarkButtonNode.hidden = false;
+  bookmarkButtonNode.textContent = bookmarked ? t("bookmark.added") : t("bookmark.add");
+  bookmarkButtonNode.dataset.bookmarkKey = playerName;
+  bookmarkButtonNode.dataset.playerName = playerName;
+  bookmarkButtonNode.dataset.fideId = normalizeFideId(view.fideId || "");
+}
+
+function decorateViewWithBookmarks(view) {
+  if (!view || view.kind !== "tournament") {
+    return view;
+  }
+
+  const bookmarks = readBookmarks();
+  const bookmarkedNames = new Set(
+    Object.entries(bookmarks)
+      .flatMap(([key, entry]) => [normalizeBookmarkName(key), normalizeBookmarkName(entry?.name || "")])
+      .filter(Boolean)
+  );
+  const nameColumnIndex = view.columns.findIndex((column) => column.label === "Name");
+
+  if (!bookmarkedNames.size || nameColumnIndex === -1) {
+    return view;
+  }
+
+  return {
+    ...view,
+    rows: view.rows.map((row) => {
+      const updatedCells = row.cells.map((cell, index) => {
+        if (index !== nameColumnIndex) {
+          return cell;
+        }
+
+        const plainName = normalizeBookmarkName(cell.text);
+        return bookmarkedNames.has(plainName) ? { ...cell, text: prependBookmarkMarker(cell.text, true) } : cell;
+      });
+      const plainMobileTitle = normalizeBookmarkName(row.mobile.title);
+      return {
+        ...row,
+        cells: updatedCells,
+        mobile: {
+          ...row.mobile,
+          title: bookmarkedNames.has(plainMobileTitle) ? prependBookmarkMarker(row.mobile.title, true) : row.mobile.title
+        }
+      };
+    })
+  };
+}
+
+function getPlayerWatchKey(view = null) {
+  const sourceUrl = readQueryState(window.location.search).url;
+  const fideId = normalizeFideId(view?.fideId || "");
+  return fideId || normalizeSupportedUrl(sourceUrl) || normalizeBookmarkName(view?.title || "");
+}
+
+function buildPlayerSnapshot(view = null) {
+  if (!view || view.kind !== "player") return "";
+  return JSON.stringify({
+    title: normalizeBookmarkName(view.title),
+    chips: view.chips || [],
+    rows: (view.rows || []).map((row) => ({
+      cells: (row.cells || []).map((cell) => String(cell.text || "").trim())
+    }))
+  });
+}
+
+function updateWatchButton(view = null) {
+  if (view?.kind !== "player") {
+    watchButtonNode.hidden = true;
+    watchButtonNode.textContent = t("watch.add");
+    watchButtonNode.classList.remove("is-watching");
+    watchButtonNode.dataset.watchKey = "";
+    return;
+  }
+
+  const watchKey = getPlayerWatchKey(view);
+  const watched = Boolean(readWatchedPlayers()[watchKey]);
+  watchButtonNode.hidden = false;
+  watchButtonNode.textContent = watched ? t("watch.on") : t("watch.add");
+  watchButtonNode.classList.toggle("is-watching", watched);
+  watchButtonNode.dataset.watchKey = watchKey;
+}
+
+function notifyPlayerChanged(playerName) {
+  const message = t("status.playerChanged", { player: playerName || "player" });
+  if (typeof Notification !== "undefined" && Notification.permission === "granted") {
+    new Notification("Easy Chess Results", { body: message });
+  }
+  setStatus(message, "success");
+}
+
+function updateWatchedSnapshot(view = null, { notify = false } = {}) {
+  if (view?.kind !== "player") return;
+  const watchKey = getPlayerWatchKey(view);
+  const watchedPlayers = readWatchedPlayers();
+  const watched = watchedPlayers[watchKey];
+  if (!watched) return;
+
+  const snapshot = buildPlayerSnapshot(view);
+  if (notify && watched.snapshot && watched.snapshot !== snapshot) {
+    notifyPlayerChanged(normalizeBookmarkName(view.title));
+  }
+  watchedPlayers[watchKey] = {
+    ...watched,
+    name: normalizeBookmarkName(view.title),
+    url: normalizeSupportedUrl(readQueryState(window.location.search).url),
+    fideId: normalizeFideId(view.fideId || ""),
+    snapshot,
+    updatedAt: new Date().toISOString()
+  };
+  writeWatchedPlayers(watchedPlayers);
+}
+
+function scheduleWatchPolling() {
+  if (watchTimer) clearInterval(watchTimer);
+  watchTimer = setInterval(() => {
+    const queryState = readQueryState(window.location.search);
+    if (!currentView || currentView.kind !== "player" || !queryState.url) return;
+    const watched = readWatchedPlayers()[getPlayerWatchKey(currentView)];
+    if (!watched) return;
+    silentWatchReload = true;
+    loadFromUrl(queryState.url, { historyMode: "replace", parentUrl: queryState.parent }).catch((error) => {
+      setStatus(error.message, "error");
+    }).finally(() => {
+      silentWatchReload = false;
+    });
+  }, WATCH_INTERVAL_MS);
+}
+
+function clearView({ keepUrl = false } = {}) {
+  debugLog("clearView", { keepUrl });
+  currentView = null;
+  currentTypeFilter = "";
+  updateDocumentTitle(null);
+  resultPanel.hidden = true;
+  mobileListNode.hidden = true;
+  mobileReloadButton.hidden = true;
+  clearButton.hidden = true;
+  controlsPanel.hidden = false;
+  heroSection.hidden = false;
+  resultKindNode.textContent = t("result.view");
+  resultTitleNode.textContent = "-";
+  backLinkNode.hidden = true;
+  backLinkNode.href = "#";
+  updateBookmarkButton(null);
+  updateWatchButton(null);
+  updateFideLink("");
+  updateOriginalLink(keepUrl ? readQueryState(window.location.search).url : "");
+  resultSubtitleNode.textContent = "";
+  resultSubtitleNode.hidden = true;
+  typeFilterWrapNode.hidden = true;
+  typeFilterSelectNode.innerHTML = "";
+  resultMetaNode.innerHTML = "";
+  resultMetaLinksNode.innerHTML = "";
+  resultMetaLinksNode.hidden = true;
+  playerStoryNode.innerHTML = "";
+  playerStoryNode.hidden = true;
+  resultsHeadNode.innerHTML = "";
+  resultsBodyNode.innerHTML = "";
+  mobileListNode.innerHTML = "";
+
+  if (!keepUrl) {
+    writeQueryState(window.history, window.location.href, { url: "", parent: "" });
+  }
+}
+
+function getTypeFilterOptions(view) {
+  if (!view || view.kind !== "tournament") {
+    return { columnIndex: -1, values: [] };
+  }
+
+  const columnIndex = findColumnIndex(view.columns, "Typ");
+  return {
+    columnIndex,
+    values: collectUniqueColumnValues(view.rows, columnIndex)
+  };
+}
+
+function normalizeTypeFilter(view) {
+  const { values } = getTypeFilterOptions(view);
+  if (!values.includes(currentTypeFilter)) {
+    currentTypeFilter = "";
+  }
+}
+
+function renderTypeFilter(view) {
+  const { columnIndex, values } = getTypeFilterOptions(view);
+
+  if (columnIndex === -1 || values.length === 0) {
+    typeFilterWrapNode.hidden = true;
+    typeFilterSelectNode.innerHTML = "";
+    return;
+  }
+
+  typeFilterWrapNode.hidden = false;
+  typeFilterSelectNode.innerHTML = [
+    `<option value="">${escapeHtml(t("filter.allGroups"))}</option>`,
+    ...values.map((value) => `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`)
+  ].join("");
+  typeFilterSelectNode.value = values.includes(currentTypeFilter) ? currentTypeFilter : "";
+}
+
+function parseChessNumber(value = "") {
+  const normalized = String(value)
+    .replace("½", "0.5")
+    .replace(/,/g, ".")
+    .trim();
+  const parsed = Number.parseFloat(normalized);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function formatChessNumber(value) {
+  if (!Number.isFinite(value)) return "0";
+  return Number.isInteger(value) ? String(value) : String(value).replace(".", ",");
+}
+
+function getPlayerStoryGames(view) {
+  if (!view || view.kind !== "player" || !Array.isArray(view.rows)) return [];
+  const indexByLabel = Object.fromEntries((view.columns || []).map((column, index) => [column.label, index]));
+  const getText = (row, label) => String(row.cells?.[indexByLabel[label]]?.text || "").trim();
+  const getRaw = (row, label) => String(row.cells?.[indexByLabel[label]]?.raw || getText(row, label)).trim();
+
+  return view.rows.map((row, index) => {
+    const result = parseChessNumber(getText(row, "Res"));
+    const ratingText = getText(row, "Rtg");
+    const rating = Number.parseInt(ratingText.replace(/\D/g, ""), 10);
+    const colorRaw = getRaw(row, "Clr").toLowerCase();
+    const name = getText(row, "Name");
+    const isBye = name.toLowerCase() === "bye";
+    return {
+      round: getText(row, "Rd") || String(index + 1),
+      name,
+      rating: Number.isFinite(rating) && rating > 0 ? rating : null,
+      result,
+      resultText: getText(row, "Res"),
+      color: colorRaw.includes("black") ? "black" : colorRaw.includes("white") ? "white" : "",
+      isBye
+    };
+  }).filter((game) => (game.round || game.name || game.resultText) && !game.isBye);
+}
+
+function resultTone(result) {
+  if (result >= 1) return "win";
+  if (result > 0) return "draw";
+  return "loss";
+}
+
+function renderPlayerStory(view) {
+  const games = getPlayerStoryGames(view);
+  if (!games.length) {
+    playerStoryNode.innerHTML = "";
+    playerStoryNode.hidden = true;
+    return;
+  }
+
+  let cumulative = 0;
+  const journey = games.map((game) => {
+    cumulative += game.result;
+    return { ...game, cumulative };
+  });
+  const finalScore = cumulative;
+  const ratedGames = games.filter((game) => game.rating !== null);
+  const strongest = ratedGames.reduce((best, game) => (!best || game.rating > best.rating ? game : best), null);
+  const bestWin = ratedGames
+    .filter((game) => game.result >= 1)
+    .reduce((best, game) => (!best || game.rating > best.rating ? game : best), null);
+  const worstLoss = ratedGames
+    .filter((game) => game.result === 0)
+    .reduce((worst, game) => (!worst || game.rating < worst.rating ? game : worst), null);
+  const whiteGames = games.filter((game) => game.color === "white");
+  const blackGames = games.filter((game) => game.color === "black");
+  const sum = (items) => items.reduce((total, game) => total + game.result, 0);
+  const perfChip = view.chips?.find((c) => c.label?.toLowerCase().includes("perf"));
+  const tprRating = perfChip ? Number.parseInt(String(perfChip.value).replace(/\D/g, ""), 10) : null;
+  const maxScore = Math.max(1, games.length);
+  const maxRating = Math.max(...ratedGames.map((game) => game.rating || 0), 1);
+  const minRating = Math.min(...ratedGames.map((game) => game.rating || maxRating), maxRating);
+  const ratingRange = Math.max(1, maxRating - minRating);
+  const scorePoints = journey.map((game, index) => {
+    const x = games.length === 1 ? 50 : 8 + (index / (games.length - 1)) * 84;
+    const y = 86 - (game.cumulative / maxScore) * 68;
+    return `${x.toFixed(2)},${y.toFixed(2)}`;
+  }).join(" ");
+  const ratingBars = games.map((game) => {
+    const height = game.rating === null ? 42 : 18 + ((game.rating - minRating) / ratingRange) * 48;
+    const ratingLabel = game.rating === null ? "—" : String(game.rating);
+    return `
+      <div class="story-rating-bar story-${resultTone(game.result)}${game.rating === null ? " story-unrated" : ""}" style="--bar-height:${height.toFixed(1)}%">
+        <span>${escapeHtml(game.round)}</span>
+        <strong>${escapeHtml(ratingLabel)}</strong>
+      </div>`;
+  }).join("");
+  const journeyDots = journey.map((game, index) => {
+    const x = games.length === 1 ? 50 : 8 + (index / (games.length - 1)) * 84;
+    const y = 86 - (game.cumulative / maxScore) * 68;
+    return `<g class="story-dot story-${resultTone(game.result)}">
+      <circle cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" r="3.8"></circle>
+      <text x="${x.toFixed(2)}" y="96">${escapeHtml(game.round)}</text>
+      <title>Rd ${escapeHtml(game.round)}: ${escapeHtml(game.resultText)} → ${escapeHtml(formatChessNumber(game.cumulative))}</title>
+    </g>`;
+  }).join("");
+  const highlights = [
+    { label: t("story.finalScore"), value: `${formatChessNumber(finalScore)} / ${games.length}` },
+    tprRating ? { label: "TPR", value: String(tprRating) } : null,
+    bestWin ? { label: t("story.bestResult"), value: `${bestWin.name || "—"} · ${bestWin.rating}` } : null,
+    worstLoss ? { label: t("story.worstLoss"), value: `${worstLoss.name || "—"} · ${worstLoss.rating}` } : null,
+    strongest ? { label: t("story.toughestOpponent"), value: `${strongest.name || "—"} · ${strongest.rating}` } : null,
+    { label: t("story.colorSplit"), value: `${t("story.white")} ${formatChessNumber(sum(whiteGames))}/${whiteGames.length || 0} · ${t("story.black")} ${formatChessNumber(sum(blackGames))}/${blackGames.length || 0}` }
+  ].filter(Boolean);
+
+  playerStoryNode.innerHTML = `
+    <div class="story-head">
+      <p class="label">${escapeHtml(t("story.title"))}</p>
+      <div class="story-score-pill">${escapeHtml(formatChessNumber(finalScore))} / ${escapeHtml(String(games.length))}</div>
+    </div>
+    <div class="story-grid">
+      <article class="story-card story-score-card">
+        <h3>${escapeHtml(t("story.scoreJourney"))}</h3>
+        <svg class="story-score-svg" viewBox="0 0 100 100" role="img" aria-label="${escapeHtml(t("story.scoreJourney"))}">
+          <polyline class="story-score-line" points="${scorePoints}"></polyline>
+          ${journeyDots}
+        </svg>
+      </article>
+      <article class="story-card">
+        <h3>${escapeHtml(t("story.opponentStrength"))}</h3>
+        <div class="story-rating-bars">${ratingBars}</div>
+      </article>
+      <article class="story-card story-highlights">
+        <h3>${escapeHtml(t("story.highlights"))}</h3>
+        ${highlights.map((item) => `<div><span>${escapeHtml(item.label)}</span><strong>${escapeHtml(item.value)}</strong></div>`).join("")}
+      </article>
+    </div>`;
+  playerStoryNode.hidden = false;
+}
+
+function renderResult(view) {
+  const sourceUrl = readQueryState(window.location.search).url;
+  currentView = view;
+  normalizeTypeFilter(view);
+  const { columnIndex } = getTypeFilterOptions(view);
+  const filteredView =
+    view.kind === "tournament"
+      ? {
+          ...view,
+          rows: filterRowsByColumnValue(view.rows, columnIndex, currentTypeFilter)
+        }
+      : view;
+  const decoratedView = decorateViewWithBookmarks(filteredView);
+  debugLog("renderResult", {
+    kind: decoratedView.kind,
+    title: decoratedView.title,
+    subtitle: decoratedView.subtitle,
+    chips: decoratedView.chips.length,
+    columns: decoratedView.columns.map((column) => column.label),
+    rows: decoratedView.rows.length,
+    backUrl: decoratedView.backUrl,
+    typeFilter: currentTypeFilter
+  });
+  updateDocumentTitle(decoratedView);
+  resultKindNode.textContent = decoratedView.label;
+  resultTitleNode.textContent = decoratedView.title;
+  updateBookmarkButton(view);
+  updateWatchButton(view);
+  updateWatchedSnapshot(view, { notify: silentWatchReload });
+  updateFideLink(decoratedView.fideUrl || "");
+  updateOriginalLink(sourceUrl);
+
+  if (decoratedView.kind === "player" && decoratedView.backUrl) {
+    backLinkNode.href = buildInternalPageUrl(window.location.href, decoratedView.backUrl);
+    backLinkNode.hidden = false;
+  } else {
+    backLinkNode.href = "#";
+    backLinkNode.hidden = true;
+  }
+
+  resultSubtitleNode.textContent = decoratedView.subtitle || "";
+  resultSubtitleNode.hidden = !decoratedView.subtitle;
+  renderTypeFilter(view);
+  resultMetaNode.innerHTML = decoratedView.chips.map((entry) => chip(entry.label, entry.value, entry)).join("");
+  resultMetaLinksNode.innerHTML = (decoratedView.tournamentLinks || [])
+    .map(
+      (entry) =>
+        `<a class="chip-link" href="${escapeHtml(buildInternalPageUrl(window.location.href, entry.href))}">${escapeHtml(entry.label)}</a>`
+    )
+    .join("");
+  resultMetaLinksNode.hidden = !(decoratedView.tournamentLinks || []).length;
+  renderPlayerStory(decoratedView);
+  resultsHeadNode.innerHTML = renderTableHead(decoratedView.columns);
+  resultsBodyNode.innerHTML = renderTableRows(decoratedView.rows, window.location.href);
+  mobileListNode.innerHTML = renderMobileRows(decoratedView.rows, window.location.href);
+
+  resultPanel.hidden = false;
+  mobileListNode.hidden = false;
+  mobileReloadButton.hidden = false;
+  clearButton.hidden = false;
+  controlsPanel.hidden = true;
+  heroSection.hidden = true;
+}
+
+typeFilterSelectNode.addEventListener("change", () => {
+  currentTypeFilter = typeFilterSelectNode.value;
+  if (currentView) {
+    renderResult(currentView);
+  }
+});
+
+bookmarkButtonNode.addEventListener("click", () => {
+  const bookmarkKey = normalizeBookmarkName(bookmarkButtonNode.dataset.bookmarkKey);
+  const playerName = normalizeBookmarkName(bookmarkButtonNode.dataset.playerName);
+  const fideId = normalizeFideId(bookmarkButtonNode.dataset.fideId);
+  if (!bookmarkKey) {
+    return;
+  }
+
+  const bookmarks = readBookmarks();
+  if (bookmarks[bookmarkKey]) {
+    delete bookmarks[bookmarkKey];
+    writeBookmarks(bookmarks);
+    updateBookmarkButton(currentView);
+    if (currentView) {
+      renderResult(currentView);
+    }
+    setStatus(t("status.removedBookmark", { player: playerName || "player" }), "success");
+    return;
+  }
+
+  bookmarks[bookmarkKey] = { name: playerName, fideId };
+  writeBookmarks(bookmarks);
+  updateBookmarkButton(currentView);
+  if (currentView) {
+    renderResult(currentView);
+  }
+  setStatus(t("status.bookmarked", { player: playerName || "player" }), "success");
+});
+
+watchButtonNode.addEventListener("click", async () => {
+  if (!currentView || currentView.kind !== "player") return;
+  const watchKey = getPlayerWatchKey(currentView);
+  const playerName = normalizeBookmarkName(currentView.title) || "player";
+  const watchedPlayers = readWatchedPlayers();
+  if (watchedPlayers[watchKey]) {
+    delete watchedPlayers[watchKey];
+    writeWatchedPlayers(watchedPlayers);
+    updateWatchButton(currentView);
+    setStatus(t("status.watchStopped", { player: playerName }), "success");
+    return;
+  }
+
+  watchedPlayers[watchKey] = {
+    name: playerName,
+    url: normalizeSupportedUrl(readQueryState(window.location.search).url),
+    fideId: normalizeFideId(currentView.fideId || ""),
+    snapshot: buildPlayerSnapshot(currentView),
+    updatedAt: new Date().toISOString()
+  };
+  writeWatchedPlayers(watchedPlayers);
+  updateWatchButton(currentView);
+
+  if (typeof Notification !== "undefined" && Notification.permission === "default") {
+    const permission = await Notification.requestPermission();
+    if (permission === "granted") setStatus(t("status.notificationsOn"), "success");
+  }
+  setStatus(t("status.watchStarted", { player: playerName }), "success");
+});
+
+async function fetchApi(path, query = {}) {
+  const apiUrl = buildApiUrl(path, query);
+  const response = await fetch(apiUrl, {
+    headers: {
+      Accept: "application/json",
+      "ngrok-skip-browser-warning": "true"
+    }
+  });
+  const payload = await response.json().catch(() => null);
+  if (!response.ok) {
+    const message = payload?.error?.message || payload?.message || `API request failed with status ${response.status}.`;
+    throw new Error(message);
+  }
+  return payload;
+}
+
+async function loadFromUrl(url, { historyMode = "replace", parentUrl = "", refresh = false } = {}) {
+  const normalizedUrl = normalizeSupportedUrl(url);
+  const normalizedParentUrl = normalizeSupportedUrl(parentUrl);
+  const wasNormalized = normalizedUrl !== url;
+  const target = extractChessResultsTarget(normalizedUrl);
+
+  debugLog("loadFromUrl:start", {
+    url,
+    normalizedUrl,
+    parentUrl,
+    normalizedParentUrl,
+    historyMode,
+    target,
+    refresh
+  });
+
+  if (!silentWatchReload) {
+    setStatus(wasNormalized ? t("status.loadingNormalized") : t("status.loading"));
+  }
+
+  try {
+    let parsed;
+    if (target.kind === "player") {
+      const basePath = `/api/v1/tournaments/${target.tournamentId}/players/${target.startNumber}`;
+      const [participantResponse, resultsResponse] = await Promise.all([
+        fetchApi(basePath, { refresh }),
+        fetchApi(`${basePath}/results`, { refresh })
+      ]);
+      parsed = buildPlayerView(participantResponse, resultsResponse, normalizedUrl, normalizedParentUrl);
+    } else {
+      const basePath = `/api/v1/tournaments/${target.tournamentId}`;
+      const [tournamentResponse, standingsResponse] = await Promise.all([
+        fetchApi(basePath, { refresh }),
+        fetchApi(`${basePath}/standings`, { round: target.round, refresh })
+      ]);
+      parsed = buildTournamentView(tournamentResponse, standingsResponse, normalizedUrl);
+    }
+    writeQueryState(
+      window.history,
+      window.location.href,
+      { url: normalizedUrl, parent: parsed.backUrl || "" },
+      historyMode
+    );
+    renderResult(parsed);
+    updateOriginalLink(normalizedUrl);
+    if (!silentWatchReload) {
+      setStatus(
+        wasNormalized
+          ? t("status.loadedNormalized", { rows: parsed.rows.length })
+          : t("status.loaded", { rows: parsed.rows.length }),
+        "success"
+      );
+    }
+  } catch (error) {
+    debugLog("loadFromUrl:error", {
+      message: error.message,
+      stack: error.stack,
+      url,
+      normalizedUrl,
+      parentUrl,
+      normalizedParentUrl
+    });
+    throw error;
+  }
+}
+
+async function loadTournamentSearch({ dateFrom = "", dateTo = "", historyMode = "push" } = {}) {
+  const country = TOURNAMENT_SEARCH_COUNTRY;
+  setStatus(t("status.searchingTournaments"));
+  const response = await fetchApi("/api/v1/tournaments", {
+    country,
+    end_from: dateFrom,
+    end_to: dateTo
+  });
+  const parsed = buildTournamentSearchView(response);
+  currentTypeFilter = "";
+  searchDateFromInput.value = dateFrom;
+  searchDateToInput.value = dateTo;
+  writeQueryState(
+    window.history,
+    window.location.href,
+    {
+      searchFrom: dateFrom,
+      searchTo: dateTo
+    },
+    historyMode
+  );
+  renderResult({
+    ...parsed,
+    title: `${parsed.title} · ${country}`,
+    chips: [
+      { label: t("label.country"), value: country },
+      { label: t("label.endFrom"), value: dateFrom },
+      { label: t("label.endTo"), value: dateTo }
+    ].filter((entry) => entry.value)
+  });
+  updateOriginalLink(parsed.sourceUrl);
+  setStatus(t("status.tournamentsFound", { rows: parsed.rows.length }), "success");
+}
+
+async function loadPlayerSearch({ firstName = "", lastName = "", country = "", historyMode = "push" } = {}) {
+  const normalizedCountry = country.trim().toUpperCase() || "LAT";
+  const normalizedFirstName = firstName.trim();
+  const normalizedLastName = lastName.trim();
+  if (!normalizedFirstName && !normalizedLastName) {
+    throw new Error("Enter a first name or last name for player search.");
+  }
+
+  setStatus(t("status.searchingPlayers"));
+  const response = await fetchApi("/api/v1/players", {
+    q: normalizedLastName || normalizedFirstName,
+    federation: normalizedCountry,
+    limit: 100
+  });
+  const nameParts = [normalizedFirstName, normalizedLastName].map((value) => value.toLocaleLowerCase()).filter(Boolean);
+  const filteredPlayers = (response.data || []).filter((player) => {
+    const name = String(player.name || "").toLocaleLowerCase();
+    return nameParts.every((part) => name.includes(part));
+  });
+  const parsed = buildPlayerSearchView({
+    ...response,
+    data: filteredPlayers,
+    count: filteredPlayers.length
+  });
+  currentTypeFilter = "";
+  playerFirstNameInput.value = normalizedFirstName;
+  playerLastNameInput.value = normalizedLastName;
+  playerCountryInput.value = normalizedCountry;
+  writeQueryState(
+    window.history,
+    window.location.href,
+    {
+      playerFirstName: normalizedFirstName,
+      playerLastName: normalizedLastName,
+      playerCountry: normalizedCountry === "LAT" ? "" : normalizedCountry
+    },
+    historyMode
+  );
+  renderResult({
+    ...parsed,
+    title: `${parsed.title} · ${[normalizedFirstName, normalizedLastName].filter(Boolean).join(" ")} · ${normalizedCountry}`,
+    chips: [
+      { label: t("label.firstName"), value: normalizedFirstName },
+      { label: t("label.lastName"), value: normalizedLastName },
+      { label: t("label.country"), value: normalizedCountry }
+    ].filter((entry) => entry.value)
+  });
+  updateOriginalLink("");
+  setStatus(t("status.playersFound", { rows: parsed.rows.length }), "success");
+}
+
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const url = urlInput.value.trim();
+  debugLog("form submit", { url });
+
+  if (!url) {
+    setStatus(t("status.enterUrl"), "error");
+    return;
+  }
+
+  try {
+    await loadFromUrl(url, { historyMode: "push" });
+  } catch (error) {
+    setStatus(error.message, "error");
+  }
+});
+
+searchForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  try {
+    await loadTournamentSearch({
+      dateFrom: searchDateFromInput.value,
+      dateTo: searchDateToInput.value
+    });
+  } catch (error) {
+    setStatus(error.message, "error");
+  }
+});
+
+playerSearchForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  try {
+    await loadPlayerSearch({
+      firstName: playerFirstNameInput.value,
+      lastName: playerLastNameInput.value,
+      country: playerCountryInput.value
+    });
+  } catch (error) {
+    setStatus(error.message, "error");
+  }
+});
+
+demoButton.addEventListener("click", async () => {
+  debugLog("demo button click");
+  urlInput.value = DEMO_URL;
+
+  try {
+    await loadFromUrl(DEMO_URL, { historyMode: "push" });
+  } catch (error) {
+    setStatus(error.message, "error");
+  }
+});
+
+mobileReloadButton.addEventListener("click", async () => {
+  const url = urlInput.value.trim();
+  debugLog("mobile reload click", { url });
+
+  if (!url) {
+    setStatus(t("status.enterUrl"), "error");
+    return;
+  }
+
+  try {
+    await loadFromUrl(url, {
+      historyMode: "replace",
+      parentUrl: readQueryState(window.location.search).parent,
+      refresh: true
+    });
+  } catch (error) {
+    setStatus(error.message, "error");
+  }
+});
+
+clearButton.addEventListener("click", () => {
+  debugLog("clear button click");
+  writeQueryState(window.history, window.location.href, { url: "", parent: "" }, "push");
+  clearView({ keepUrl: true });
+  urlInput.value = "";
+  setStatus("");
+});
+
+resultPanel.addEventListener("click", async (event) => {
+  const link = event.target.closest("a[href]");
+  if (!link) {
+    return;
+  }
+
+  const nextUrl = new URL(link.href, window.location.href);
+  if (nextUrl.origin !== window.location.origin || nextUrl.pathname !== window.location.pathname) {
+    return;
+  }
+
+  const targetUrl = nextUrl.searchParams.get("url");
+  if (!targetUrl) {
+    return;
+  }
+
+  debugLog("result panel internal navigation", {
+    linkHref: link.href,
+    targetUrl,
+    currentSourceUrl: urlInput.value.trim()
+  });
+  event.preventDefault();
+  const currentSourceUrl = urlInput.value.trim();
+  const parentUrl = isTournamentUrl(currentSourceUrl) ? currentSourceUrl : readQueryState(window.location.search).parent;
+  urlInput.value = targetUrl;
+
+  try {
+    await loadFromUrl(targetUrl, { historyMode: "push", parentUrl });
+  } catch (error) {
+    setStatus(error.message, "error");
+  }
+});
+
+languageOptions.forEach((option) => {
+  option.addEventListener("click", () => {
+    currentLanguage = option.dataset.languageOption === "ru" ? "ru" : "en";
+    window.localStorage?.setItem(LANGUAGE_STORAGE_KEY, currentLanguage);
+    applyLanguage();
+  });
+});
+
+applyLanguage();
+scheduleWatchPolling();
+
+playerCountryInput.value = playerCountryInput.value.trim().toUpperCase() || "LAT";
+
+
+const initialState = readQueryState(window.location.search);
+debugLog("initial query state", initialState);
+if (initialState.url) {
+  urlInput.value = initialState.url;
+  updateOriginalLink(initialState.url);
+  loadFromUrl(initialState.url, {
+    historyMode: "replace",
+    parentUrl: initialState.parent
+  }).catch((error) => {
+    clearView({ keepUrl: true });
+    setStatus(error.message, "error");
+  });
+} else if (initialState.playerFirstName || initialState.playerLastName) {
+  playerFirstNameInput.value = initialState.playerFirstName;
+  playerLastNameInput.value = initialState.playerLastName;
+  playerCountryInput.value = (initialState.playerCountry || "LAT").trim().toUpperCase();
+  loadPlayerSearch({
+    firstName: playerFirstNameInput.value,
+    lastName: playerLastNameInput.value,
+    country: playerCountryInput.value,
+    historyMode: "replace"
+  }).catch((error) => {
+    clearView({ keepUrl: true });
+    setStatus(error.message, "error");
+  });
+} else if (initialState.searchFrom || initialState.searchTo) {
+  searchDateFromInput.value = initialState.searchFrom;
+  searchDateToInput.value = initialState.searchTo;
+  loadTournamentSearch({
+    dateFrom: searchDateFromInput.value,
+    dateTo: searchDateToInput.value,
+    historyMode: "replace"
+  }).catch((error) => {
+    clearView({ keepUrl: true });
+    setStatus(error.message, "error");
+  });
+}
+
+window.addEventListener("popstate", () => {
+  const queryState = readQueryState(window.location.search);
+  debugLog("popstate", queryState);
+
+  if (!queryState.url) {
+    if (queryState.playerFirstName || queryState.playerLastName) {
+      playerFirstNameInput.value = queryState.playerFirstName;
+      playerLastNameInput.value = queryState.playerLastName;
+      playerCountryInput.value = (queryState.playerCountry || "LAT").trim().toUpperCase();
+      loadPlayerSearch({
+        firstName: playerFirstNameInput.value,
+        lastName: playerLastNameInput.value,
+        country: playerCountryInput.value,
+        historyMode: "replace"
+      }).catch((error) => {
+        clearView({ keepUrl: true });
+        setStatus(error.message, "error");
+      });
+      return;
+    }
+
+    if (queryState.searchFrom || queryState.searchTo) {
+      searchDateFromInput.value = queryState.searchFrom;
+      searchDateToInput.value = queryState.searchTo;
+      loadTournamentSearch({
+        dateFrom: searchDateFromInput.value,
+        dateTo: searchDateToInput.value,
+        historyMode: "replace"
+      }).catch((error) => {
+        clearView({ keepUrl: true });
+        setStatus(error.message, "error");
+      });
+      return;
+    }
+
+    clearView({ keepUrl: true });
+    urlInput.value = "";
+    searchDateFromInput.value = "";
+    searchDateToInput.value = "";
+    playerFirstNameInput.value = "";
+    playerLastNameInput.value = "";
+    playerCountryInput.value = "LAT";
+    setStatus("");
+    return;
+  }
+
+  urlInput.value = queryState.url;
+  updateOriginalLink(queryState.url);
+  loadFromUrl(queryState.url, { historyMode: "replace", parentUrl: queryState.parent }).catch((error) => {
+    clearView({ keepUrl: true });
+    setStatus(error.message, "error");
+  });
+});

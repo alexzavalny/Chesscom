@@ -1,417 +1,96 @@
 <!doctype html>
 <html lang="en">
     <head>
+        <script>
+            // Old stats links (pawnpatrol.eu/?usernames=... or /?x) moved to /stats/.
+            (() => {
+                const params = new URLSearchParams(window.location.search);
+                if (params.has('usernames') || params.has('x')) {
+                    window.location.replace(`stats/${window.location.search}`);
+                }
+            })();
+        </script>
         <!-- Google tag (gtag.js) -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-8N93HR2GHK"></script>
         <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
 
-        gtag('config', 'G-8N93HR2GHK');
+            gtag('config', 'G-8N93HR2GHK');
         </script>
         <meta charset="UTF-8" />
-        <title>Pawn Patrol</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
-        <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
-        <link rel="icon" type="image/x-icon" href="favicon.ico">
-        <link rel="stylesheet" href="site.css?15" />
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+        <title>Pawn Patrol · Chess tools</title>
+        <meta name="description" content="Free chess tools: Chess.com stats, memory training, play any position against Stockfish, a puzzle ladder and clean tournament results." />
+        <link rel="icon" type="image/x-icon" href="favicon.ico" />
+        <link rel="stylesheet" href="shared/pawnpatrol.css" />
+        <link rel="stylesheet" href="home.css" />
     </head>
     <body>
-        <div id="app">
-            <!-- Username Input Form -->
-            <div v-if="showUsernameInput" class="username-input-container">
-                <div class="site-nav">
-                    <div class="brand-mark">Pawn Patrol</div>
-                    <a class="nav-link" href="https://www.chess.com" target="_blank">Chess.com</a>
-                </div>
-                <div class="username-input-form">
-                    <span class="section-pill">Chess.com stats</span>
-                    <h1>Pawn Patrol</h1>
-                    <p>Enter a Chess.com username to view recent results, ratings, accuracy, and game time.</p>
-                    <form @submit.prevent="handleUsernameSubmit">
-                        <input
-                            type="text"
-                            v-model="inputUsername"
-                            placeholder="Enter Chess.com username"
-                            required
-                            class="username-input"
-                        />
-                        <button type="submit" class="username-submit-btn">View Stats</button>
-                    </form>
-                </div>
-            </div>
+        <script src="shared/pp-bar.js" data-tool="home"></script>
 
-            <main class="container" v-if="!showUsernameInput">
-                <header class="site-header">
-                    <div class="site-nav">
-                        <div class="brand-mark">Pawn Patrol</div>
-                        <a class="nav-link" href="https://www.chess.com" target="_blank">Chess.com</a>
-                    </div>
+        <main class="home">
+            <header class="home__hero">
+                <span class="home__pill">Chess tools</span>
+                <h1 class="home__title">Pawn Patrol</h1>
+                <p class="home__lede">Small, free tools for friends who play every day. Track your games, train your eye, play it out. No sign-up.</p>
+            </header>
 
-                </header>
-
-                <!-- Username Tags Section -->
-                <div class="username-tags-container">
-                    <div class="username-tags">
-                        <span
-                            v-for="username in usernames"
-                            :key="username"
-                            class="username-tag"
-                        >
-                            {{ usernamesToNames[username] || username }}
-                            <span class="tag-close" @click="removeUsername(username)">&times;</span>
+            <ul class="tiles">
+                <li>
+                    <a class="tile" href="stats/">
+                        <span class="tile__icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24"><path d="M4 4v16h16" /><path d="M8 15l4-4 3 3 5-6" /></svg>
                         </span>
-                        <button class="add-user-btn" @click="showAddUserModal = true" title="Add another user" aria-label="Add another user">
-                            <span class="plus-icon">+</span>
-                        </button>
-                    </div>
-                </div>
+                        <h2 class="tile__name">Chess.com Stats</h2>
+                        <p class="tile__text">Ratings, results, accuracy and time played, for you and your friends.</p>
+                        <span class="tile__open">Open <span aria-hidden="true">→</span></span>
+                    </a>
+                </li>
+                <li>
+                    <a class="tile" href="memo/">
+                        <span class="tile__icon tile__icon--warm" aria-hidden="true">
+                            <svg viewBox="0 0 24 24"><circle cx="12" cy="13.5" r="7.5" /><path d="M12 10v3.5l2.5 2" /><path d="M9.5 2.5h5" /><path d="M12 2.5V6" /></svg>
+                        </span>
+                        <h2 class="tile__name">Memo Rush</h2>
+                        <p class="tile__text">See a position, then rebuild it from memory before the clock runs out.</p>
+                        <span class="tile__open">Open <span aria-hidden="true">→</span></span>
+                    </a>
+                </li>
+                <li>
+                    <a class="tile" href="fen/">
+                        <span class="tile__icon" aria-hidden="true">
+                            <span class="tile__glyph">♞</span>
+                        </span>
+                        <h2 class="tile__name">FEN Player</h2>
+                        <p class="tile__text">Paste any position and play it out against Stockfish, with eval and best moves.</p>
+                        <span class="tile__open">Open <span aria-hidden="true">→</span></span>
+                    </a>
+                </li>
+                <li>
+                    <a class="tile" href="puzzles/">
+                        <span class="tile__icon tile__icon--warm" aria-hidden="true">
+                            <svg viewBox="0 0 24 24"><path d="M2.5 20l7-12 4 6.5 2.5-3.5 5.5 9z" /><path d="M9.5 8V3l3.5 1.5-3.5 1.5" /></svg>
+                        </span>
+                        <h2 class="tile__name">Puzzle Mountain</h2>
+                        <p class="tile__text">Climb the Lichess puzzle database, 50 rating points at a time.</p>
+                        <span class="tile__open">Open <span aria-hidden="true">→</span></span>
+                    </a>
+                </li>
+                <li>
+                    <a class="tile" href="tournaments/">
+                        <span class="tile__icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 0 1-8 0z" /><path d="M8 6H5a3 3 0 0 0 3 3.5" /><path d="M16 6h3a3 3 0 0 1-3 3.5" /><path d="M12 13v4" /><path d="M8.5 20.5h7" /><path d="M10 17h4v3.5h-4z" /></svg>
+                        </span>
+                        <h2 class="tile__name">Tournament Results</h2>
+                        <p class="tile__text">Clean, phone-friendly standings and player pages from Chess-Results.</p>
+                        <span class="tile__open">Open <span aria-hidden="true">→</span></span>
+                    </a>
+                </li>
+            </ul>
+        </main>
 
-                <div class="panel">
-                    <button @click="toggleLeaderboard" :class="{ active: showLeaderboard, leaderboard: true }">
-                      Leaderboard
-                    </button>
-                    <div class="date-controls">
-                        <button
-                            v-for="period in periods"
-                            @click="fetchStats(period)"
-                            :key="period"
-                            :class="periodButtonClass(period)"
-                        >
-                            {{ period.charAt(0).toUpperCase() + period.slice(1) }}
-                        </button>
-                    </div>
-                </div>
-
-                <div v-if="showLeaderboard" class="stats">
-                  <!-- Chess Game Types -->
-                  <div v-for="type in ['blitz', 'rapid', 'bullet', 'daily']" :key="type" class="leaderboard-section">
-                    <h3>{{ type.charAt(0).toUpperCase() + type.slice(1) }}</h3>
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>Rank</th>
-                          <th>Player</th>
-                          <th>Rating</th>
-                          <th>Best Rating</th>
-                          <th>W/L/D</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr v-for="(player, index) in leaderboards[type]" :key="player.username">
-                          <td>
-                            {{ index + 1 }}
-                          </td>
-                          <td>{{ player.displayName }}</td>
-                          <td>{{ player.rating }}</td>
-                          <td>{{ player.bestRating || '-' }}</td>
-                          <td>{{ player.gamesWon }}/{{ player.gamesLost }}/{{ player.gamesDraw }}</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-
-                  <!-- Tactics -->
-                  <div v-if="leaderboards.tactics.length" class="leaderboard-section">
-                    <h3>Tactics</h3>
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>Rank</th>
-                          <th>Player</th>
-                          <th>Highest Rating</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr v-for="(player, index) in leaderboards.tactics" :key="player.username">
-                          <td>
-                            {{ index + 1 }}
-                          </td>
-                          <td>{{ player.displayName }}</td>
-                          <td>{{ player.bestRating }}</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-
-                  <!-- Puzzle Rush -->
-                  <div v-show="false" v-if="leaderboards.puzzle_rush.length" class="leaderboard-section">
-                    <h3>Puzzle Rush</h3>
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>Rank</th>
-                          <th>Player</th>
-                          <th>Best Score</th>
-                          <th>Total Attempts</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr v-for="(player, index) in leaderboards.puzzle_rush" :key="player.username">
-                          <td>
-                            {{ index + 1 }}
-                          </td>
-                          <td>{{ player.displayName }}</td>
-                          <td>{{ player.score }}</td>
-                          <td>{{ player.attempts }}</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                <!-- Empty State Message -->
-                <div v-if="!showLeaderboard && hasNoResults" class="empty-state">
-                    <div class="empty-state-content">
-                        <h3>No games found!</h3>
-                        <p>No one played chess during the selected time period: <strong>{{ activePeriod | capitalize }}</strong></p>
-                        <p class="empty-state-tip">
-                            Try selecting a different time period or check if you've entered the correct Chess.com usernames.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="stats" v-for="result in results" :key="result.username" v-if="Object.entries(result.statsByType).length > 0">
-                    <h2>
-                        <a
-                            :href="`https://www.chess.com/member/${result.username}`"
-                            target="_blank"
-                            >{{ usernamesToNames[result.username] || result.username }}
-                                <span class="player-badge" v-if="Object.entries(result.statsByType).length > 0 && totalStats[result.username].won > totalStats[result.username].lost">Winning</span>
-                                <span class="player-badge" v-if="Object.entries(result.statsByType).length > 0 && totalStats[result.username].won <= totalStats[result.username].lost">Trying their best</span>
-                                <span class="player-badge" v-if="isTheBest(result.username)">Most time</span>
-                            </a
-                        >
-                    </h2>
-
-
-                    <table v-if="Object.entries(result.statsByType).length > 0">
-                        <colgroup>
-                            <col style="width: 10%" />
-                            <col style="width: 10%" />
-                            <col style="width: 10%" />
-                            <col style="width: 10%" />
-                            <col style="width: 10%" />
-                            <col style="width: 10%" />
-                            <col style="width: 10%" />
-                            <col style="width: 10%" />
-                            <col style="width: 10%" />
-                            <col style="width: 10%" />
-                            <col style="width: 10%" />
-                        </colgroup>
-                        <thead>
-                            <tr>
-                                <th>Type</th>
-                                <th>Games</th>
-                                <th colspan="2">Won</th>
-                                <th colspan="2">Lost</th>
-                                <th colspan="2">Draw</th>
-                                <th>Time</th>
-                                <th>Rating</th>
-                                <th>Avg Acc</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr
-                                v-for="(details, type) in result.statsByType"
-                                :key="type"
-                                @click="openModal(result.username, details.games)"
-                            >
-                                <td>
-                                    <img
-                                        :src="`icons/${type.toLowerCase()}.svg`"
-                                        :alt="type"
-                                    />
-                                </td>
-                                <td>{{ details.played }}</td>
-                                <td class="score">{{ details.won }}</td>
-                                <td class="percentage">
-                                    {{ percentage(details.won, details.played)}}%
-                                </td>
-                                <td class="score">{{ details.lost }}</td>
-                                <td class="percentage">
-                                    {{ percentage(details.lost, details.played)}}%
-                                </td>
-                                <td class="score">{{ details.draw }}</td>
-                                <td class="percentage">
-                                    {{ percentage(details.draw, details.played)}}%
-                                </td>
-                                <td class="time">{{ formatDuration(details.duration) }}</td>
-                                <td><span class="rating-before">{{ details.ratingBefore }}</span><br><span :class="ratingClass(details)">{{ details.rating }}</span></td>
-                                <td>{{ details.averageAccuracy ? details.averageAccuracy.toFixed(1) + '%' : '-' }}</td>
-                            </tr>
-                            <tr class="totals" v-if="totalStats[result.username].played > 0">
-                                <td><strong>Total</strong></td>
-                                <td>
-                                    <strong
-                                        >{{
-                                        totalStats[result.username].played}}</strong
-                                    >
-                                </td>
-                                <td class="score">
-                                    <strong
-                                        >{{
-                                        totalStats[result.username].won}}</strong
-                                    >
-                                </td>
-                                <td class="percentage">
-                                    {{percentage(totalStats[result.username].won,totalStats[result.username].played)
-                                    }}%
-                                </td>
-                                <td class="score">
-                                    <strong
-                                        >{{
-                                        totalStats[result.username].lost}}</strong
-                                    >
-                                </td>
-                                <td class="percentage">
-                                    {{percentage(totalStats[result.username].lost,totalStats[result.username].played)
-                                    }}%
-                                </td>
-                                <td class="score">
-                                    <strong
-                                        >{{
-                                        totalStats[result.username].draw}}</strong
-                                    >
-                                </td>
-                                <td class="percentage">
-                                    {{percentage(totalStats[result.username].draw,totalStats[result.username].played)
-                                    }}%
-                                </td>
-                                <td class="time">
-                                    <strong>
-                                        {{formatDuration(totalStats[result.username].duration)}}
-                                    </strong>
-                                </td>
-                                <td></td>
-                                <td>
-                                    <strong>
-                                        {{totalStats[result.username].averageAccuracy ? totalStats[result.username].averageAccuracy.toFixed(1) + '%' : '-'}}
-                                    </strong>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div v-if="showModal" class="modal">
-                    <div class="modal-content">
-
-                        <div class="modal-header">
-                            <span class="close" @click="closeModal">&times;</span>
-                            <h2>
-                                Games
-
-                                <canvas id="ratingChart" v-if="showChart"></canvas>
-                                <span class="checkbox desktop">
-                                    <input type="checkbox" id="showOpenings" v-model="showOpenings" />
-                                    <label for="showOpenings">Openings</label>
-                                </span>
-                                <span class="checkbox">
-                                    <input type="checkbox" id="showTime" v-model="showTime" />
-                                    <label for="showTime">Time</label>
-                                </span>
-                                <span class="checkbox">
-                                    <input type="checkbox" id="showDate" v-model="showDate" />
-                                    <label for="showDate">Date</label>
-                                </span>
-                                <span class="checkbox">
-                                    <input type="checkbox" id="showWeekDay" v-model="showWeekDay" />
-                                    <label for="showWeekDay">Week Day</label>
-                                </span>
-                                <span class="checkbox desktop">
-                                    <input type="checkbox" id="showChart" v-model="showChart" />
-                                    <label for="showChart">Chart</label>
-                                </span>
-                            </h2>
-                        </div>
-                        <div class="modal-body">
-                            <table>
-                                <tr
-                                    v-for="game in currentGames"
-                                    :key="game.id"
-                                    @click="openGame(game.url)"
-                                >
-                                <td v-if="showWeekDay">
-                                    {{ formatWeekday(game.endTime) }}
-                                </td>
-                                <td v-if="showDate">
-                                    {{ formatDate(game.endTime) }}
-                                </td>
-                                <td v-if="showTime">
-                                    <!-- game.endTime to time hh:mm -->
-                                    {{ game.endTime.toLocaleTimeString([],{ hour12: false, hour: "2-digit", minute: "2-digit" }) }}
-                                </td>
-                                <td>
-                                    <span
-                                        class="chess-icon"
-                                        :class="iconClassByResult(game)"
-                                        :title="game.resultSubType"
-                                    ></span>
-                                </td>
-                                <td class="modal__player-white">
-                                    <span :class="nonameClass(game.white.username)">{{ game.white.username }}</span>
-                                    <span
-                                        v-if="game.accuracies"
-                                        :class="colorClass(game.accuracies.white)"
-                                    >
-                                        [{{ game.accuracies.white }}%]
-                                    </span>
-                                </td>
-                                <td class="modal__move-count">-{{ game.moveCount }}-</td>
-                                <td class="modal__player-black">
-                                    <span
-                                        v-if="game.accuracies"
-                                        :class="colorClass(game.accuracies.black)"
-                                    >
-                                        [{{ game.accuracies.black }}%]
-                                    </span>
-                                    <span :class="nonameClass(game.black.username)">{{ game.black.username }}</span>
-                                </td>
-                                <td class="desktop" v-if="showOpenings">
-                                    <!-- game.opening is in format { "name" => "url" } -->
-                                    <a :href="game.opening.url" target="_blank">
-                                        {{ game.opening.name }}</a>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-            </main>
-
-            <!-- Add User Modal -->
-            <div v-if="showAddUserModal" class="modal">
-                <div class="modal-content add-user-modal">
-                    <div class="modal-header">
-                        <span class="close" @click="closeAddUserModal">&times;</span>
-                        <h2>Add User</h2>
-                    </div>
-                    <div class="modal-body">
-                        <form @submit.prevent="addUsername">
-                            <input
-                                type="text"
-                                v-model="newUsername"
-                                placeholder="Enter Chess.com username"
-                                required
-                                class="add-user-input"
-                                ref="addUserInput"
-                            />
-                            <div class="modal-buttons">
-                                <button type="button" @click="closeAddUserModal" class="cancel-btn">Cancel</button>
-                                <button type="submit" class="add-btn">Add User</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <script type="module" src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.esm.browser.js"></script>
-        <script type="module" src="config.js"></script>
-        <script type="module" src="services/chessApi.js"></script>
-        <script type="module" src="utils/gameUtils.js"></script>
-        <script type="module" src="chessStats.js?2"></script>
+        <footer class="home__footer">pawnpatrol.eu · made for friends who play every day</footer>
     </body>
 </html>

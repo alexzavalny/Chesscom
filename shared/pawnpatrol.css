@@ -1,0 +1,136 @@
+/*
+ * Pawn Patrol shared chrome: design tokens and the top bar (pp-bar).
+ * Loaded by the landing page, the stats tool and every synced tool.
+ * Everything is namespaced (--pp-*, .pp-*) so it cannot clash with a tool's own styles.
+ */
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400&family=Inter:wght@400;500;600&display=swap");
+
+:root {
+    --pp-tangerine: #f69251;
+    --pp-tangerine-deep: #e07b3a;
+    --pp-midnight: #181825;
+    --pp-graphite: #484758;
+    --pp-slate: #242433;
+    --pp-carbon: #000000;
+    --pp-stone: #636363;
+    --pp-pebble: #949494;
+    --pp-fog: #f7f7f7;
+    --pp-snow: #ffffff;
+    --pp-line: rgba(24, 24, 37, 0.08);
+    --pp-shadow: rgba(24, 24, 37, 0.12) 0 2px 3px -2px;
+    --pp-shadow-lift: rgba(24, 24, 37, 0.1) 0 12px 28px -12px;
+    --pp-font-heading: "DM Sans", "Inter", sans-serif;
+    --pp-font-body: "Inter", sans-serif;
+}
+
+/* Reset everything inside the bar so host page CSS (global a/button/nav rules) cannot leak in. */
+.pp-bar,
+.pp-bar *,
+.pp-bar *::before,
+.pp-bar *::after {
+    all: unset;
+    box-sizing: border-box;
+}
+
+.pp-bar {
+    position: relative;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    align-self: stretch;
+    width: min(1200px, calc(100% - 40px));
+    min-height: 64px;
+    margin: 24px auto 0;
+    padding: 10px 12px 10px 24px;
+    border-radius: 32px;
+    background: var(--pp-snow);
+    box-shadow: var(--pp-shadow);
+    font-family: var(--pp-font-body);
+    letter-spacing: -0.01em;
+    text-align: left;
+}
+
+.pp-bar__brand {
+    flex: none;
+    color: var(--pp-carbon);
+    font-family: var(--pp-font-heading);
+    font-size: 24px;
+    font-weight: 300;
+    line-height: 1.2;
+    letter-spacing: 0;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.pp-bar__links {
+    display: flex;
+    gap: 4px;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.pp-bar__links::-webkit-scrollbar {
+    display: none;
+}
+
+.pp-bar__link {
+    display: block;
+    flex: none;
+    border-radius: 100px;
+    padding: 10px 16px;
+    color: var(--pp-stone);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.2;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: color 160ms ease, background-color 160ms ease;
+}
+
+.pp-bar__link:hover {
+    color: var(--pp-midnight);
+    background: var(--pp-fog);
+}
+
+.pp-bar__link[aria-current="page"] {
+    color: var(--pp-snow);
+    background: var(--pp-midnight);
+}
+
+.pp-bar__brand:focus-visible,
+.pp-bar__link:focus-visible {
+    outline: 2px solid var(--pp-midnight);
+    outline-offset: 2px;
+    border-radius: 100px;
+}
+
+@media screen and (max-width: 700px) {
+    .pp-bar {
+        flex-wrap: wrap;
+        gap: 6px;
+        width: calc(100% - 24px);
+        margin-top: 12px;
+        padding: 12px 8px 8px 18px;
+        border-radius: 24px;
+    }
+
+    .pp-bar__brand {
+        font-size: 20px;
+    }
+
+    .pp-bar__links {
+        flex-basis: 100%;
+        margin-left: -10px;
+        /* Soft edges hint that the row scrolls sideways. */
+        -webkit-mask-image: linear-gradient(to right, transparent, #000 10px, #000 calc(100% - 28px), transparent);
+        mask-image: linear-gradient(to right, transparent, #000 10px, #000 calc(100% - 28px), transparent);
+    }
+
+    .pp-bar__link {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+}

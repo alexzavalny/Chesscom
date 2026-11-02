@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en" class="h-full">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FEN Player · Pawn Patrol</title>
+    <meta
+      name="description"
+      content="Paste a FEN, pick a Stockfish level and a side, and play the position out in your browser."
+    />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>♞</text></svg>" />
+    <script type="module" crossorigin src="./assets/index-Bes3hg0K.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-wALev095.css">
+      <!-- Synced from FenPlayer@6317272 by scripts/sync-tools.mjs. Do not edit here. -->
+    <link rel="stylesheet" href="../shared/pawnpatrol.css" />
+    <link rel="stylesheet" href="../shared/themes/fen.css" />
+  </head>
+  <body class="min-h-full bg-slate-950 text-slate-200 antialiased">
+    <script src="../shared/pp-bar.js" data-tool="fen"></script>
+    <div class="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+      <header class="mb-6 flex flex-wrap items-baseline justify-between gap-3">
+        <h1 class="text-2xl font-semibold tracking-tight text-slate-100">
+          FEN Player
+        </h1>
+        <p class="text-sm text-slate-400">
+          Paste a position, pick a level, play it out against Stockfish.
+        </p>
+      </header>
+
+      <!-- ── Setup ─────────────────────────────────────────────────────── -->
+      <section
+        id="setup"
+        class="rounded-xl border border-slate-800 bg-slate-900/60 p-5 shadow-lg shadow-black/20"
+      >
+        <label for="fen" class="mb-2 block text-sm font-medium text-slate-300">
+          FEN
+        </label>
+        <textarea
+          id="fen"
+          rows="2"
+          spellcheck="false"
+          class="w-full resize-y rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 font-mono text-sm text-slate-100 outline-none placeholder:text-slate-600 focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
+          placeholder="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+        ></textarea>
+
+        <div class="mt-2 flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            data-preset="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+            class="preset-btn"
+          >
+            Start position
+          </button>
+          <button
+            type="button"
+            data-preset="r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4"
+            class="preset-btn"
+          >
+            Italian game
+          </button>
+          <button
+            type="button"
+            data-preset="8/8/8/4k3/8/4K3/4P3/8 w - - 0 1"
+            class="preset-btn"
+          >
+            King &amp; pawn endgame
+          </button>
+          <button
+            type="button"
+            data-preset="6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1"
+            class="preset-btn"
+          >
+            Rook endgame
+          </button>
+          <button id="paste-fen" type="button" class="preset-btn">Paste</button>
+          <p id="fen-error" class="basis-full text-sm text-rose-400 empty:hidden"></p>
+        </div>
+
+        <div class="mt-5 grid gap-4 sm:grid-cols-2">
+          <div>
+            <label for="level" class="mb-1.5 block text-sm font-medium text-slate-300">
+              Stockfish level
+            </label>
+            <select id="level" class="control"></select>
+          </div>
+          <div>
+            <label for="side" class="mb-1.5 block text-sm font-medium text-slate-300">
+              You play
+            </label>
+            <select id="side" class="control">
+              <option value="white">White</option>
+              <option value="black">Black</option>
+              <option value="random">Random side</option>
+              <option value="both">Both sides (engine off)</option>
+            </select>
+          </div>
+        </div>
+
+        <fieldset class="mt-5">
+          <legend class="mb-2 text-sm font-medium text-slate-300">Assistance</legend>
+          <div class="grid gap-2 sm:grid-cols-3">
+            <label class="toggle">
+              <input id="opt-eval" type="checkbox" class="checkbox" />
+              <span>Show eval</span>
+            </label>
+            <label class="toggle">
+              <input id="opt-best" type="checkbox" class="checkbox" />
+              <span>Show best moves</span>
+            </label>
+            <label class="toggle">
+              <input id="opt-undo" type="checkbox" class="checkbox" />
+              <span>Allow undoes</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <button
+          id="start"
+          type="button"
+          class="mt-5 w-full rounded-lg bg-sky-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+        >
+          Start playing
+        </button>
+        <p id="engine-boot" class="mt-2 text-xs text-slate-500"></p>
+      </section>
+
+      <!-- ── Play ──────────────────────────────────────────────────────── -->
+      <section id="play" class="mt-6 hidden gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
+        <div class="flex gap-3">
+          <!-- eval bar -->
+          <div id="evalbar-wrap" class="hidden w-8 shrink-0">
+            <div
+              id="evalbar"
+              class="relative h-full w-full overflow-hidden rounded bg-slate-900 ring-1 ring-slate-700"
+            >
+              <div
+                id="evalbar-fill"
+                class="absolute inset-x-0 bottom-0 bg-slate-100 transition-[height] duration-300 ease-out"
+                style="height: 50%"
+              ></div>
+              <span
+                id="evalbar-text"
+                class="absolute inset-x-0 bottom-0.5 text-center text-[10px] font-semibold tabular-nums"
+              ></span>
+            </div>
+          </div>
+
+          <!-- board -->
+          <div class="relative w-full max-w-[36rem]">
+            <div id="board" class="cg-wrap aspect-square w-full"></div>
+
+            <div
+              id="promotion"
+              class="absolute inset-0 z-20 hidden items-center justify-center bg-slate-950/70 backdrop-blur-sm"
+            >
+              <div class="rounded-xl border border-slate-700 bg-slate-900 p-4 text-center shadow-2xl">
+                <p class="mb-3 text-sm font-medium text-slate-300">Promote to</p>
+                <div id="promotion-choices" class="flex gap-2"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- side panel -->
+        <aside class="mt-6 flex flex-col gap-4 lg:mt-0">
+          <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
+            <p id="status" class="text-sm font-semibold text-slate-100">—</p>
+            <p id="substatus" class="mt-1 text-xs text-slate-400"></p>
+          </div>
+
+          <div
+            id="lines-card"
+            class="hidden rounded-xl border border-slate-800 bg-slate-900/60 p-4"
+          >
+            <h2
+              id="lines-title"
+              class="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400"
+            >
+              Engine lines
+            </h2>
+            <ol id="lines" class="space-y-1 text-xs"></ol>
+          </div>
+
+          <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
+            <h2 class="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
+              Moves
+            </h2>
+            <ol
+              id="moves"
+              class="grid max-h-52 grid-cols-[2.5rem_1fr_1fr] gap-x-2 gap-y-0.5 overflow-y-auto font-mono text-sm tabular-nums"
+            ></ol>
+          </div>
+
+          <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
+            <h2 class="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
+              Settings
+            </h2>
+            <label for="play-level" class="mb-1.5 block text-sm text-slate-300">
+              Stockfish level
+            </label>
+            <select id="play-level" class="control mb-3"></select>
+            <div class="space-y-2">
+              <label class="toggle">
+                <input id="play-eval" type="checkbox" class="checkbox" />
+                <span>Show eval</span>
+              </label>
+              <label class="toggle">
+                <input id="play-best" type="checkbox" class="checkbox" />
+                <span>Show best moves</span>
+              </label>
+              <label class="toggle">
+                <input id="play-undo" type="checkbox" class="checkbox" />
+                <span>Allow undoes</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap gap-2">
+            <button id="undo" type="button" class="action-btn hidden">Undo</button>
+            <button id="flip" type="button" class="action-btn">Flip board</button>
+            <button id="copy-fen" type="button" class="action-btn">Copy FEN</button>
+            <button id="copy-link" type="button" class="action-btn">Copy link</button>
+            <button id="restart" type="button" class="action-btn">Restart</button>
+            <button id="new-position" type="button" class="action-btn">New position</button>
+          </div>
+        </aside>
+      </section>
+    </div>
+
+  </body>
+</html>

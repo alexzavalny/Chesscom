@@ -1,0 +1,9 @@
+Current sound files in use
+
+1. move-self.mp3
+Source URL: https://images.chesscomfiles.com/chess-themes/sounds/_MP3_/default/move-self.mp3
+
+2. capture.mp3
+Source URL: https://images.chesscomfiles.com/chess-themes/sounds/_MP3_/default/capture.mp3
+
+Legacy OGG files remain in this directory but are not referenced by the app.

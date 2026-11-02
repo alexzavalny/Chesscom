@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-8N93HR2GHK"></script>
+        <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-8N93HR2GHK');
+        </script>
+        <meta charset="UTF-8" />
+        <title>Chess.com Stats · Pawn Patrol</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+        <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+        <link rel="icon" type="image/x-icon" href="../favicon.ico">
+        <link rel="stylesheet" href="../shared/pawnpatrol.css" />
+        <link rel="stylesheet" href="site.css?16" />
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    </head>
+    <body>
+        <script src="../shared/pp-bar.js" data-tool="stats"></script>
+        <div id="app">
+            <!-- Username Input Form -->
+            <div v-if="showUsernameInput" class="username-input-container">
+                <div class="username-input-form">
+                    <span class="section-pill">Pawn Patrol</span>
+                    <h1>Chess.com Stats</h1>
+                    <p>Enter a Chess.com username to view recent results, ratings, accuracy, and game time.</p>
+                    <form @submit.prevent="handleUsernameSubmit">
+                        <input
+                            type="text"
+                            v-model="inputUsername"
+                            placeholder="Enter Chess.com username"
+                            required
+                            class="username-input"
+                        />
+                        <button type="submit" class="username-submit-btn">View Stats</button>
+                    </form>
+                </div>
+            </div>
+
+            <main class="container" v-if="!showUsernameInput">
+                <!-- Username Tags Section -->
+                <div class="username-tags-container">
+                    <div class="username-tags">
+                        <span
+                            v-for="username in usernames"
+                            :key="username"
+                            class="username-tag"
+                        >
+                            {{ usernamesToNames[username] || username }}
+                            <span class="tag-close" @click="removeUsername(username)">&times;</span>
+                        </span>
+                        <button class="add-user-btn" @click="showAddUserModal = true" title="Add another user" aria-label="Add another user">
+                            <span class="plus-icon">+</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <button @click="toggleLeaderboard" :class="{ active: showLeaderboard, leaderboard: true }">
+                      Leaderboard
+                    </button>
+                    <div class="date-controls">
+                        <button
+                            v-for="period in periods"
+                            @click="fetchStats(period)"
+                            :key="period"
+                            :class="periodButtonClass(period)"
+                        >
+                            {{ period.charAt(0).toUpperCase() + period.slice(1) }}
+                        </button>
+                    </div>
+                </div>
+
+                <div v-if="showLeaderboard" class="stats">
+                  <!-- Chess Game Types -->
+                  <div v-for="type in ['blitz', 'rapid', 'bullet', 'daily']" :key="type" class="leaderboard-section">
+                    <h3>{{ type.charAt(0).toUpperCase() + type.slice(1) }}</h3>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Rank</th>
+                          <th>Player</th>
+                          <th>Rating</th>
+                          <th>Best Rating</th>
+                          <th>W/L/D</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="(player, index) in leaderboards[type]" :key="player.username">
+                          <td>
+                            {{ index + 1 }}
+                          </td>
+                          <td>{{ player.displayName }}</td>
+                          <td>{{ player.rating }}</td>
+                          <td>{{ player.bestRating || '-' }}</td>
+                          <td>{{ player.gamesWon }}/{{ player.gamesLost }}/{{ player.gamesDraw }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <!-- Tactics -->
+                  <div v-if="leaderboards.tactics.length" class="leaderboard-section">
+                    <h3>Tactics</h3>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Rank</th>
+                          <th>Player</th>
+                          <th>Highest Rating</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="(player, index) in leaderboards.tactics" :key="player.username">
+                          <td>
+                            {{ index + 1 }}
+                          </td>
+                          <td>{{ player.displayName }}</td>
+                          <td>{{ player.bestRating }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <!-- Puzzle Rush -->
+                  <div v-show="false" v-if="leaderboards.puzzle_rush.length" class="leaderboard-section">
+                    <h3>Puzzle Rush</h3>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Rank</th>
+                          <th>Player</th>
+                          <th>Best Score</th>
+                          <th>Total Attempts</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="(player, index) in leaderboards.puzzle_rush" :key="player.username">
+                          <td>
+                            {{ index + 1 }}
+                          </td>
+                          <td>{{ player.displayName }}</td>
+                          <td>{{ player.score }}</td>
+                          <td>{{ player.attempts }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <!-- Empty State Message -->
+                <div v-if="!showLeaderboard && hasNoResults" class="empty-state">
+                    <div class="empty-state-content">
+                        <h3>No games found!</h3>
+                        <p>No one played chess during the selected time period: <strong>{{ activePeriod | capitalize }}</strong></p>
+                        <p class="empty-state-tip">
+                            Try selecting a different time period or check if you've entered the correct Chess.com usernames.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="stats" v-for="result in results" :key="result.username" v-if="Object.entries(result.statsByType).length > 0">
+                    <h2>
+                        <a
+                            :href="`https://www.chess.com/member/${result.username}`"
+                            target="_blank"
+                            >{{ usernamesToNames[result.username] || result.username }}
+                                <span class="player-badge" v-if="Object.entries(result.statsByType).length > 0 && totalStats[result.username].won > totalStats[result.username].lost">Winning</span>
+                                <span class="player-badge" v-if="Object.entries(result.statsByType).length > 0 && totalStats[result.username].won <= totalStats[result.username].lost">Trying their best</span>
+                                <span class="player-badge" v-if="isTheBest(result.username)">Most time</span>
+                            </a
+                        >
+                    </h2>
+
+
+                    <table v-if="Object.entries(result.statsByType).length > 0">
+                        <colgroup>
+                            <col style="width: 10%" />
+                            <col style="width: 10%" />
+                            <col style="width: 10%" />
+                            <col style="width: 10%" />
+                            <col style="width: 10%" />
+                            <col style="width: 10%" />
+                            <col style="width: 10%" />
+                            <col style="width: 10%" />
+                            <col style="width: 10%" />
+                            <col style="width: 10%" />
+                            <col style="width: 10%" />
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Games</th>
+                                <th colspan="2">Won</th>
+                                <th colspan="2">Lost</th>
+                                <th colspan="2">Draw</th>
+                                <th>Time</th>
+                                <th>Rating</th>
+                                <th>Avg Acc</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr
+                                v-for="(details, type) in result.statsByType"
+                                :key="type"
+                                @click="openModal(result.username, details.games)"
+                            >
+                                <td>
+                                    <img
+                                        :src="`icons/${type.toLowerCase()}.svg`"
+                                        :alt="type"
+                                    />
+                                </td>
+                                <td>{{ details.played }}</td>
+                                <td class="score">{{ details.won }}</td>
+                                <td class="percentage">
+                                    {{ percentage(details.won, details.played)}}%
+                                </td>
+                                <td class="score">{{ details.lost }}</td>
+                                <td class="percentage">
+                                    {{ percentage(details.lost, details.played)}}%
+                                </td>
+                                <td class="score">{{ details.draw }}</td>
+                                <td class="percentage">
+                                    {{ percentage(details.draw, details.played)}}%
+                                </td>
+                                <td class="time">{{ formatDuration(details.duration) }}</td>
+                                <td><span class="rating-before">{{ details.ratingBefore }}</span><br><span :class="ratingClass(details)">{{ details.rating }}</span></td>
+                                <td>{{ details.averageAccuracy ? details.averageAccuracy.toFixed(1) + '%' : '-' }}</td>
+                            </tr>
+                            <tr class="totals" v-if="totalStats[result.username].played > 0">
+                                <td><strong>Total</strong></td>
+                                <td>
+                                    <strong
+                                        >{{
+                                        totalStats[result.username].played}}</strong
+                                    >
+                                </td>
+                                <td class="score">
+                                    <strong
+                                        >{{
+                                        totalStats[result.username].won}}</strong
+                                    >
+                                </td>
+                                <td class="percentage">
+                                    {{percentage(totalStats[result.username].won,totalStats[result.username].played)
+                                    }}%
+                                </td>
+                                <td class="score">
+                                    <strong
+                                        >{{
+                                        totalStats[result.username].lost}}</strong
+                                    >
+                                </td>
+                                <td class="percentage">
+                                    {{percentage(totalStats[result.username].lost,totalStats[result.username].played)
+                                    }}%
+                                </td>
+                                <td class="score">
+                                    <strong
+                                        >{{
+                                        totalStats[result.username].draw}}</strong
+                                    >
+                                </td>
+                                <td class="percentage">
+                                    {{percentage(totalStats[result.username].draw,totalStats[result.username].played)
+                                    }}%
+                                </td>
+                                <td class="time">
+                                    <strong>
+                                        {{formatDuration(totalStats[result.username].duration)}}
+                                    </strong>
+                                </td>
+                                <td></td>
+                                <td>
+                                    <strong>
+                                        {{totalStats[result.username].averageAccuracy ? totalStats[result.username].averageAccuracy.toFixed(1) + '%' : '-'}}
+                                    </strong>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div v-if="showModal" class="modal">
+                    <div class="modal-content">
+
+                        <div class="modal-header">
+                            <span class="close" @click="closeModal">&times;</span>
+                            <h2>
+                                Games
+
+                                <canvas id="ratingChart" v-if="showChart"></canvas>
+                                <span class="checkbox desktop">
+                                    <input type="checkbox" id="showOpenings" v-model="showOpenings" />
+                                    <label for="showOpenings">Openings</label>
+                                </span>
+                                <span class="checkbox">
+                                    <input type="checkbox" id="showTime" v-model="showTime" />
+                                    <label for="showTime">Time</label>
+                                </span>
+                                <span class="checkbox">
+                                    <input type="checkbox" id="showDate" v-model="showDate" />
+                                    <label for="showDate">Date</label>
+                                </span>
+                                <span class="checkbox">
+                                    <input type="checkbox" id="showWeekDay" v-model="showWeekDay" />
+                                    <label for="showWeekDay">Week Day</label>
+                                </span>
+                                <span class="checkbox desktop">
+                                    <input type="checkbox" id="showChart" v-model="showChart" />
+                                    <label for="showChart">Chart</label>
+                                </span>
+                            </h2>
+                        </div>
+                        <div class="modal-body">
+                            <table>
+                                <tr
+                                    v-for="game in currentGames"
+                                    :key="game.id"
+                                    @click="openGame(game.url)"
+                                >
+                                <td v-if="showWeekDay">
+                                    {{ formatWeekday(game.endTime) }}
+                                </td>
+                                <td v-if="showDate">
+                                    {{ formatDate(game.endTime) }}
+                                </td>
+                                <td v-if="showTime">
+                                    <!-- game.endTime to time hh:mm -->
+                                    {{ game.endTime.toLocaleTimeString([],{ hour12: false, hour: "2-digit", minute: "2-digit" }) }}
+                                </td>
+                                <td>
+                                    <span
+                                        class="chess-icon"
+                                        :class="iconClassByResult(game)"
+                                        :title="game.resultSubType"
+                                    ></span>
+                                </td>
+                                <td class="modal__player-white">
+                                    <span :class="nonameClass(game.white.username)">{{ game.white.username }}</span>
+                                    <span
+                                        v-if="game.accuracies"
+                                        :class="colorClass(game.accuracies.white)"
+                                    >
+                                        [{{ game.accuracies.white }}%]
+                                    </span>
+                                </td>
+                                <td class="modal__move-count">-{{ game.moveCount }}-</td>
+                                <td class="modal__player-black">
+                                    <span
+                                        v-if="game.accuracies"
+                                        :class="colorClass(game.accuracies.black)"
+                                    >
+                                        [{{ game.accuracies.black }}%]
+                                    </span>
+                                    <span :class="nonameClass(game.black.username)">{{ game.black.username }}</span>
+                                </td>
+                                <td class="desktop" v-if="showOpenings">
+                                    <!-- game.opening is in format { "name" => "url" } -->
+                                    <a :href="game.opening.url" target="_blank">
+                                        {{ game.opening.name }}</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Add User Modal -->
+            <div v-if="showAddUserModal" class="modal">
+                <div class="modal-content add-user-modal">
+                    <div class="modal-header">
+                        <span class="close" @click="closeAddUserModal">&times;</span>
+                        <h2>Add User</h2>
+                    </div>
+                    <div class="modal-body">
+                        <form @submit.prevent="addUsername">
+                            <input
+                                type="text"
+                                v-model="newUsername"
+                                placeholder="Enter Chess.com username"
+                                required
+                                class="add-user-input"
+                                ref="addUserInput"
+                            />
+                            <div class="modal-buttons">
+                                <button type="button" @click="closeAddUserModal" class="cancel-btn">Cancel</button>
+                                <button type="submit" class="add-btn">Add User</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script type="module" src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.esm.browser.js"></script>
+        <script type="module" src="config.js"></script>
+        <script type="module" src="services/chessApi.js"></script>
+        <script type="module" src="utils/gameUtils.js"></script>
+        <script type="module" src="chessStats.js?2"></script>
+    </body>
+</html>

@@ -1,0 +1,87 @@
+/*
+ * Pawn Patrol look for Puzzle Mountain (synced from PuzzleMountain).
+ * Loaded after the tool's own styles.css; the tool is themed through its CSS variables.
+ */
+
+:root {
+    --bg: var(--pp-fog);
+    --panel: var(--pp-snow);
+    --panel-strong: var(--pp-snow);
+    --text: var(--pp-midnight);
+    --muted: var(--pp-stone);
+    --accent: var(--pp-tangerine);
+    --accent-deep: #c2621f;
+    --shadow: var(--pp-shadow);
+}
+
+body {
+    background: var(--pp-fog);
+    font-family: var(--pp-font-body);
+    letter-spacing: -0.01em;
+}
+
+.shell {
+    width: min(1200px, calc(100% - 40px));
+    padding-top: 24px;
+}
+
+.eyebrow,
+.label,
+.themes,
+.rules,
+.board-caption,
+.board-loader-label,
+.stopwatch-value,
+.sound-debug-row-meta,
+.stats-item-score {
+    font-family: var(--pp-font-body);
+}
+
+.eyebrow {
+    color: var(--pp-carbon);
+    font-family: var(--pp-font-heading);
+    font-size: 22px;
+    font-weight: 300;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+.label {
+    color: var(--pp-stone);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.panel {
+    border-color: transparent;
+    border-radius: 24px;
+    box-shadow: var(--pp-shadow);
+    backdrop-filter: none;
+}
+
+.range,
+.level-badge,
+.stopwatch-value {
+    color: var(--pp-carbon);
+    font-family: var(--pp-font-heading);
+    font-weight: 300;
+    letter-spacing: 0;
+    font-variant-numeric: tabular-nums;
+}
+
+.primary {
+    color: var(--pp-carbon);
+    font-weight: 500;
+}
+
+.secondary {
+    border-color: #dedee3;
+    background: var(--pp-snow);
+    font-weight: 500;
+}
+
+@media screen and (max-width: 700px) {
+    .shell {
+        width: calc(100% - 24px);
+    }
+}

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memo Rush · Pawn Patrol</title>
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <!-- Synced from ChessMemoRush@f23d053 by scripts/sync-tools.mjs. Do not edit here. -->
+    <link rel="stylesheet" href="../shared/pawnpatrol.css" />
+    <link rel="stylesheet" href="../shared/themes/memo.css" />
+  </head>
+<body>
+    <script src="../shared/pp-bar.js" data-tool="memo"></script>
+    <div id="app">
+        <h1>Chess Memo Rush</h1>
+        <div v-if="!gameStarted" class="start-screen">
+            <h2>Test Your Chess Memory</h2>
+            <p>Memorize chess positions and recreate them before time runs out!</p>
+            <button @click="startGame">Start Game</button>
+            <div class="high-scores" v-if="highScores.length">
+                <h3>High Scores</h3>
+                <ol>
+                    <li v-for="score in highScores">{{ score }}</li>
+                </ol>
+            </div>
+        </div>
+        <div class="game-container" v-if="gameStarted && !gameOver">
+            <div class="timer">{{ formatTime(timeLeft) }}</div>
+            <div class="boards-container">
+                <div class="board-wrapper">
+                    <div id="targetBoard"></div>
+                    <div v-if="showingResults" class="label">Target Position</div>
+                </div>
+                <div class="board-wrapper">
+                    <div id="playerBoard"></div>
+                    <div v-if="showingResults" class="label">Your Answer</div>
+                </div>
+            </div>
+            <div class="controls">
+                <button v-if="!positionHidden && !showingResults" @click="startMemorizing">Ready</button>
+                <button v-if="positionHidden && !showingResults" @click="submitPosition">Submit</button>
+                <button v-if="showingResults" @click="nextPosition">Next Position</button>
+            </div>
+            <div class="score">Score: {{ score }}</div>
+        </div>
+        <div class="game-over" v-if="gameStarted && gameOver">
+            <h2>Game Over!</h2>
+            <p>Final Score: {{ score }}</p>
+            <button @click="startNewGame">Play Again</button>
+            <div class="high-scores" v-if="highScores.length">
+                <h3>High Scores</h3>
+                <ol>
+                    <li v-for="score in highScores">{{ score }}</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html> 

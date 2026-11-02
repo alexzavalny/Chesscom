@@ -1,0 +1,131 @@
+/*
+ * Pawn Patrol look for Memo Rush (synced from ChessMemoRush).
+ * Loaded after the tool's own style.css, so equal-specificity rules here win.
+ */
+
+body {
+    padding: 0 0 56px;
+    color: var(--pp-midnight);
+    background: var(--pp-fog);
+    font-family: var(--pp-font-body);
+    letter-spacing: -0.01em;
+}
+
+#app {
+    width: min(1200px, calc(100% - 40px));
+    margin-top: 48px;
+}
+
+h1 {
+    margin: 0 0 32px;
+    color: var(--pp-carbon);
+    font-family: var(--pp-font-heading);
+    font-size: 54px;
+    font-weight: 300;
+    line-height: 1.1;
+    letter-spacing: 0;
+}
+
+.start-screen,
+.game-container,
+.game-over {
+    border-radius: 24px;
+    background: var(--pp-snow);
+    box-shadow: var(--pp-shadow);
+}
+
+.start-screen {
+    padding: 56px 48px;
+}
+
+.start-screen h2,
+.game-over h2 {
+    margin-bottom: 16px;
+    color: var(--pp-carbon);
+    font-family: var(--pp-font-heading);
+    font-size: 32px;
+    font-weight: 300;
+    letter-spacing: 0;
+}
+
+.start-screen p,
+.game-over p {
+    color: var(--pp-stone);
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+button {
+    min-height: 44px;
+    border: 0;
+    border-radius: 28px;
+    padding: 12px 24px;
+    color: var(--pp-carbon);
+    background: var(--pp-tangerine);
+    box-shadow: rgba(0, 0, 0, 0.04) 0 1px 2px, rgba(0, 0, 0, 0.02) 0 2px 4px, rgba(0, 0, 0, 0.02) 0 4px 8px;
+    font-family: var(--pp-font-body);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    transition: transform 160ms ease, background-color 160ms ease;
+}
+
+button:hover {
+    background: var(--pp-tangerine);
+    transform: translateY(-1px);
+}
+
+button:focus-visible {
+    outline: 2px solid var(--pp-midnight);
+    outline-offset: 3px;
+}
+
+.timer {
+    color: var(--pp-carbon);
+    font-family: var(--pp-font-heading);
+    font-size: 48px;
+    font-weight: 300;
+    font-variant-numeric: tabular-nums;
+}
+
+.score {
+    color: var(--pp-midnight);
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.label {
+    color: var(--pp-stone);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.spare-pieces-7492f {
+    border-radius: 16px;
+    background: var(--pp-fog);
+}
+
+.high-scores h3 {
+    color: var(--pp-carbon);
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.high-scores ol {
+    color: var(--pp-graphite);
+}
+
+@media screen and (max-width: 700px) {
+    #app {
+        width: calc(100% - 24px);
+        margin-top: 32px;
+    }
+
+    h1 {
+        font-size: 42px;
+    }
+
+    .start-screen {
+        padding: 40px 24px;
+    }
+}

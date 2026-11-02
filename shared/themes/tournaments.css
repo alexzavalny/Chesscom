@@ -1,0 +1,120 @@
+/*
+ * Pawn Patrol look for Tournament Results (synced from EasyChessResults).
+ * Loaded after the tool's own styles.css; the tool is themed through its CSS variables.
+ * Its dark-mode block is stripped by scripts/sync-tools.mjs: Pawn Patrol is light-only.
+ */
+
+:root {
+    --bg: var(--pp-fog);
+    --panel: var(--pp-snow);
+    --panel-strong: var(--pp-snow);
+    --line: rgba(24, 24, 37, 0.12);
+    --text: var(--pp-midnight);
+    --muted: var(--pp-stone);
+    --accent: var(--pp-tangerine);
+    --accent-dark: #c2621f;
+    --shadow: var(--pp-shadow);
+}
+
+html {
+    color-scheme: light;
+    background: var(--pp-fog);
+}
+
+body {
+    background: var(--pp-fog);
+    font-family: var(--pp-font-body);
+    letter-spacing: -0.01em;
+}
+
+.shell {
+    width: min(1200px, calc(100% - 40px));
+    padding-top: 48px;
+}
+
+.language-switch,
+.eyebrow,
+.label,
+.status,
+input,
+textarea,
+button,
+th,
+td,
+.chips,
+.back-link,
+.fide-link,
+.original-link,
+.bookmark-button,
+.watch-button,
+.chip-link,
+.type-filter span,
+.story-score-pill,
+.story-dot text,
+.story-rating-bar,
+.story-highlights span,
+.mobile-card-top {
+    font-family: var(--pp-font-body);
+}
+
+th,
+td {
+    font-variant-numeric: tabular-nums;
+}
+
+/* Hero: same pill + light headline as the landing page and Stats. */
+.hero .eyebrow {
+    display: inline-block;
+    margin-bottom: 20px;
+    border-radius: 100px;
+    padding: 7px 13px;
+    color: var(--pp-graphite);
+    background: var(--pp-snow);
+    box-shadow: var(--pp-shadow);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+h1 {
+    max-width: 14ch;
+    color: var(--pp-carbon);
+    font-family: var(--pp-font-heading);
+    font-size: clamp(2.6rem, 6vw, 70px);
+    font-weight: 300;
+    line-height: 1.08;
+    letter-spacing: 0;
+}
+
+.panel {
+    border-color: transparent;
+    box-shadow: var(--pp-shadow);
+    backdrop-filter: none;
+}
+
+button {
+    border-radius: 28px;
+    font-weight: 500;
+}
+
+button[type="submit"] {
+    color: var(--pp-carbon);
+}
+
+.language-switch {
+    border-color: var(--line);
+    background: var(--pp-snow);
+}
+
+.language-option.is-active {
+    color: var(--pp-carbon);
+    box-shadow: none;
+}
+
+@media screen and (max-width: 700px) {
+    .shell {
+        width: calc(100% - 24px);
+        padding-top: 32px;
+    }
+}

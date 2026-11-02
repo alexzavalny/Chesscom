@@ -1,8 +1,30 @@
-# Chess.com Stats Viewer - Developer Guide
+# Pawn Patrol (pawnpatrol.eu) - Developer Guide
+
+Pawn Patrol is a hub of small chess tools. The landing page (`/index.html`) shows one tile per tool.
+
+## Site layout
+- `/index.html`, `/home.css`: landing page (tool tiles)
+- `/stats/`: Chess.com Stats (Vue). Lives in this repo; edit it here
+- `/memo/`, `/fen/`, `/puzzles/`, `/tournaments/`: **generated** by `scripts/sync-tools.mjs` from the sibling projects
+  `../ChessMemoRush`, `../FenPlayer`, `../PuzzleMountain`, `../EasyChessResults`. Never edit them here; edit the source project and re-sync
+- `/shared/pawnpatrol.css`: design tokens (`--pp-*`) and the top bar styles
+- `/shared/pp-bar.js`: top bar, including the tool list (classic script, include right after `<body>` with `data-tool="<id>"`)
+- `/shared/themes/<id>.css`: Pawn Patrol look for each synced tool, loaded after the tool's own CSS. Edit these here; sync never touches them
 
 ## Commands
-- **Run locally**: Open `index.html` in a browser
-- **Deploy**: Upload all files to a web server
+- **Run locally**: `python3 -m http.server 8000` then open http://localhost:8000 (port 8000 is allowed by the tournaments API CORS)
+- **Sync tools**: `node scripts/sync-tools.mjs` (all) or `node scripts/sync-tools.mjs fen memo` (some). Builds FEN Player, copies, patches, injects the bar and theme
+- **Deploy**: GitHub Pages serves `main` as-is (no build step). Commit the synced output and push
+
+## Adding a tool
+1. Add it to `TOOLS` in `scripts/sync-tools.mjs` (or build it in-repo like `/stats/`)
+2. Add it to `TOOLS` in `shared/pp-bar.js` and as a tile in `/index.html`
+3. Create `shared/themes/<id>.css`, run the sync, then check it in a browser
+
+## Gotchas
+- Puzzle Mountain's puzzle data (~1.4 GB) is over the GitHub Pages limit. `/puzzles/` loads it from https://alexzavalny.github.io/PuzzleMountain/, so that site must stay published
+- `/tournaments/` calls the Easy Chess Results API (ngrok, `../ChessResultsApi`). Its `CORS_ALLOWED_ORIGINS` must include `https://pawnpatrol.eu`
+- Old stats links (`/?usernames=...`, `/?x`) are redirected to `/stats/` by the landing page
 
 ## Code Style Guidelines
 

@@ -1,0 +1,211 @@
+/* Landing page. Tokens and the top bar come from shared/pawnpatrol.css. */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    background: var(--pp-fog);
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    color: var(--pp-midnight);
+    font-family: var(--pp-font-body);
+    letter-spacing: -0.01em;
+}
+
+.home {
+    width: calc(100% - 24px);
+    margin: 0 auto;
+    padding: 48px 0 56px;
+}
+
+.home__hero {
+    max-width: 780px;
+    margin-bottom: 36px;
+    padding: 0 6px;
+}
+
+.home__pill {
+    display: inline-block;
+    margin-bottom: 20px;
+    border-radius: 100px;
+    padding: 7px 13px;
+    color: var(--pp-graphite);
+    background: var(--pp-snow);
+    box-shadow: var(--pp-shadow);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.home__title {
+    margin: 0 0 16px;
+    color: var(--pp-carbon);
+    font-family: var(--pp-font-heading);
+    font-size: 42px;
+    font-weight: 300;
+    line-height: 1.1;
+    letter-spacing: 0;
+}
+
+.home__lede {
+    max-width: 620px;
+    margin: 0;
+    color: var(--pp-stone);
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.tiles {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.tile {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border-radius: 24px;
+    padding: 24px;
+    color: inherit;
+    background: var(--pp-snow);
+    box-shadow: var(--pp-shadow);
+    text-decoration: none;
+    transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.tile:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--pp-shadow), var(--pp-shadow-lift);
+}
+
+.tile:focus-visible {
+    outline: 2px solid var(--pp-midnight);
+    outline-offset: 3px;
+}
+
+.tile__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    margin-bottom: 20px;
+    border-radius: 14px;
+    color: var(--pp-snow);
+    background: var(--pp-midnight);
+}
+
+.tile__icon--warm {
+    color: var(--pp-midnight);
+    background: var(--pp-tangerine);
+}
+
+.tile__icon svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.tile__glyph {
+    font-size: 26px;
+    line-height: 1;
+}
+
+.tile__name {
+    margin: 0 0 8px;
+    color: var(--pp-carbon);
+    font-family: var(--pp-font-heading);
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+}
+
+.tile__text {
+    flex: 1;
+    margin: 0 0 20px;
+    color: var(--pp-stone);
+    font-size: 15px;
+    line-height: 1.55;
+}
+
+.tile__open {
+    color: var(--pp-midnight);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.tile__open span {
+    display: inline-block;
+    color: var(--pp-tangerine-deep);
+    transition: transform 160ms ease;
+}
+
+.tile:hover .tile__open span {
+    transform: translateX(3px);
+}
+
+.home__footer {
+    padding: 0 0 40px;
+    color: var(--pp-pebble);
+    font-size: 13px;
+    text-align: center;
+}
+
+@media screen and (min-width: 640px) {
+    .tiles {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media screen and (min-width: 701px) {
+    .home {
+        width: min(1200px, calc(100% - 40px));
+        padding-top: 72px;
+    }
+
+    .home__title {
+        font-size: 70px;
+        line-height: 1.08;
+    }
+
+    .home__lede {
+        font-size: 18px;
+    }
+
+    .tile {
+        padding: 28px;
+    }
+}
+
+@media screen and (min-width: 960px) {
+    .tiles {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tile,
+    .tile__open span {
+        transition: none;
+    }
+
+    .tile:hover {
+        transform: none;
+    }
+}

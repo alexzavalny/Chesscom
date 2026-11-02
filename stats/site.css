@@ -51,8 +51,7 @@ p {
 }
 
 h1,
-h2,
-.brand-mark {
+h2 {
     font-family: var(--font-heading);
     font-weight: 300;
     letter-spacing: 0;
@@ -117,36 +116,6 @@ input:focus-visible {
     width: min(1200px, calc(100% - 40px));
     margin: 0 auto;
     padding: 32px 0 80px;
-}
-
-.site-header {
-    padding-bottom: 24px;
-}
-
-.site-nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: min(1200px, calc(100% - 40px));
-    min-height: 64px;
-    margin: 24px auto 0;
-    padding: 10px 12px 10px 24px;
-    border-radius: 32px;
-    background: var(--color-snow);
-    box-shadow: var(--shadow-subtle);
-}
-
-.brand-mark {
-    font-size: 24px;
-    line-height: 1.2;
-}
-
-.nav-link {
-    border-radius: 100px;
-    padding: 10px 16px;
-    color: var(--color-stone);
-    font-size: 14px;
-    font-weight: 500;
 }
 
 .hero {
@@ -637,14 +606,8 @@ canvas#ratingChart {
         display: none;
     }
 
-    .container,
-    .site-nav {
+    .container {
         width: min(100% - 24px, 1200px);
-    }
-
-    .site-nav {
-        margin-top: 12px;
-        padding-left: 18px;
     }
 
     .hero {
