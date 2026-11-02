@@ -6,8 +6,10 @@
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400&family=Inter:wght@400;500;600&display=swap");
 
 :root {
-    --pp-tangerine: #f69251;
-    --pp-tangerine-deep: #e07b3a;
+    /* Brand accent (green since May 2026). CTA fill only; use --pp-accent-text for green text on white. */
+    --pp-accent: #3fb950;
+    --pp-accent-deep: #2da44e;
+    --pp-accent-text: #1a7f37;
     --pp-midnight: #181825;
     --pp-graphite: #484758;
     --pp-slate: #242433;

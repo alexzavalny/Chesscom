@@ -11,8 +11,8 @@
     --line: rgba(24, 24, 37, 0.12);
     --text: var(--pp-midnight);
     --muted: var(--pp-stone);
-    --accent: var(--pp-tangerine);
-    --accent-dark: #c2621f;
+    --accent: var(--pp-accent);
+    --accent-dark: var(--pp-accent-text);
     --shadow: var(--pp-shadow);
 }
 

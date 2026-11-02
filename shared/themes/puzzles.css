@@ -9,8 +9,8 @@
     --panel-strong: var(--pp-snow);
     --text: var(--pp-midnight);
     --muted: var(--pp-stone);
-    --accent: var(--pp-tangerine);
-    --accent-deep: #c2621f;
+    --accent: var(--pp-accent);
+    --accent-deep: var(--pp-accent-text);
     --shadow: var(--pp-shadow);
 }
 

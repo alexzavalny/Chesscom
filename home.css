@@ -105,9 +105,9 @@ body {
     background: var(--pp-midnight);
 }
 
-.tile__icon--warm {
+.tile__icon--accent {
     color: var(--pp-midnight);
-    background: var(--pp-tangerine);
+    background: var(--pp-accent);
 }
 
 .tile__icon svg {
@@ -151,7 +151,7 @@ body {
 
 .tile__open span {
     display: inline-block;
-    color: var(--pp-tangerine-deep);
+    color: var(--pp-accent-deep);
     transition: transform 160ms ease;
 }
 

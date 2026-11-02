@@ -3,7 +3,7 @@
  *
  * FEN Player is built dark-first with Tailwind v4, whose colours are CSS variables.
  * Instead of restyling every utility, the slate scale is inverted (950 = page,
- * 900 = cards, 100 = strongest text) and sky is swapped for tangerine.
+ * 900 = cards, 100 = strongest text) and sky is swapped for the brand green.
  * Tailwind's rules live in cascade layers, so these unlayered rules always win.
  */
 
@@ -22,9 +22,9 @@
     --color-slate-200: var(--pp-midnight);
     --color-slate-100: var(--pp-carbon);
 
-    --color-sky-400: var(--pp-tangerine);
-    --color-sky-500: var(--pp-tangerine);
-    --color-sky-600: var(--pp-tangerine);
+    --color-sky-400: var(--pp-accent);
+    --color-sky-500: var(--pp-accent);
+    --color-sky-600: var(--pp-accent);
 
     /* Status colours, darkened for a light background. */
     --color-rose-400: #c0392b;
